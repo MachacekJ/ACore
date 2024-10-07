@@ -1,0 +1,27 @@
+﻿@page "/"
+@inherits ACore.Blazor.JMPageBase
+
+@using System.Threading
+@using ACore.Blazor.Services.App
+@using Microsoft.Extensions.Localization
+@using ACore.Blazor.Components
+@inject IAppStartConfiguration AppSettings
+@inject IStringLocalizer<ACore.ResX.ResX_Errors> Ler
+
+<PageTitle>@AppSettings.AppName</PageTitle>
+
+Current UI culture (used for localization): @Thread.CurrentThread.CurrentUICulture.Name
+<br/>
+Current thread culture (used for date and number formatting): @Thread.CurrentThread.CurrentCulture.Name
+<br/>
+@Ler[ACore.ResX.ResX_Errors.ApiResponseBaseStatusCode_ERROR_PARSEJSON]
+<br/>
+<Testable TestId="aa">
+    <button @onclick="Click" cy-id="qqq"><span class="k-button-text">Click</span></button>
+    <TelerikTextBox @ref="txt" Class="txt1"></TelerikTextBox>
+    <TelerikButton Class="btn1" OnClick="Click">Click</TelerikButton>
+
+    <div>
+        @aa
+    </div>
+</Testable>

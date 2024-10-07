@@ -1,0 +1,24 @@
+﻿.jm-leftmenu {
+    background-color: $kendo-color-primary;
+    color: $kendo-color-primary-contrast;
+    .k-link {
+        color: inherit !important;
+        background-color: inherit !important;
+    }
+
+    .k-image {
+        width: 16px
+    }
+
+    .k-level-1 {
+        padding-left: 1rem;
+    }
+
+    .k-level-selected {
+       background-color: $kendo-color-secondary !important
+    }
+
+    .k-focus {
+        box-shadow: inset 0 0 0 0px !important;
+    }
+}

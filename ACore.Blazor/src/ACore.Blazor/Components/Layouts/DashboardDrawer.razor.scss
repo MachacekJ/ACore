@@ -1,0 +1,42 @@
+﻿.jm-content-drawer-main {
+  height: calc(100vh);
+  
+  .k-drawer-start {
+    background-color: $kendo-color-primary;
+  }
+
+  .k-drawer {
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    border-right-width: 0 !important;
+  }
+}
+
+
+.jm-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  height: $content-height;
+}
+
+.jm-content-child {
+  padding: 0px $content-padding $content-padding $content-padding;
+}
+
+.jm-content-height {
+  height: $content-height-child;
+}
+
+.jm-content-app-bar {
+  height: $app-bar-height;
+}
+
+.jm-breadcrumb {
+  height: $breadcrumb-height;
+}
+
+.jm-content-logo {
+  h2 { 
+    margin: 0;
+  }
+}

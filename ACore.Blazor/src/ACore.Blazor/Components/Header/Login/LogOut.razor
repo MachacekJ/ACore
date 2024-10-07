@@ -1,0 +1,8 @@
+﻿@inherits JMComponentBase;
+@using Telerik.SvgIcons
+
+<form method="post" action="api/Account/Logout">
+    <AntiForgeryTokenInput/>
+    <TelerikButton FillMode="flat" Icon="@SvgIcon.Logout" ButtonType="ButtonType.Submit">
+    </TelerikButton>
+</form>
