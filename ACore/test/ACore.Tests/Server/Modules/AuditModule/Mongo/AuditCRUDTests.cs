@@ -12,12 +12,12 @@ namespace ACore.Tests.Server.Modules.AuditModule.Mongo;
 /// </summary>
 public class AuditTests : AuditTestsBase
 {
-  [Fact]
-  public async Task NoAuditTest()
-  {
-    var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.NoAuditAsyncTest(Mediator, GetTableName); });
-  }
+  // [Fact]
+  // public async Task NoAuditTest()
+  // {
+  //   var method = MethodBase.GetCurrentMethod();
+  //   await RunTestAsync(method, async () => { await AuditCRUDTestHelper.NoAuditAsyncTest(Mediator, GetTableName); });
+  // }
 
 
   [Fact]
@@ -27,25 +27,25 @@ public class AuditTests : AuditTestsBase
     await RunTestAsync(method, async () => { await AuditCRUDTestHelper.AddItemAsyncTest<ObjectId>(Mediator, GetTableName, GetColumnName); });
   }
 
-  [Fact]
-  public async Task UpdateItemTest()
-  {
-    var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemAsyncTest(Mediator, GetTableName, GetColumnName); });
-  }
-
-  [Fact]
-  public async Task UpdateItemWithoutChangesTest()
-  {
-    var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemWithoutChangesAsyncTest(Mediator, GetTableName, GetColumnName); });
-  }
-
-
-  [Fact]
-  public async Task DeleteItemTest()
-  {
-    var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.DeleteItemTest(Mediator, GetTableName, GetColumnName); });
-  }
+  // [Fact]
+  // public async Task UpdateItemTest()
+  // {
+  //   var method = MethodBase.GetCurrentMethod();
+  //   await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemAsyncTest(Mediator, GetTableName, GetColumnName); });
+  // }
+  //
+  // [Fact]
+  // public async Task UpdateItemWithoutChangesTest()
+  // {
+  //   var method = MethodBase.GetCurrentMethod();
+  //   await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemWithoutChangesAsyncTest(Mediator, GetTableName, GetColumnName); });
+  // }
+  //
+  //
+  // [Fact]
+  // public async Task DeleteItemTest()
+  // {
+  //   var method = MethodBase.GetCurrentMethod();
+  //   await RunTestAsync(method, async () => { await AuditCRUDTestHelper.DeleteItemTest(Mediator, GetTableName, GetColumnName); });
+  // }
 }

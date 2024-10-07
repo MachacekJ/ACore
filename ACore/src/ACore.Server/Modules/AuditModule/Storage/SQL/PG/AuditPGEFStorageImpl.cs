@@ -1,6 +1,6 @@
 ﻿using ACore.Server.Modules.AuditModule.Storage.SQL.Models;
+using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
-using ACore.Server.Storages.Definitions.EF.Base.Scripts;
 using ACore.Server.Storages.Definitions.EF.PGStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

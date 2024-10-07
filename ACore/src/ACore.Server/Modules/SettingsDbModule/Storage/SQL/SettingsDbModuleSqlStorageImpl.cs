@@ -4,7 +4,7 @@ using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheRemove;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.SettingsDbModule.Storage.SQL.Models;
 using ACore.Server.Storages;
-using ACore.Server.Storages.Definitions.EF.Base;
+using ACore.Server.Storages.Contexts.EF;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

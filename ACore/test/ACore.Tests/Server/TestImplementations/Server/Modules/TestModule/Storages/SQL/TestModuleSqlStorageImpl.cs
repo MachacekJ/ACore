@@ -1,6 +1,6 @@
-﻿using ACore.Server.Storages.Definitions.EF.Base;
-using ACore.Server.Storages.Definitions.EF.Base.Scripts;
-using ACore.Server.Storages.Definitions.Models.PK;
+﻿using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Models.PK;
+using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -31,13 +31,6 @@ internal abstract class TestModuleSqlStorageImpl : DbContextBase, ITestStorageMo
     RegisterDbSet(TestPKString);
     RegisterDbSet(TestPKLong);
   }
-
-  // public async Task Save<TEntity, TPK>(TEntity data, string? hashToCheck = null) where TEntity : class
-  //   => await base.Save<TEntity, TPK>(data, hashToCheck);
-  //
-  // public async Task Delete<T, TPK>(TPK id) where T : class
-  //   => await  base.Delete<T, TPK>(id);
-
 
   public async Task SaveTestEntity<TEntity, TPK>(TEntity data, string? hashToCheck = null)
     where TEntity : PKEntity<TPK>

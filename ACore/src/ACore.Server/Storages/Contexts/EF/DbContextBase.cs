@@ -3,11 +3,12 @@ using ACore.Configuration;
 using ACore.Extensions;
 using ACore.Server.Configuration.CQRS.OptionsGet;
 using ACore.Server.Storages.Attributes;
+using ACore.Server.Storages.Contexts.EF.Helpers;
+using ACore.Server.Storages.Contexts.EF.Models.PK;
+using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.CQRS.Notifications;
-using ACore.Server.Storages.Definitions.EF.Base.Scripts;
-using ACore.Server.Storages.Definitions.EF.Helpers;
-using ACore.Server.Storages.Definitions.Models;
-using ACore.Server.Storages.Definitions.Models.PK;
+using ACore.Server.Storages.Definitions;
+using ACore.Server.Storages.Definitions.EF;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ using MongoDB.Bson;
 using Newtonsoft.Json;
 using Guid = System.Guid;
 
-namespace ACore.Server.Storages.Definitions.EF.Base;
+namespace ACore.Server.Storages.Contexts.EF;
 
 public abstract partial class DbContextBase(DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger) : DbContext(options), IStorage
 {
@@ -139,7 +140,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     => typeof(T).FullName ?? throw new Exception($"{nameof(Type.FullName)} cannot be retrieved.");
 
 
-  protected static void SetDatabaseNames<T>(Dictionary<string, StorageEntityNameDefinition> objectNameMapping, ModelBuilder modelBuilder) where T : class
+  protected static void SetDatabaseNames<T>(Dictionary<string, EFNameDefinition> objectNameMapping, ModelBuilder modelBuilder) where T : class
   {
     if (objectNameMapping.TryGetValue(typeof(T).Name, out var auditColumnEntityObjectNames))
     {

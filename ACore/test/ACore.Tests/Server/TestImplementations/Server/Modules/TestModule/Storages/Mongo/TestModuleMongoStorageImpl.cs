@@ -1,8 +1,8 @@
-﻿using ACore.Server.Storages.Definitions.EF;
-using ACore.Server.Storages.Definitions.EF.Base;
-using ACore.Server.Storages.Definitions.EF.Base.Scripts;
+﻿using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Models.PK;
+using ACore.Server.Storages.Contexts.EF.Scripts;
+using ACore.Server.Storages.Definitions.EF;
 using ACore.Server.Storages.Definitions.EF.MongoStorage;
-using ACore.Server.Storages.Definitions.Models.PK;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.Mongo.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -19,13 +19,15 @@ internal class TestModuleMongoStorageImpl : DbContextBase, ITestStorageModule
   protected override string ModuleName => nameof(ITestStorageModule);
   protected override EFStorageDefinition EFStorageDefinition => new MongoStorageDefinition();
 
+  internal DbSet<TestAuditEntity> Tests { get; set; }
+  internal DbSet<TestValueTypeEntity> TestValueTypes { get; set; }
+  
   public TestModuleMongoStorageImpl(DbContextOptions<TestModuleMongoStorageImpl> options, IMediator mediator, ILogger<TestModuleMongoStorageImpl> logger) : base(options, mediator, logger)
   {
-    RegisterDbSet(TestAudits);
+    RegisterDbSet(Tests);
+    RegisterDbSet(TestValueTypes);
   }
-
-  internal DbSet<TestAuditEntity> TestAudits { get; set; }
-
+  
   public async Task SaveTestEntity<TEntity, TPK>(TEntity data, string? hashToCheck = null)
     where TEntity : PKEntity<TPK>
     => await Save<TEntity, TPK>(data, hashToCheck);
@@ -39,7 +41,8 @@ internal class TestModuleMongoStorageImpl : DbContextBase, ITestStorageModule
   {
     var res = typeof(TEntity) switch
     {
-      { } entityType when entityType == typeof(TestAuditEntity) => TestAudits as DbSet<TEntity>,
+      { } entityType when entityType == typeof(TestAuditEntity) => Tests as DbSet<TEntity>,
+      { } entityType when entityType == typeof(TestValueTypeEntity) => TestValueTypes as DbSet<TEntity>,
       _ => throw new Exception($"Unknown entity type {typeof(TEntity).Name}.")
     };
     return res ?? throw new ArgumentNullException(nameof(res), @"DbSet function returned null value.");
@@ -51,6 +54,12 @@ internal class TestModuleMongoStorageImpl : DbContextBase, ITestStorageModule
     modelBuilder.Entity<TestAuditEntity>().ToCollection(DefaultNames.ObjectNameMapping[nameof(TestAuditEntity)].TableName);
     modelBuilder.Entity<TestAuditEntity>().HasKey(p => p.Id);
     modelBuilder.Entity<TestAuditEntity>(builder =>
+      builder.Property(entity => entity.Id).HasElementName("_id")
+    );
+    
+    modelBuilder.Entity<TestValueTypeEntity>().ToCollection(DefaultNames.ObjectNameMapping[nameof(TestValueTypeEntity)].TableName);
+    modelBuilder.Entity<TestValueTypeEntity>().HasKey(p => p.Id);
+    modelBuilder.Entity<TestValueTypeEntity>(builder =>
       builder.Property(entity => entity.Id).HasElementName("_id")
     );
   }

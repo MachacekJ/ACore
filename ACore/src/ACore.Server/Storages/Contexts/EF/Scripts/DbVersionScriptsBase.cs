@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace ACore.Server.Storages.Definitions.EF.Base.Scripts;
+namespace ACore.Server.Storages.Contexts.EF.Scripts;
 
 public abstract class DbVersionScriptsBase
 {

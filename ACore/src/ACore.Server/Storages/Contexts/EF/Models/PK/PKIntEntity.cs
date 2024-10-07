@@ -1,4 +1,4 @@
-namespace ACore.Server.Storages.Definitions.Models.PK;
+namespace ACore.Server.Storages.Contexts.EF.Models.PK;
 
 public abstract class PKIntEntity() : PKEntity<int>(EmptyId)
 {

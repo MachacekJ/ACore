@@ -1,40 +1,34 @@
-﻿using System.Runtime.ExceptionServices;
-using ACore.Base.CQRS.Results;
+﻿using ACore.Base.CQRS.Results;
 using ACore.Server.Storages.CQRS;
 using ACore.Server.Storages.Services.StorageResolvers;
-using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL;
+using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.Mongo;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;
+using MongoDB.Bson;
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Save;
 
-internal class TestValueTypeSaveHashHandler(IStorageResolver storageResolver) : TestModuleRequestHandler<TestValueTypeSaveCommand, Result>(storageResolver)
+internal class TestValueTypeSaveHashHandler<TPK>(IStorageResolver storageResolver) : TestModuleRequestHandler<TestValueTypeSaveCommand<TPK>, Result>(storageResolver)
 {
-  public override async Task<Result> Handle(TestValueTypeSaveCommand request, CancellationToken cancellationToken)
+  public override async Task<Result> Handle(TestValueTypeSaveCommand<TPK> request, CancellationToken cancellationToken)
   {
-    var allTask = new List<SaveProcessExecutor<TestValueTypeEntity>>();
+    var allTask = new List<SaveProcessExecutor>();
+
     foreach (var storage in WriteTestContexts())
     {
-      if (storage is TestModuleSqlStorageImpl)
+      switch (storage)
       {
-        var en = TestValueTypeEntity.Create(request.Data);
-        allTask.Add(new SaveProcessExecutor<TestValueTypeEntity>(en, storage, storage.SaveTestEntity<TestValueTypeEntity, int>(en, request.Hash)));
+        case TestModuleMongoStorageImpl:
+          var enMongo = Storages.Mongo.Models.TestValueTypeEntity.Create(request.Data);
+          allTask.Add(new SaveProcessExecutor(enMongo, storage, storage.SaveTestEntity<Storages.Mongo.Models.TestValueTypeEntity, ObjectId>(enMongo)));
+          break;
+        default:
+          var en = TestValueTypeEntity.Create(request.Data);
+          allTask.Add(new SaveProcessExecutor(en, storage, storage.SaveTestEntity<TestValueTypeEntity, int>(en)));
+          break;
       }
-      else
-        throw new Exception($"{nameof(TestValueTypeSaveHashHandler)} cannot be used for storage {storage.GetType().Name}");
     }
 
-    Task? taskSum = null;
-    try
-    {
-      taskSum = Task.WhenAll(allTask.Select(e => e.Task));
-      await taskSum.ConfigureAwait(false);
-    }
-    catch
-    {
-      if (taskSum?.Exception != null) ExceptionDispatchInfo.Capture(taskSum.Exception).Throw();
-      throw;
-    }
-    
+    await Task.WhenAll(allTask.Select(t => t.Task));
     return DbSaveResult.SuccessWithData(allTask);
   }
 }

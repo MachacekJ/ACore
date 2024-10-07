@@ -1,13 +1,14 @@
 using ACore.Extensions;
 using ACore.Server.Modules.AuditModule.Attributes;
 using ACore.Server.Modules.ICAMModule.CQRS.ICAMGetCurrentUser;
-using ACore.Server.Storages.Definitions.Models.PK;
+using ACore.Server.Storages.Contexts.EF.Models.PK;
+using ACore.Server.Storages.Definitions.EF;
 using ACore.Server.Storages.Models.SaveInfo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace ACore.Server.Storages.Definitions.EF.Helpers;
+namespace ACore.Server.Storages.Contexts.EF.Helpers;
 
 public class SaveInfoHelper<TEntity, TPK>(IMediator mediator, IModel model, EFStorageDefinition storageDefinition, TEntity initData)
   where TEntity : PKEntity<TPK>
@@ -146,10 +147,10 @@ public class SaveInfoHelper<TEntity, TPK>(IMediator mediator, IModel model, EFSt
     columnName = property.GetColumnName();
     if (string.IsNullOrEmpty(storageDefinition.DataAnnotationColumnNameKey))
       return (columnName, isAuditable);
-
-    var anno = property.GetAnnotation(storageDefinition.DataAnnotationColumnNameKey).Value?.ToString();
+    
+    var anno = property.GetAnnotations().FirstOrDefault(e => e.Name == storageDefinition.DataAnnotationColumnNameKey);
     if (anno != null)
-      columnName = anno;
+      columnName = anno.Value?.ToString() ?? throw new Exception($"Annotation '{storageDefinition.DataAnnotationColumnNameKey}' has not been found for property '{propName}'");
 
     return (columnName, isAuditable);
   }

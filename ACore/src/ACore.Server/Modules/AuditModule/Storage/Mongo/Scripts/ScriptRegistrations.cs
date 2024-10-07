@@ -1,4 +1,4 @@
-﻿using ACore.Server.Storages.Definitions.EF.Base.Scripts;
+﻿using ACore.Server.Storages.Contexts.EF.Scripts;
 
 namespace ACore.Server.Modules.AuditModule.Storage.Mongo.Scripts;
 

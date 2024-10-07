@@ -1,5 +1,5 @@
-﻿using ACore.Server.Storages.Definitions.EF;
-using ACore.Server.Storages.Definitions.EF.Base.Scripts;
+﻿using ACore.Server.Storages.Contexts.EF.Scripts;
+using ACore.Server.Storages.Definitions.EF;
 using ACore.Server.Storages.Definitions.EF.PGStorage;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;
 using MediatR;

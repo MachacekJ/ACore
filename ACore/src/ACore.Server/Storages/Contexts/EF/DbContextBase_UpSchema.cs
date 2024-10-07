@@ -2,12 +2,12 @@ using System.Reflection;
 using ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbGet;
 using ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbSave;
 using ACore.Server.Modules.SettingsDbModule.Storage;
-using ACore.Server.Storages.Definitions.EF.Base.Scripts;
+using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace ACore.Server.Storages.Definitions.EF.Base;
+namespace ACore.Server.Storages.Contexts.EF;
 
 public abstract partial class DbContextBase
 {

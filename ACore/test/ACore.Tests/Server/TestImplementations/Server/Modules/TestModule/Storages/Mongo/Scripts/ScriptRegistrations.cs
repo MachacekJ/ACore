@@ -1,4 +1,4 @@
-﻿using ACore.Server.Storages.Definitions.EF.Base.Scripts;
+﻿using ACore.Server.Storages.Contexts.EF.Scripts;
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.Mongo.Scripts;
 
@@ -10,7 +10,7 @@ internal class ScriptRegistrations : DbScriptBase
     {
       var all = new List<DbVersionScriptsBase>
       {
-        new V1_0_1_1TestTable(),
+       // new V1_0_1_1TestTable(),
         new V1_0_1_2TestAuditTables(),
         //  new V1_0_1_3TestAuditTypes(),
         //   new V1_0_1_4TestPK()

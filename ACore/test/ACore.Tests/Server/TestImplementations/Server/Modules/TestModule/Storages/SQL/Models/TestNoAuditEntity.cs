@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ACore.Server.Storages.Attributes;
-using ACore.Server.Storages.Definitions.Models.PK;
+using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestNoAudit.Models;
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;

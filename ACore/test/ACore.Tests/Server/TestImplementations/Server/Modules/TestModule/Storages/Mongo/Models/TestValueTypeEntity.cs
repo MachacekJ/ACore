@@ -5,10 +5,10 @@ using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.Test
 using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
-namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;
+namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.Mongo.Models;
 
 [Auditable(1)]
-internal class TestValueTypeEntity : PKIntEntity
+internal class TestValueTypeEntity : PKMongoEntity
 {
   public int IntNotNull { get; set; }
   public int? IntNull { get; set; }

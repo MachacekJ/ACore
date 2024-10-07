@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mapster;
 
-namespace ACore.Server.Storages.Definitions.Models.PK;
+namespace ACore.Server.Storages.Contexts.EF.Models.PK;
 
 public abstract class PKEntity<TPK>(TPK id)
 {

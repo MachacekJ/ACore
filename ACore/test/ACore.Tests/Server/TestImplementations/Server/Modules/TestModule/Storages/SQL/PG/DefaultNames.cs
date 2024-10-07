@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using ACore.Server.Storages.Definitions.Models;
+using ACore.Server.Storages.Definitions.EF;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;
 
 #pragma warning disable CS8603 // Possible null reference return.
@@ -8,24 +8,24 @@ namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Stora
 
 public static class DefaultNames
 {
-  public static Dictionary<string, StorageEntityNameDefinition> ObjectNameMapping => new()
+  public static Dictionary<string, EFNameDefinition> ObjectNameMapping => new()
   {
-    { nameof(TestNoAuditEntity), new StorageEntityNameDefinition("test", TestEntityColumnNames) },
-    { nameof(TestAuditEntity), new StorageEntityNameDefinition("test_audit", TestAttributeAuditEntityColumnNames) },
-    { nameof(TestValueTypeEntity), new StorageEntityNameDefinition("test_value_type", TestValueTypeEntityColumnNames) },
-    { nameof(TestPKGuidEntity), new StorageEntityNameDefinition("test_pk_guid", TestPKGuidEntityColumnNames) },
-    { nameof(TestPKStringEntity), new StorageEntityNameDefinition("test_pk_string", TestPKStringEntityColumnNames) },
-    { nameof(TestPKLongEntity), new StorageEntityNameDefinition("test_pk_long", TestPKLongEntityColumnNames) }
+    { nameof(TestNoAuditEntity), new EFNameDefinition("test_no_audit", TestNoAuditEntityColumnNames) },
+    { nameof(TestAuditEntity), new EFNameDefinition("test_audit", TestAuditEntityColumnNames) },
+    { nameof(TestValueTypeEntity), new EFNameDefinition("test_value_type", TestValueTypeEntityColumnNames) },
+    { nameof(TestPKGuidEntity), new EFNameDefinition("test_pk_guid", TestPKGuidEntityColumnNames) },
+    { nameof(TestPKStringEntity), new EFNameDefinition("test_pk_string", TestPKStringEntityColumnNames) },
+    { nameof(TestPKLongEntity), new EFNameDefinition("test_pk_long", TestPKLongEntityColumnNames) }
   };
 
-  private static Dictionary<Expression<Func<TestNoAuditEntity, object>>, string> TestEntityColumnNames => new()
+  private static Dictionary<Expression<Func<TestNoAuditEntity, object>>, string> TestNoAuditEntityColumnNames => new()
   {
     { e => e.Id, "test_id" },
     { e => e.Name, "name" },
     { e => e.Created, "created" }
   };
 
-  private static Dictionary<Expression<Func<TestAuditEntity, object>>, string> TestAttributeAuditEntityColumnNames => new()
+  private static Dictionary<Expression<Func<TestAuditEntity, object>>, string> TestAuditEntityColumnNames => new()
   {
     { e => e.Id, "test_audit_id" },
     { e => e.Name, "name" },

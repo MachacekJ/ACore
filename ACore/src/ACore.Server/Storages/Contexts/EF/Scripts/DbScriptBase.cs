@@ -1,4 +1,4 @@
-﻿namespace ACore.Server.Storages.Definitions.EF.Base.Scripts;
+﻿namespace ACore.Server.Storages.Contexts.EF.Scripts;
 
 public abstract class DbScriptBase
 {

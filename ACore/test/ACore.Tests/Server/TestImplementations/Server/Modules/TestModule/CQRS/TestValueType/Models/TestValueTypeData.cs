@@ -3,9 +3,9 @@ using Mapster;
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Models;
 
-public class TestValueTypeData //: HashData
+public class TestValueTypeData<T> //: HashData
 {
-  public int Id { get; set; }
+  public T Id { get; set; } = default(T) ?? throw new Exception($"Cannot create {nameof(Id)} for type {typeof(T).Name}");
   public int IntNotNull { get; set; }
   public int? IntNull { get; set; }
   public long BigIntNotNull { get; set; }
@@ -24,6 +24,9 @@ public class TestValueTypeData //: HashData
   public byte[] VarBinary2 { get; set; } = [];
   public string VarChar2 { get; set; } = string.Empty;
 
-  internal static TestValueTypeData Create(TestValueTypeEntity entity)
-    => entity.Adapt<TestValueTypeData>();
+  internal static TestValueTypeData<TPK> Create<TPK>(TestValueTypeEntity entity)
+    => entity.Adapt<TestValueTypeData<TPK>>();
+  
+  internal static TestValueTypeData<TPK> Create<TPK>(Storages.Mongo.Models.TestValueTypeEntity entity)
+    => entity.Adapt<TestValueTypeData<TPK>>();
 }

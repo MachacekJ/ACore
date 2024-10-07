@@ -1,5 +1,5 @@
+using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Definitions.Models;
-using ACore.Server.Storages.Definitions.Models.PK;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 
@@ -13,19 +13,18 @@ public class MongoStorageDefinition : EFStorageDefinition
   public override string DataAnnotationTableNameKey => "Mongo:CollectionName";
   public override bool IsTransactionEnabled => false;
 
-  public override int GetNewIntId<TEntity, TPK>(DbSet<TEntity> dbSet)
+  protected override int CreatePKInt<TEntity, TPK>(DbSet<TEntity> dbSet)
+    => throw new NotImplementedException(ErrorNotSupportedPK);
+  
+  protected override long CreatePKLong<TEntity, TPK>(DbSet<TEntity> dbSet)
     => throw new NotImplementedException(ErrorNotSupportedPK);
 
-
-  public override long GetNewLongId<TEntity, TPK>(DbSet<TEntity> dbSet)
+  protected override Guid CreatePKGuid<TEntity, TPK>()
     => throw new NotImplementedException(ErrorNotSupportedPK);
 
-  public override Guid GetNewGuidId<TEntity, TPK>()
+  protected override string CreatePKString<TEntity, TPK>()
     => throw new NotImplementedException(ErrorNotSupportedPK);
 
-  public override string GetNewStringId<TEntity, TPK>()
-    => throw new NotImplementedException(ErrorNotSupportedPK);
-
-  public override ObjectId GetNewObjectId<TEntity, TPK>()
+  protected override ObjectId CreatePKObjectId<TEntity, TPK>()
     => PKMongoEntity.NewId;
 }

@@ -3,7 +3,7 @@ using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.Test
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Get;
 
-public class TestValueTypeGetQuery: TestModuleQueryRequest<Result<TestValueTypeData[]>>
+public class TestValueTypeGetQuery<TPK>: TestModuleQueryRequest<Result<TestValueTypeData<TPK>[]>>
 {
   
 }
