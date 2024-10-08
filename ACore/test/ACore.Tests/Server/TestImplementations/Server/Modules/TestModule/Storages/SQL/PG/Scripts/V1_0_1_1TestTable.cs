@@ -1,4 +1,4 @@
-﻿using ACore.Server.Storages.Definitions.EF.Base.Scripts;
+﻿using ACore.Server.Storages.Contexts.EF.Scripts;
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.PG.Scripts;
 
@@ -15,7 +15,7 @@ internal class V1_0_1_1TestTable : DbVersionScriptsBase
             List<string> l = new()
             {
                 @"
-CREATE TABLE test
+CREATE TABLE test_no_audit
 (
     test_id INT GENERATED ALWAYS AS IDENTITY
         PRIMARY KEY,

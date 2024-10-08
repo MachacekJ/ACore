@@ -1,19 +1,29 @@
 ﻿using ACore.Base.CQRS.Results;
 using ACore.Server.Storages.Services.StorageResolvers;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Models;
+using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.Mongo;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Get;
 
-internal class TestValueTypeGetHandler(IStorageResolver storageResolver) : TestModuleRequestHandler<TestValueTypeGetQuery, Result<TestValueTypeData[]>>(storageResolver)
+internal class TestValueTypeGetHandler<TPK>(IStorageResolver storageResolver) : TestModuleRequestHandler<TestValueTypeGetQuery<TPK>, Result<TestValueTypeData<TPK>[]>>(storageResolver)
 {
-  public override async Task<Result<TestValueTypeData[]>> Handle(TestValueTypeGetQuery request, CancellationToken cancellationToken)
+  public override async Task<Result<TestValueTypeData<TPK>[]>> Handle(TestValueTypeGetQuery<TPK> request, CancellationToken cancellationToken)
   {
-    var db = ReadTestContext().DbSet<TestValueTypeEntity, int>() ?? throw new Exception();
-    var r= await db
-      .Select(a => TestValueTypeData.Create(a))
-      .ToArrayAsync(cancellationToken: cancellationToken);
-    return Result.Success(r);
+    var st = ReadTestContext();
+    if (st is TestModuleMongoStorageImpl)
+    {
+      var dbMongo = st.DbSet<Storages.Mongo.Models.TestValueTypeEntity, ObjectId>() ?? throw new Exception();
+      var allItemsM = await dbMongo.ToArrayAsync(cancellationToken: cancellationToken);
+      var r = allItemsM.Select(TestValueTypeData<TPK>.Create<TPK>).ToArray();
+      return Result.Success(r);
+    }
+
+    var db = st.DbSet<TestValueTypeEntity, int>() ?? throw new Exception();
+    var allItems = await db.ToArrayAsync(cancellationToken: cancellationToken);
+    var rr = allItems.Select(TestValueTypeData<TPK>.Create<TPK>).ToArray();
+    return Result.Success(rr); 
   }
 }

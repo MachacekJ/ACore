@@ -79,4 +79,8 @@
 	  <ProjectReference Include="..\ACore\ACore.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Storages\Contexts\EF\Models\" />
+	</ItemGroup>
+
 </Project>

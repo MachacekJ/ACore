@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using ACore.Server.Modules.AuditModule.Storage.SQL.Models;
-using ACore.Server.Storages.Definitions.Models;
+using ACore.Server.Storages.Definitions.EF;
 
 #pragma warning disable CS8603 // Possible null reference return.
 
@@ -8,13 +8,13 @@ namespace ACore.Server.Modules.AuditModule.Storage.SQL.PG;
 
 public static class AuditPGEFDbNames
 {
-  public static Dictionary<string, StorageEntityNameDefinition> ObjectNameMapping => new()
+  public static Dictionary<string, EFNameDefinition> ObjectNameMapping => new()
   {
-    { nameof(AuditColumnEntity), new StorageEntityNameDefinition("audit_column", AuditColumnEntityColumnNames) },
-    { nameof(AuditEntity), new StorageEntityNameDefinition("audit", AuditEntityColumnNames) },
-    { nameof(AuditTableEntity), new StorageEntityNameDefinition("audit_table", AuditTableEntityColumnNames) },
-    { nameof(AuditUserEntity), new StorageEntityNameDefinition("audit_user", AuditUserEntityColumnNames) },
-    { nameof(AuditValueEntity), new StorageEntityNameDefinition("audit_value", AuditValueColumnNames) },
+    { nameof(AuditColumnEntity), new EFNameDefinition("audit_column", AuditColumnEntityColumnNames) },
+    { nameof(AuditEntity), new EFNameDefinition("audit", AuditEntityColumnNames) },
+    { nameof(AuditTableEntity), new EFNameDefinition("audit_table", AuditTableEntityColumnNames) },
+    { nameof(AuditUserEntity), new EFNameDefinition("audit_user", AuditUserEntityColumnNames) },
+    { nameof(AuditValueEntity), new EFNameDefinition("audit_value", AuditValueColumnNames) },
   };
 
   private static Dictionary<Expression<Func<AuditColumnEntity, object>>, string> AuditColumnEntityColumnNames => new()

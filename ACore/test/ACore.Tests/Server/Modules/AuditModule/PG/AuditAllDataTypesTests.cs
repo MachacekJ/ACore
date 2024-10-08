@@ -13,6 +13,6 @@ public class AuditAllDataTypesTests : AuditTestsBase
   public async Task AllDataTypesTest()
   {
     var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => await AuditAllDataTypesTestHelper.AllDataTypes(Mediator, LogInMemorySink, GetTableName, GetColumnName));
+    await RunTestAsync(method, async () => await AuditAllDataTypesTestHelper.AllDataTypes<int>(Mediator, LogInMemorySink, GetTableName, GetColumnName));
   }
 }

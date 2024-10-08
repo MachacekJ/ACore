@@ -1,4 +1,4 @@
-﻿using ACore.Server.Storages.Definitions.EF.Base.Scripts;
+﻿using ACore.Server.Storages.Contexts.EF.Scripts;
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.PG.Scripts;
 

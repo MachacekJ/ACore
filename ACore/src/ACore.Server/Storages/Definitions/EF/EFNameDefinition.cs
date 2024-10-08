@@ -2,9 +2,9 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace ACore.Server.Storages.Definitions.Models;
+namespace ACore.Server.Storages.Definitions.EF;
 
-public class StorageEntityNameDefinition(string tableName, IDictionary columns)
+public class EFNameDefinition(string tableName, IDictionary columns)
 {
   private readonly IDictionary? _columns = columns;
   private Dictionary<string, string>? _columnNames;

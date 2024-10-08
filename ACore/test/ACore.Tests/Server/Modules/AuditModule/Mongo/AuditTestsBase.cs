@@ -55,7 +55,11 @@ public class AuditTestsBase : StorageTestsBase
 
   protected string GetColumnName(string entityName, string propertyName)
   {
-    return TestImplementations.Server.Modules.TestModule.Storages.Mongo.DefaultNames.ObjectNameMapping[entityName].ColumnNames?[propertyName] ?? throw new InvalidDataException("Define column names for Mongo.");
+    var columnNames = TestImplementations.Server.Modules.TestModule.Storages.Mongo.DefaultNames.ObjectNameMapping[entityName].ColumnNames;
+    if (columnNames != null && columnNames.TryGetValue(propertyName, out var columnName))
+      return columnName;
+    
+    return propertyName;
   }
 
   protected override async Task FinishedTestAsync()

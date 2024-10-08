@@ -3,7 +3,7 @@ using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.Test
 
 namespace ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Save;
 
-public class TestValueTypeSaveCommand(TestValueTypeData data): TestModuleCommandRequest<Result>(null)
+public class TestValueTypeSaveCommand<TPK>(TestValueTypeData<TPK> data): TestModuleCommandRequest<Result>(null)
 {
-  public TestValueTypeData Data => data;
+  public TestValueTypeData<TPK> Data => data;
 }

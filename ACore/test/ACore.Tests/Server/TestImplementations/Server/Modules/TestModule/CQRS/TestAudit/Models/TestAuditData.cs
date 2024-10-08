@@ -15,9 +15,9 @@ public class TestAuditData<T>
 
   public DateTime Created { get; set; }
 
-  internal static TestAuditData<TEntity> Create<TEntity>(Storages.SQL.Models.TestAuditEntity entity)
-    => entity.Adapt<TestAuditData<TEntity>>();
+  internal static TestAuditData<TPK> Create<TPK>(Storages.SQL.Models.TestAuditEntity entity)
+    => entity.Adapt<TestAuditData<TPK>>();
 
-  internal static TestAuditData<TEntity> Create<TEntity>(TestAuditEntity entity)
-    => entity.Adapt<TestAuditData<TEntity>>();
+  internal static TestAuditData<TPK> Create<TPK>(TestAuditEntity entity)
+    => entity.Adapt<TestAuditData<TPK>>();
 }

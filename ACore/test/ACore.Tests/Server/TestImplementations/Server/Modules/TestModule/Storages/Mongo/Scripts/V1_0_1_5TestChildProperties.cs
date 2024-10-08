@@ -1,5 +1,5 @@
-﻿using ACore.Server.Storages.Definitions.EF.Base;
-using ACore.Server.Storages.Definitions.EF.Base.Scripts;
+﻿using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Scripts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;

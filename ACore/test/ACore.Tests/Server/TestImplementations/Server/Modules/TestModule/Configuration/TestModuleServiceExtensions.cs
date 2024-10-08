@@ -5,6 +5,8 @@ using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.Test
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestAudit.Get;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestAudit.Save;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestNoAudit.Models;
+using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Get;
+using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Save;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.Mongo;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Memory;
@@ -40,6 +42,10 @@ public static class TestModuleServiceExtensions
     containerBuilder.RegisterGeneric(typeof(TestAuditGetHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(TestAuditSaveHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(TestAuditDeleteHandler<>)).AsImplementedInterfaces();
+    
+    containerBuilder.RegisterGeneric(typeof(TestValueTypeGetHandler<>)).AsImplementedInterfaces();
+    containerBuilder.RegisterGeneric(typeof(TestValueTypeSaveHashHandler<>)).AsImplementedInterfaces();
+    //containerBuilder.RegisterGeneric(typeof(TestValueTypeDeleteHandler<>)).AsImplementedInterfaces();
   }
 
   public static async Task UseTestModule(this IServiceProvider provider)

@@ -1,10 +1,10 @@
-﻿using System.Globalization;
-using ACore.Server.Modules.AuditModule.Models;
+﻿using ACore.Server.Modules.AuditModule.Models;
+using ACore.Server.Modules.AuditModule.Storage.Helpers;
 using ACore.Server.Modules.AuditModule.Storage.Mongo.Models;
-using ACore.Server.Modules.AuditModule.Storage.SQL.Models;
+using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Models.PK;
+using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
-using ACore.Server.Storages.Definitions.EF.Base;
-using ACore.Server.Storages.Definitions.EF.Base.Scripts;
 using ACore.Server.Storages.Definitions.EF.MongoStorage;
 using ACore.Server.Storages.Models.SaveInfo;
 using MediatR;
@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.EntityFrameworkCore.Extensions;
-
 
 namespace ACore.Server.Modules.AuditModule.Storage.Mongo;
 
@@ -33,6 +32,7 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
 
     var auditEntity = new AuditMongoEntity
     {
+      Id = PKMongoEntity.NewId,
       ObjectId = GetObjectId(saveInfoItem.TableName, new ObjectId(saveInfoItem.PkValueString)),
       Version = saveInfoItem.Version,
       User = new AuditMongoUserEntity
@@ -41,37 +41,34 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
       },
       EntityState = saveInfoItem.EntityState,
       Created = DateTime.UtcNow,
+   //   Columns = []
       Columns = saveInfoItem.ChangedColumns.Where(e => e.IsAuditable).Select(e => new AuditMongoValueEntity
       {
         PropName = e.PropName,
         Property = e.ColumnName,
         DataType = e.DataType,
         IsChanged = e.IsChanged,
-        NewValue = ConvertValue(e.NewValue),
-        OldValue = ConvertValue(e.OldValue),
+        NewValue = e.NewValue.ToAuditValue(),
+        OldValue = e.OldValue.ToAuditValue(),
       }).ToList()
     };
+
+    // foreach (var column in saveInfoItem.ChangedColumns.Where(e => e.IsAuditable))
+    // {
+    //   auditEntity.Columns.Add(new AuditMongoValueEntity
+    //   {
+    //     PropName = column.PropName,
+    //     Property = column.ColumnName,
+    //     DataType = column.DataType,
+    //     IsChanged = column.IsChanged,
+    //     NewValue = column.NewValue.ToAuditValue(),
+    //     OldValue = column.OldValue.ToAuditValue(),
+    //   });
+    // }
 
     await Audits.AddAsync(auditEntity);
     await SaveChangesAsync();
   }
-
-  private string? ConvertValue(object? value)
-  {
-    if (value == null)
-      return null;
-
-    return value switch
-    {
-      byte or short or int or long or bool or Guid or ObjectId => value.ToString(),
-      TimeSpan ts => ts.Ticks.ToString(),
-      DateTime dateTime => dateTime.Ticks.ToString(),
-      decimal dec => dec.ToString(CultureInfo.InvariantCulture),
-      _ => SqlConvertedItem.ToValueString(logger, value)
-    };
-  }
-
-
 
   public async Task<AuditInfoItem[]> AuditItemsAsync<TPK>(string collectionName, TPK pkValue, string? schemaName = null)
   {
@@ -89,7 +86,12 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
       {
         foreach (var col in auditMongoEntity.Columns)
         {
-          aa.AddColumnEntry(new AuditInfoColumnItem(col.PropName, col.Property, col.DataType, col.IsChanged, SqlConvertedItem.ConvertObjectToDataType(col.DataType, col.OldValue), SqlConvertedItem.ConvertObjectToDataType(col.DataType, col.NewValue)));
+          aa.AddColumnEntry(new AuditInfoColumnItem(
+            col.PropName, col.Property,
+            col.DataType, col.IsChanged,
+            col.OldValue.ConvertObjectToDataType(col.DataType),
+            col.NewValue.ConvertObjectToDataType(col.DataType)
+          ));
         }
       }
 

@@ -1,4 +1,4 @@
-namespace ACore.Server.Storages.Definitions.Models.PK;
+namespace ACore.Server.Storages.Contexts.EF.Models.PK;
 
 public abstract class PKLongEntity(): PKEntity<long>(EmptyId)
 {

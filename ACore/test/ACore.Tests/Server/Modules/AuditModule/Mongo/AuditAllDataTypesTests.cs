@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using ACore.Tests.Server.Modules.AuditModule.Helpers;
+using MongoDB.Bson;
 using Xunit;
 
 namespace ACore.Tests.Server.Modules.AuditModule.Mongo;
@@ -13,6 +14,6 @@ public class AuditAllDataTypesTests : AuditTestsBase
   public async Task AllDataTypesTest()
   {
     var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => await AuditAllDataTypesTestHelper.AllDataTypes(Mediator, LogInMemorySink, GetTableName, GetColumnName));
+    await RunTestAsync(method, async () => await AuditAllDataTypesTestHelper.AllDataTypes<ObjectId>(Mediator, LogInMemorySink, GetTableName, GetColumnName));
   }
 }

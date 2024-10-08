@@ -36,7 +36,6 @@
 
 	<ItemGroup>
 		<Folder Include="Client\ServicesT\" />
-		<Folder Include="Logs\" />
 		<Folder Include="Server\Configuration\" />
 	</ItemGroup>
 
@@ -54,6 +53,7 @@
 		<None Remove="ServerT\DbT\TestStorageModule\Scripts\MSSQL\**" />
 		<None Remove="TestImplementations\Server\Modules\TestModule\CQRS\TestManualAudit\**" />
 		<None Remove="Server\Modules\LocalizationModule\**" />
+		<None Remove="Logs\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -86,6 +86,7 @@
 	  </EmbeddedResource>
 	  <EmbeddedResource Remove="TestImplementations\Server\Modules\TestModule\CQRS\TestManualAudit\**" />
 	  <EmbeddedResource Remove="Server\Modules\LocalizationModule\**" />
+	  <EmbeddedResource Remove="Logs\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -94,5 +95,6 @@
 	  <Compile Remove="ServerT\DbT\TestStorageModule\Scripts\MSSQL\**" />
 	  <Compile Remove="TestImplementations\Server\Modules\TestModule\CQRS\TestManualAudit\**" />
 	  <Compile Remove="Server\Modules\LocalizationModule\**" />
+	  <Compile Remove="Logs\**" />
 	</ItemGroup>
 </Project>
