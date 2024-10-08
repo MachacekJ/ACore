@@ -1,6 +1,5 @@
 ﻿using ACore.Base.CQRS.Results;
-using ACore.Server.Configuration.CQRS.OptionsGet;
-using ACore.Server.Storages.CQRS;
+using ACore.Server.Storages.CQRS.Handlers;
 using ACore.Server.Storages.Services.StorageResolvers;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;
@@ -12,22 +11,18 @@ internal class TestNoAuditSaveHandler(IStorageResolver storageResolver, IMediato
 {
   public override async Task<Result> Handle(TestNoAuditSaveCommand request, CancellationToken cancellationToken)
   {
-    var saltForHash = (await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt), cancellationToken)).ResultValue 
-                      ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
-
-    var allTask = new List<SaveProcessExecutor<TestNoAuditEntity>>();
-    foreach (var storage in WriteTestContexts())
+    // var saltForHash = (await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt), cancellationToken)).ResultValue
+    //                   ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
+    return await PerformWriteActionWithData((storage) =>
     {
-      if (storage is TestModuleSqlStorageImpl)
+      switch (storage)
       {
-        var en = TestNoAuditEntity.Create(request.Data);
-        allTask.Add(new SaveProcessExecutor<TestNoAuditEntity>(en, storage, storage.SaveTestEntity<TestNoAuditEntity, int>(en, request.Hash)));
+        case TestModuleSqlStorageImpl:
+          var en = TestNoAuditEntity.Create(request.Data);
+          return new SaveProcessExecutor<TestNoAuditEntity>(en, storage, storage.SaveTestEntity<TestNoAuditEntity, int>(en, request.Hash));
+        default:
+          throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }
-      else
-        throw new Exception($"{nameof(TestNoAuditSaveHandler)} cannot be used for storage {storage.GetType().Name}");
-    }
-
-    await Task.WhenAll(allTask.Select(e => e.Task));
-    return DbSaveResult.SuccessWithData(allTask, saltForHash);
+    });
   }
 }

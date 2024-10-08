@@ -159,15 +159,6 @@ public abstract class TestsBase
   private async Task SettingStartTestAsync(ServiceCollection services)
   {
     _services = [];
-    // RegisterServices(services);
-    //
-    // var serviceProvider = services.BuildServiceProvider();
-    //
-    // await GetServicesAsync(serviceProvider);
-    //
-    //------------------
-
-
     var serviceCollection = services;
 
     // The Microsoft.Extensions.Logging package provides this one-liner

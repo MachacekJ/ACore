@@ -24,9 +24,29 @@ public class TestValueTypeData<T> //: HashData
   public byte[] VarBinary2 { get; set; } = [];
   public string VarChar2 { get; set; } = string.Empty;
 
+  public TimeSpan? TimeSpan2 { get; set; }
+
   internal static TestValueTypeData<TPK> Create<TPK>(TestValueTypeEntity entity)
-    => entity.Adapt<TestValueTypeData<TPK>>();
+  {
+#pragma warning disable CS8603 // Possible null reference return.
+    var config = TypeAdapterConfig<TestValueTypeEntity, TestValueTypeData<TPK>>.NewConfig()
+      .Ignore(d => d.TimeSpan2).Config;
+#pragma warning restore CS8603 // Possible null reference return.
   
+    var res = entity.Adapt<TestValueTypeData<TPK>>(config);
+    res.TimeSpan2 = entity.TimeSpan2 != null ? new TimeSpan(entity.TimeSpan2.Value) : null;
+    return res;
+  }
+
   internal static TestValueTypeData<TPK> Create<TPK>(Storages.Mongo.Models.TestValueTypeEntity entity)
-    => entity.Adapt<TestValueTypeData<TPK>>();
+  {
+#pragma warning disable CS8603 // Possible null reference return.
+    var config = TypeAdapterConfig<Storages.Mongo.Models.TestValueTypeEntity, TestValueTypeData<TPK>>.NewConfig()
+      .Ignore(d => d.TimeSpan2).Config;
+#pragma warning restore CS8603 // Possible null reference return.
+    
+    var res = entity.Adapt<TestValueTypeData<TPK>>(config);
+    res.TimeSpan2 = entity.TimeSpan2 != null ? new TimeSpan(entity.TimeSpan2.Value) : null;
+    return res;
+  }
 }

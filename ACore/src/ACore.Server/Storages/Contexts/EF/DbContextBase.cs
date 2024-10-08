@@ -172,21 +172,21 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     where TEntity : PKEntity<TPK>
   {
     var remap = GetDbSet<TEntity>();
-
-    if (typeof(TEntity).IsSubclassOfRawGeneric(typeof(PKIntEntity)))
-      return await remap.SingleOrDefaultAsync(e => (e as PKIntEntity).Id == Convert.ToInt32(id));
-
-    if (typeof(TEntity).IsSubclassOfRawGeneric(typeof(PKLongEntity)))
-      return await remap.SingleOrDefaultAsync(e => (e as PKLongEntity).Id == Convert.ToInt64(id));
-
-    if (typeof(TEntity).IsSubclassOfRawGeneric(typeof(PKGuidEntity)))
-      return await remap.SingleOrDefaultAsync(e => (e as PKGuidEntity).Id == (Guid)(Convert.ChangeType(id, typeof(Guid)) ?? PKGuidEntity.EmptyId));
-
-    if (typeof(TEntity).IsSubclassOfRawGeneric(typeof(PKStringEntity)))
-      return await remap.SingleOrDefaultAsync(e => (e as PKStringEntity).Id == id.ToString());
-
-    if (typeof(TEntity).IsSubclassOfRawGeneric(typeof(PKMongoEntity)))
-      return await remap.SingleOrDefaultAsync(e => (e as PKMongoEntity).Id == (ObjectId)(Convert.ChangeType(id, typeof(ObjectId)) ?? PKMongoEntity.EmptyId));
+    
+    if (typeof(PKEntity<int>).IsAssignableFrom(typeof(TEntity)))
+      return await remap.SingleOrDefaultAsync(e => (e as PKEntity<int>).Id == Convert.ToInt32(id));
+    
+    if (typeof(PKEntity<long>).IsAssignableFrom(typeof(TEntity)))
+      return await remap.SingleOrDefaultAsync(e => (e as PKEntity<long>).Id == Convert.ToInt64(id));
+    
+    if (typeof(PKEntity<Guid>).IsAssignableFrom(typeof(TEntity)))
+      return await remap.SingleOrDefaultAsync(e => (e as PKEntity<Guid>).Id == (Guid)Convert.ChangeType(id, typeof(Guid)));
+    
+    if (typeof(PKEntity<string>).IsAssignableFrom(typeof(TEntity)))
+      return await remap.SingleOrDefaultAsync(e => (e as PKEntity<string>).Id == Convert.ToString(id));
+    
+    if (typeof(PKEntity<ObjectId>).IsAssignableFrom(typeof(TEntity)))
+      return await remap.SingleOrDefaultAsync(e => (e as PKEntity<ObjectId>).Id == (ObjectId)Convert.ChangeType(id, typeof(ObjectId)));
 
     throw new Exception($"Unsupported type of primary key for entity '{typeof(TEntity).Name}.'");
   }

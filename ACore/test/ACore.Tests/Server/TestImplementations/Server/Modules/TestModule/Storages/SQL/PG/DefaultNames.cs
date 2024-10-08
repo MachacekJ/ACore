@@ -56,6 +56,7 @@ public static class DefaultNames
     { e => e.Guid2, "guid2" },
     { e => e.VarBinary2, "varbinary2" },
     { e => e.VarChar2, "varchar2" },
+    { e => e.TimeSpan2, "timespan2" },
   };
 
   private static Dictionary<Expression<Func<TestPKGuidEntity, object>>, string> TestPKGuidEntityColumnNames => new()

@@ -40,7 +40,7 @@ public static class AuditValueObjectConverter
 
     if (dataType == typeof(DateTime).ACoreTypeName())
       return new DateTime(Convert.ToInt64(value), DateTimeKind.Utc);
-
+    
     var type = Type.GetType(dataType);
     if (dataType == typeof(byte[]).ACoreTypeName() && type != null)
       return JsonSerializer.Deserialize(value.ToString() ?? throw new NullReferenceException(), type);

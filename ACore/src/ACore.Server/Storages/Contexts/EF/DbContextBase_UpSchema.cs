@@ -69,22 +69,22 @@ public abstract partial class DbContextBase
     {
       foreach (var script in version.AllScripts)
       {
+        var idTrans = Guid.NewGuid();
         try
         {
-          Logger.LogInformation("SQL scripts version " + version.Version + ":" +
-                                script);
+          Logger.LogInformation("START {transaction} update script version:{version}", idTrans, version.Version);
+          Logger.LogInformation("SCRIPT {transaction}:{script}", idTrans, script);
           await Database.ExecuteSqlRawAsync(script);
-          Logger.LogInformation("OK");
+          Logger.LogInformation("END {transaction} update script version:{version}", idTrans, version.Version);
         }
         catch (Exception ex)
         {
-          Logger.LogCritical(MethodBase.GetCurrentMethod()?.Name + " - Create tables in DB:", ex);
-
-          throw new Exception("UpdateDB error for script ->" + script, ex);
+          Logger.LogCritical(ex, "ERROR {transaction} update script version:{version}", idTrans, version.Version);
+          throw;
         }
       }
 
-      version.AfterScriptRunCode(this, _options, Logger);
+      version.AfterScriptRunCode(this, _options, mediator, Logger);
       updatedToVersion = version.Version;
     }
 
@@ -101,7 +101,9 @@ public abstract partial class DbContextBase
     }
     catch
     {
-      Logger.LogDebug("Setting table has not been found.");
+      // Log contains errors from EF.
+      // 2024-10-12 07:46:42.368 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'ACore.Server.Modules.SettingsDbModule.Storage.SQL.PG.SettingsDbModuleSqlPGStorageImpl'.
+      Logger.LogInformation("Setting table has not been found.");
     }
 
     return res;

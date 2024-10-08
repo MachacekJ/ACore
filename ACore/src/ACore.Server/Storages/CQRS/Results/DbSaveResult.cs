@@ -3,9 +3,9 @@ using ACore.Base.CQRS.Results;
 using ACore.Base.CQRS.Results.Models;
 using ACore.Extensions;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
-using ACore.Server.Storages.Definitions.Models;
+using ACore.Server.Storages.CQRS.Handlers;
 
-namespace ACore.Server.Storages.CQRS;
+namespace ACore.Server.Storages.CQRS.Results;
 
 public class DbSaveResultData(object pk, string? hash = null)
 {
@@ -15,31 +15,31 @@ public class DbSaveResultData(object pk, string? hash = null)
 
 public class DbSaveResult : Result
 {
-  public ReadOnlyDictionary<StorageTypeEnum, DbSaveResultData> ReturnedValues { get; }
+  public ReadOnlyDictionary<IStorage, DbSaveResultData> ReturnedValues { get; }
 
-  public static DbSaveResult SuccessWithValues(Dictionary<StorageTypeEnum, DbSaveResultData> pkValues) => new(pkValues);
+  public static DbSaveResult SuccessWithValues(Dictionary<IStorage, DbSaveResultData> pkValues) => new(pkValues);
 
   public static DbSaveResult SuccessWithData(IEnumerable<SaveProcessExecutor> data, string saltForHash = "")
   {
     return SuccessWithValues(data.ToDictionary(
-      k => k.Storage.StorageDefinition.Type,
+      k => k.Storage,
       v => new DbSaveResultData(
         v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
         v.WithHash ? v.Entity.HashObject(saltForHash) : null
       )));
   }
-
+  
   public static DbSaveResult SuccessWithData<T>(IEnumerable<SaveProcessExecutor<T>> data, string saltForHash = "") where T : class
   {
     return SuccessWithValues(data.ToDictionary(
-      k => k.Storage.StorageDefinition.Type,
+      k => k.Storage,
       v => new DbSaveResultData(
         v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
         v.WithHash ? v.Entity.HashObject(saltForHash) : null
       )));
   }
 
-  private DbSaveResult(IDictionary<StorageTypeEnum, DbSaveResultData> pkValues) : base(true, ResultErrorItem.None)
+  private DbSaveResult(IDictionary<IStorage, DbSaveResultData> pkValues) : base(true, ResultErrorItem.None)
   {
     ReturnedValues = pkValues.AsReadOnly();
   }
