@@ -92,7 +92,7 @@ public static class AuditCRUDTestHelper
 
   public static async Task UpdateItemAsyncTest(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
   {
-    // Action.
+    // Arrange
     var item = new TestAuditData<int>
     {
       Created = TestDateTime,

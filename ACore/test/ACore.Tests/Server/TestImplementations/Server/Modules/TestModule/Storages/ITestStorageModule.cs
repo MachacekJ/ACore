@@ -12,5 +12,6 @@ public interface ITestStorageModule : IStorage
   Task DeleteTestEntity<TEntity, TPK>(TPK id)
     where TEntity : PKEntity<TPK>;
 
-  DbSet<TEntity> DbSet<TEntity, TPK>()   where TEntity : PKEntity<TPK>;
+  DbSet<TEntity> DbSet<TEntity, TPK>()  
+    where TEntity : PKEntity<TPK>;
 }

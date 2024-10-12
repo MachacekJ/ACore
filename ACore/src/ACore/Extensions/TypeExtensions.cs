@@ -4,7 +4,7 @@ public static class TypeExtensions
 {
   public static string ACoreTypeName(this Type type)
   => type.FullName ?? type.Name;
-
+  
   public static bool IsSubclassOfRawGeneric(this Type toCheck, Type  generic)
   {
     while (toCheck != null && toCheck != typeof(object))

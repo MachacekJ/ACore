@@ -1,11 +1,11 @@
 using ACore.Server.Storages.Attributes;
 
-namespace ACore.Server.Storages.CQRS;
+namespace ACore.Server.Storages.CQRS.Handlers;
 
 public class SaveProcessExecutor(object entity, IStorage storage, Task task)
 {
   public bool WithHash => entity.GetType().IsHashCheck();
-  public Object Entity => entity;
+  public object Entity => entity;
   public Task Task => task;
   public IStorage Storage => storage;
 }

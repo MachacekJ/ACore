@@ -1,5 +1,5 @@
 ﻿using ACore.Base.CQRS.Results;
-using ACore.Server.Storages.CQRS;
+using ACore.Server.Storages.CQRS.Handlers;
 using ACore.Server.Storages.Services.StorageResolvers;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.Storages.SQL.Models;
@@ -11,19 +11,16 @@ internal class TestPKGuidSaveHandler(IStorageResolver storageResolver)
 {
   public override async Task<Result> Handle(TestPKGuidSaveCommand request, CancellationToken cancellationToken)
   {
-    var allTask = new List<SaveProcessExecutor<TestPKGuidEntity>>();
-    foreach (var storage in WriteTestContexts())
+    return await PerformWriteActionWithData((storage) =>
     {
-      if (storage is TestModuleSqlStorageImpl)
+      switch (storage)
       {
-        var en = TestPKGuidEntity.Create(request.Data);
-        allTask.Add(new SaveProcessExecutor<TestPKGuidEntity>(en, storage, storage.SaveTestEntity<TestPKGuidEntity, Guid>(en)));
+        case TestModuleSqlStorageImpl:
+          var en = TestPKGuidEntity.Create(request.Data);
+          return new SaveProcessExecutor<TestPKGuidEntity>(en, storage, storage.SaveTestEntity<TestPKGuidEntity, Guid>(en));
+        default:
+          throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }
-      else
-        throw new Exception($"{nameof(TestPKGuidSaveHandler)} cannot be used for storage {storage.GetType().Name}");
-    }
-
-    await Task.WhenAll(allTask.Select(e => e.Task));
-    return DbSaveResult.SuccessWithData(allTask);
+    });
   }
 }

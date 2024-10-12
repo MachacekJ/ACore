@@ -1,5 +1,5 @@
 using System.Reflection;
-using ACore.Server.Storages.CQRS;
+using ACore.Server.Storages.CQRS.Results;
 using ACore.Tests.Server.Modules.AuditModule.MemoryEF;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestNoAudit.Get;
 using ACore.Tests.Server.TestImplementations.Server.Modules.TestModule.CQRS.TestNoAudit.Models;

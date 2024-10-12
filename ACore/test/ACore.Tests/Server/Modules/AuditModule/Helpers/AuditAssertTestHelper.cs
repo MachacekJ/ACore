@@ -1,6 +1,6 @@
 using ACore.Base.CQRS.Results;
 using ACore.Extensions;
-using ACore.Server.Storages.CQRS;
+using ACore.Server.Storages.CQRS.Results;
 using FluentAssertions;
 
 namespace ACore.Tests.Server.Modules.AuditModule.Helpers;

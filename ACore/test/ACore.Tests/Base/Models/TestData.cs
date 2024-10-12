@@ -63,8 +63,8 @@ public class TestData
   {
     var testName = _shrinkStrings.Aggregate(TestName, (current, name)
       => current.Replace($"{name}_", string.Empty)).ToLower();
-    if (typeEnum == StorageTypeEnum.Postgres)
-      testName += Guid.NewGuid();
+    //if (typeEnum == StorageTypeEnum.Postgres || typeEnum == StorageTypeEnum.Mongo)
+    testName += Guid.NewGuid();
     testName = testName.Replace("-", string.Empty);
 
     if (testName.Length > MaximumLengthOfDb)

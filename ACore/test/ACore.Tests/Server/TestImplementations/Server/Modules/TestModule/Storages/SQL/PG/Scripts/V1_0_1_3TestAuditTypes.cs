@@ -35,7 +35,8 @@ CREATE TABLE test_value_type
     tinyint2 SMALLINT NOT NULL,
     guid2 UUID NOT NULL,
     varbinary2 BYTEA NOT NULL,
-    varchar2 VARCHAR(100) NOT NULL
+    varchar2 VARCHAR(100) NOT NULL,
+    timespan2 BIGINT
 );
 "
             ];
