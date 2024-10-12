@@ -17,27 +17,38 @@ public class DbSaveResult : Result
 {
   public ReadOnlyDictionary<IStorage, DbSaveResultData> ReturnedValues { get; }
 
-  public static DbSaveResult SuccessWithValues(Dictionary<IStorage, DbSaveResultData> pkValues) => new(pkValues);
+  private static DbSaveResult SuccessWithValues(Dictionary<IStorage, DbSaveResultData> pkValues) => new(pkValues);
 
   public static DbSaveResult SuccessWithData(IEnumerable<SaveProcessExecutor> data, string saltForHash = "")
   {
     return SuccessWithValues(data.ToDictionary(
       k => k.Storage,
-      v => new DbSaveResultData(
-        v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
-        v.WithHash ? v.Entity.HashObject(saltForHash) : null
-      )));
+      v =>
+      {
+        if (v.Entity != null)
+          return new DbSaveResultData(
+            v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
+            v.WithHash ? v.Entity.HashObject(saltForHash) : null
+          );
+
+        return new DbSaveResultData(-1);
+      }));
   }
-  
-  public static DbSaveResult SuccessWithData<T>(IEnumerable<SaveProcessExecutor<T>> data, string saltForHash = "") where T : class
-  {
-    return SuccessWithValues(data.ToDictionary(
-      k => k.Storage,
-      v => new DbSaveResultData(
-        v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
-        v.WithHash ? v.Entity.HashObject(saltForHash) : null
-      )));
-  }
+
+  // public static DbSaveResult SuccessWithData<T>(IEnumerable<SaveProcessExecutor<T>> data, string saltForHash = "") where T : class
+  // {
+  //   return SuccessWithValues(data.ToDictionary(
+  //     k => k.Storage,
+  //     v =>
+  //     {
+  //       if (v.Entity != null)
+  //         return new DbSaveResultData(
+  //           v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
+  //           v.WithHash ? v.Entity.HashObject(saltForHash) : null
+  //         );
+  //       return new DbSaveResultData(-1);
+  //     }));
+  // }
 
   private DbSaveResult(IDictionary<IStorage, DbSaveResultData> pkValues) : base(true, ResultErrorItem.None)
   {

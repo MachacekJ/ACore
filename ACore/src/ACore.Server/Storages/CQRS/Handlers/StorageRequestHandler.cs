@@ -12,7 +12,7 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
 {
   public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
-  protected async Task<Result> PerformWriteActionWithData<TStorage>(Func<TStorage, SaveProcessExecutor> executor, string hashSalt = "")
+  protected async Task<Result> PerformWriteAction<TStorage>(Func<TStorage, SaveProcessExecutor> executor, string hashSalt = "")
     where TStorage : IStorage
   {
     var allTask = storageResolver.WriteStorages<TStorage>()

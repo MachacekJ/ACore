@@ -65,8 +65,8 @@ public static class StorageServiceExtensions
     var storageResolver = GetStorageResolver(provider);
     if (storageOptions.UseMemoryStorage)
     {
-      var pgImpl = provider.GetService<TImplementation>() as IStorage ?? throw new ArgumentNullException($"Missing implementation of {typeof(TImplementation).Name}.");
-      await storageResolver.ConfigureStorage<TIStorage>(new StorageImplementation(pgImpl));
+      var memoryImpl = provider.GetService<TImplementation>() as IStorage ?? throw new ArgumentNullException($"Missing implementation of {typeof(TImplementation).Name}.");
+      await storageResolver.ConfigureStorage<TIStorage>(new StorageImplementation(memoryImpl));
     }
   }
 

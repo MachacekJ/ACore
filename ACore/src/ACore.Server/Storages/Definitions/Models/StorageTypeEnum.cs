@@ -3,9 +3,9 @@
 [Flags]
 public enum StorageTypeEnum
 {
-  Memory = 1 << 0,
+  MemoryEF = 1 << 0,
   Postgres = 1 << 1,
   Mongo = 1 << 2,
 
-  All = Memory | Postgres | Mongo
+  All = MemoryEF | Postgres | Mongo
 }

@@ -9,12 +9,10 @@ namespace ACore.Server.Modules.AuditModule.CQRS.NotificationHandlers;
 public class EntitySaveNotificationHandler(ILogger<EntitySaveNotificationHandler> logger, IMediator mediator) : ACoreNotificationHandler<EntitySaveNotification>(logger)
 {
   public override bool ThrowException => true;
-  
+
   protected override async Task HandleMethod(EntitySaveNotification notification, CancellationToken cancellationToken)
   {
-    await mediator.Send(new AuditSaveCommand(notification.SaveInfo), cancellationToken);
+    if (notification.SaveInfo.IsAuditable)
+      await mediator.Send(new AuditSaveCommand(notification.SaveInfo), cancellationToken);
   }
 }
-
-
-

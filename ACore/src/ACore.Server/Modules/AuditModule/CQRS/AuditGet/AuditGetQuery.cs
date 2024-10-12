@@ -8,5 +8,4 @@ public class AuditGetQuery<TPK>(string tableName, TPK pkValue, bool restoreEntit
   public string TableName => tableName;
   public string? SchemaName => schemaName;
   public TPK PKValue => pkValue;
-  public bool RestoreEntity => restoreEntity;
 }

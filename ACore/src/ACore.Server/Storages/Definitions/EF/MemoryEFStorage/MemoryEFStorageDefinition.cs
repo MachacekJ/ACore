@@ -7,7 +7,7 @@ namespace ACore.Server.Storages.Definitions.EF.MemoryEFStorage;
 
 public class MemoryEFStorageDefinition : EFStorageDefinition
 {
-  public override StorageTypeEnum Type => StorageTypeEnum.Memory;
+  public override StorageTypeEnum Type => StorageTypeEnum.MemoryEF;
   public override string DataAnnotationColumnNameKey => string.Empty;
   public override string DataAnnotationTableNameKey => string.Empty;
   public override bool IsTransactionEnabled => false;
