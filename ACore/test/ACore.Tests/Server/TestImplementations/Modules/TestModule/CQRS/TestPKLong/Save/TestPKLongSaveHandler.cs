@@ -10,13 +10,13 @@ internal class TestPKLongSaveHandler(IStorageResolver storageResolver) : TestMod
 {
   public override async Task<Result> Handle(TestPKLongSaveCommand request, CancellationToken cancellationToken)
   {
-    return await PerformWriteAction((storage) =>
+    return await StorageEntityAction((storage) =>
     {
       switch (storage)
       {
         case TestModuleSqlStorageImpl:
           var en = TestPKLongEntity.Create(request.Data);
-          return new SaveProcessExecutor<TestPKLongEntity>(en, storage, storage.SaveTestEntity<TestPKLongEntity, long>(en));
+          return new StorageEntityExecutor<TestPKLongEntity>(en, storage, storage.SaveTestEntity<TestPKLongEntity, long>(en));
         default:
           throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }

@@ -19,8 +19,8 @@ public static class AuditAssertTestHelper
     if (result.GetType().IsGenericType && result.GetType().GetGenericTypeDefinition() == typeof(ExceptionResult<>))
       throw result.PropertyValue(nameof(ExceptionResult<int>.Exception)) as Exception ?? throw new Exception();
 
-    result.Should().BeOfType<DbSaveResult>();
-    var dbSaveResult = (DbSaveResult)result;
+    result.Should().BeOfType<EntityResult>();
+    var dbSaveResult = (EntityResult)result;
     dbSaveResult.IsSuccess.Should().BeTrue();
     dbSaveResult.Should().NotBeNull();
     dbSaveResult.ReturnedValues.Should().HaveCount(1);

@@ -14,11 +14,11 @@ public class TestAuditDeleteHandler<T>(IStorageResolver storageResolver)
 {
   public override async Task<Result> Handle(TestAuditDeleteCommand<T> request, CancellationToken cancellationToken)
   {
-    return await PerformWriteAction((storage)
+    return await StorageAction((storage)
       => storage switch
       {
-        TestModuleMongoStorageImpl => new DeleteProcessExecutor(storage.DeleteTestEntity<TestAuditEntity, ObjectId>((ObjectId)Convert.ChangeType(request.Id, typeof(ObjectId)))),
-        _ => new DeleteProcessExecutor(storage.DeleteTestEntity<Storages.SQL.Models.TestAuditEntity, int>((int)Convert.ChangeType(request.Id, typeof(int))))
+        TestModuleMongoStorageImpl => new StorageExecutor(storage.DeleteTestEntity<TestAuditEntity, ObjectId>((ObjectId)Convert.ChangeType(request.Id, typeof(ObjectId)))),
+        _ => new StorageExecutor(storage.DeleteTestEntity<Storages.SQL.Models.TestAuditEntity, int>((int)Convert.ChangeType(request.Id, typeof(int))))
       });
   }
 }

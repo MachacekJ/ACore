@@ -11,11 +11,11 @@ public abstract class TestModuleRequestHandler<TRequest, TResponse>(IStorageReso
   where TResponse : Result
 {
   private readonly IStorageResolver _storageResolver = storageResolver;
-  protected ITestStorageModule ReadTestContext() => _storageResolver.FirstReadOnlyStorage<ITestStorageModule>();
+  protected ITestStorageModule ReadTestContext() => _storageResolver.ReadFromStorage<ITestStorageModule>();
 
-  protected Task<Result> PerformWriteAction(Func<ITestStorageModule, SaveProcessExecutor> executor, string hashSalt = "")
-    => base.PerformWriteAction(executor, hashSalt);
+  protected Task<Result> StorageEntityAction(Func<ITestStorageModule, StorageEntityExecutor> executor, string hashSalt = "")
+    => base.StorageEntityAction(executor, hashSalt);
   
-  protected Task<Result> PerformWriteAction(Func<ITestStorageModule, DeleteProcessExecutor> executor)
-    => base.PerformWriteAction(executor);
+  protected Task<Result> StorageAction(Func<ITestStorageModule, StorageExecutor> executor)
+    => base.StorageAction(executor);
 }

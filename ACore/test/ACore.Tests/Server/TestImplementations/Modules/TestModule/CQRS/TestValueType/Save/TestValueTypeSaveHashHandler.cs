@@ -12,16 +12,16 @@ internal class TestValueTypeSaveHashHandler<TPK>(IStorageResolver storageResolve
 {
   public override async Task<Result> Handle(TestValueTypeSaveCommand<TPK> request, CancellationToken cancellationToken)
   {
-    return await PerformWriteAction((storage) =>
+    return await StorageEntityAction((storage) =>
     {
       switch (storage)
       {
         case TestModuleMongoStorageImpl:
           var enMongo = Storages.Mongo.Models.TestValueTypeEntity.Create(request.Data);
-          return new SaveProcessExecutor(enMongo, storage, storage.SaveTestEntity<Storages.Mongo.Models.TestValueTypeEntity, ObjectId>(enMongo));
+          return new StorageEntityExecutor(enMongo, storage, storage.SaveTestEntity<Storages.Mongo.Models.TestValueTypeEntity, ObjectId>(enMongo));
         case TestModuleSqlStorageImpl:
           var en = TestValueTypeEntity.Create(request.Data);
-          return new SaveProcessExecutor(en, storage, storage.SaveTestEntity<TestValueTypeEntity, int>(en));
+          return new StorageEntityExecutor(en, storage, storage.SaveTestEntity<TestValueTypeEntity, int>(en));
         default:
           throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }

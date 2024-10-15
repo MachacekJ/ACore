@@ -12,33 +12,31 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
 {
   public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
-  protected async Task<Result> PerformWriteAction<TStorage>(Func<TStorage, SaveProcessExecutor> executor, string hashSalt = "")
+  protected async Task<Result> StorageEntityAction<TStorage>(Func<TStorage, StorageEntityExecutor> executor, string hashSalt = "")
     where TStorage : IStorage
   {
-    var allTask = storageResolver.WriteStorages<TStorage>()
+    var allTask = storageResolver.WriteToStorages<TStorage>()
       .Select(executor).ToList();
 
-    Task? taskSum = null;
-    try
-    {
-      taskSum = Task.WhenAll(allTask.Select(e => e.Task));
-      await taskSum.ConfigureAwait(false);
-    }
-    catch
-    {
-      if (taskSum?.Exception != null) ExceptionDispatchInfo.Capture(taskSum.Exception).Throw();
-      throw;
-    }
+    await WaitForAllParallelTasks(allTask.OfType<StorageExecutor>()
+                              ?? throw new ArgumentNullException($"{nameof(allTask)}"));
 
-    return DbSaveResult.SuccessWithData(allTask, hashSalt);
+    return EntityResult.SuccessWithEntityData(allTask, hashSalt);
   }
   
-  protected async Task<Result> PerformWriteAction<TStorage>(Func<TStorage, DeleteProcessExecutor> executor)
+  protected async Task<Result> StorageAction<TStorage>(Func<TStorage, StorageExecutor> executor)
     where TStorage : IStorage
   {
-    var allTask = storageResolver.WriteStorages<TStorage>()
+    var allTask = storageResolver.WriteToStorages<TStorage>()
       .Select(executor).ToList();
 
+    await WaitForAllParallelTasks(allTask);
+
+    return Result.Success();
+  }
+  
+  private static async Task WaitForAllParallelTasks(IEnumerable<StorageExecutor> allTask)
+  {
     Task? taskSum = null;
     try
     {
@@ -50,7 +48,5 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
       if (taskSum?.Exception != null) ExceptionDispatchInfo.Capture(taskSum.Exception).Throw();
       throw;
     }
-
-    return Result.Success();
   }
 }

@@ -49,10 +49,10 @@ public class DefaultStorageResolver : IStorageResolver
     }
   }
 
-  public T FirstReadOnlyStorage<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage
+  public T ReadFromStorage<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage
     => AllStorages<T>(StorageModeEnum.Read, storageType).First();
 
-  public IEnumerable<T> WriteStorages<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage
+  public IEnumerable<T> WriteToStorages<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage
   {
     return AllStorages<T>(StorageModeEnum.Write, storageType);
   }

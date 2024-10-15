@@ -7,6 +7,6 @@ public interface IStorageResolver
   Task ConfigureStorage<TStorage>(StorageImplementation implementation)
     where TStorage : IStorage;
   
-  T FirstReadOnlyStorage<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage;
-  IEnumerable<T> WriteStorages<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage;
+  T ReadFromStorage<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage;
+  IEnumerable<T> WriteToStorages<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage;
 }

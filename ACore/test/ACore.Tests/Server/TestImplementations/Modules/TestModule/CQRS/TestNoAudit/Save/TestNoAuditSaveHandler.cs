@@ -13,13 +13,13 @@ internal class TestNoAuditSaveHandler(IStorageResolver storageResolver, IMediato
   {
     // var saltForHash = (await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt), cancellationToken)).ResultValue
     //                   ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
-    return await PerformWriteAction((storage) =>
+    return await StorageEntityAction((storage) =>
     {
       switch (storage)
       {
         case TestModuleSqlStorageImpl:
           var en = TestNoAuditEntity.Create(request.Data);
-          return new SaveProcessExecutor<TestNoAuditEntity>(en, storage, storage.SaveTestEntity<TestNoAuditEntity, int>(en, request.Hash));
+          return new StorageEntityExecutor<TestNoAuditEntity>(en, storage, storage.SaveTestEntity<TestNoAuditEntity, int>(en, request.Hash));
         default:
           throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }

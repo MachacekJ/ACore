@@ -11,13 +11,13 @@ internal class TestPKGuidSaveHandler(IStorageResolver storageResolver)
 {
   public override async Task<Result> Handle(TestPKGuidSaveCommand request, CancellationToken cancellationToken)
   {
-    return await PerformWriteAction((storage) =>
+    return await StorageEntityAction((storage) =>
     {
       switch (storage)
       {
         case TestModuleSqlStorageImpl:
           var en = TestPKGuidEntity.Create(request.Data);
-          return new SaveProcessExecutor<TestPKGuidEntity>(en, storage, storage.SaveTestEntity<TestPKGuidEntity, Guid>(en));
+          return new StorageEntityExecutor<TestPKGuidEntity>(en, storage, storage.SaveTestEntity<TestPKGuidEntity, Guid>(en));
         default:
           throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }

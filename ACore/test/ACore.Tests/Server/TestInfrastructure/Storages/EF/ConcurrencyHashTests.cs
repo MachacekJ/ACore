@@ -27,13 +27,13 @@ public class AuditCheckSumTests : AuditTestsBase
       };
 
       // Action
-      var result = (await Mediator.Send(new TestNoAuditSaveCommand(item, null))) as DbSaveResult;
+      var result = (await Mediator.Send(new TestNoAuditSaveCommand(item, null))) as EntityResult;
 
       ArgumentNullException.ThrowIfNull(result);
       var hash = result.HashSingle();
       item.Id = result.PrimaryKeySingle<int>();
    
-      var result2 = (await Mediator.Send(new TestNoAuditSaveCommand(item, hash))) as DbSaveResult;
+      var result2 = (await Mediator.Send(new TestNoAuditSaveCommand(item, hash))) as EntityResult;
       var hash2 = result2?.HashSingle();
       
       var allData = (await Mediator.Send(new TestNoAuditGetQuery())).ResultValue;
@@ -44,7 +44,7 @@ public class AuditCheckSumTests : AuditTestsBase
       savedItem.Key.Should().Be(hash2).And.Be(hash);
       
       item.Name = "faketest";
-      var result3 = (await Mediator.Send(new TestNoAuditSaveCommand(item, hash))) as DbSaveResult;
+      var result3 = (await Mediator.Send(new TestNoAuditSaveCommand(item, hash))) as EntityResult;
       var hash3 = result3?.HashSingle();
       savedItem.Key.Should().NotBe(hash3);
       
@@ -65,13 +65,13 @@ public class AuditCheckSumTests : AuditTestsBase
       };
 
       // Action
-      var result = (await Mediator.Send(new TestNoAuditSaveCommand(item, null))) as DbSaveResult;
+      var result = (await Mediator.Send(new TestNoAuditSaveCommand(item, null))) as EntityResult;
 
       ArgumentNullException.ThrowIfNull(result);
       var hash = result.HashSingle();
       item.Id = result.PrimaryKeySingle<int>();
    
-      var result2 = (await Mediator.Send(new TestNoAuditSaveCommand(item, null))) as DbSaveResult;
+      var result2 = (await Mediator.Send(new TestNoAuditSaveCommand(item, null))) as EntityResult;
 
     });
   }

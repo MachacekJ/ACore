@@ -18,6 +18,6 @@ public class SettingsDbModuleTestsBase() : StorageTestsBase(StorageTypeEnum.Memo
   protected override async Task GetServices(IServiceProvider sp)
   {
     await base.GetServices(sp);
-    MemorySettingStorageModule = StorageResolver?.FirstReadOnlyStorage<ISettingsDbModuleStorage>(StorageTypeEnum.MemoryEF) ?? throw new ArgumentNullException($"{nameof(ISettingsDbModuleStorage)} is not implemented.");
+    MemorySettingStorageModule = StorageResolver?.ReadFromStorage<ISettingsDbModuleStorage>(StorageTypeEnum.MemoryEF) ?? throw new ArgumentNullException($"{nameof(ISettingsDbModuleStorage)} is not implemented.");
   }
 }

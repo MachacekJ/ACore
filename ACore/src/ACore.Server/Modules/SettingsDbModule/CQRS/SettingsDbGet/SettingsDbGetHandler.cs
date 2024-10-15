@@ -10,7 +10,7 @@ public class SettingsDbGetHandler(IStorageResolver storageResolver) : SettingsDb
 
   public override async Task<Result<string?>> Handle(SettingsDbGetQuery request, CancellationToken cancellationToken)
   {
-    var storageImplementation = _storageResolver.FirstReadOnlyStorage<ISettingsDbModuleStorage>(request.StorageType);
+    var storageImplementation = _storageResolver.ReadFromStorage<ISettingsDbModuleStorage>(request.StorageType);
     var res= await storageImplementation.Setting_GetAsync(request.Key, request.IsRequired);
     return Result.Success(res);
   }

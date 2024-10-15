@@ -11,5 +11,5 @@ public abstract class AuditModuleRequestHandler<TRequest, TResponse>(IStorageRes
   where TResponse : Result
 {
   private readonly IStorageResolver _storageResolver = storageResolver;
-  protected IAuditStorageModule ReadAuditContext() => _storageResolver.FirstReadOnlyStorage<IAuditStorageModule>();
+  protected IAuditStorageModule ReadAuditContext() => _storageResolver.ReadFromStorage<IAuditStorageModule>();
 }

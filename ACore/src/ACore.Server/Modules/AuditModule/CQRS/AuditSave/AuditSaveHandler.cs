@@ -9,7 +9,7 @@ public class AuditSaveHandler(IStorageResolver storageResolver) : AuditModuleReq
 {
   public override async Task<Result> Handle(AuditSaveCommand request, CancellationToken cancellationToken)
   {
-    return await PerformWriteAction<IAuditStorageModule>((storage) 
-      => new SaveProcessExecutor(storage, storage.SaveAuditAsync(request.SaveInfoItem)));
+    return await StorageAction<IAuditStorageModule>((storage) 
+      => new StorageExecutor(storage.SaveAuditAsync(request.SaveInfoItem)));
   }
 }

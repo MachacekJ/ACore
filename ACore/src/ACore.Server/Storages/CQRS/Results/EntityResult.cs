@@ -7,54 +7,37 @@ using ACore.Server.Storages.CQRS.Handlers;
 
 namespace ACore.Server.Storages.CQRS.Results;
 
-public class DbSaveResultData(object pk, string? hash = null)
+public class EntityResultData(object pk, string? hash = null)
 {
   public object PK => pk;
   public string? Hash => hash;
 }
 
-public class DbSaveResult : Result
+public class EntityResult : Result
 {
-  public ReadOnlyDictionary<IStorage, DbSaveResultData> ReturnedValues { get; }
+  public ReadOnlyDictionary<IStorage, EntityResultData> ReturnedValues { get; }
 
-  private static DbSaveResult SuccessWithValues(Dictionary<IStorage, DbSaveResultData> pkValues) => new(pkValues);
-
-  public static DbSaveResult SuccessWithData(IEnumerable<SaveProcessExecutor> data, string saltForHash = "")
+  private EntityResult(IDictionary<IStorage, EntityResultData> pkValues) : base(true, ResultErrorItem.None) 
+    => ReturnedValues = pkValues.AsReadOnly();
+  
+  public static EntityResult SuccessWithEntityData(IEnumerable<StorageEntityExecutor> data, string saltForHash = "")
   {
     return SuccessWithValues(data.ToDictionary(
       k => k.Storage,
       v =>
       {
         if (v.Entity != null)
-          return new DbSaveResultData(
+          return new EntityResultData(
             v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
             v.WithHash ? v.Entity.HashObject(saltForHash) : null
           );
 
-        return new DbSaveResultData(-1);
+        return new EntityResultData(-1);
       }));
   }
-
-  // public static DbSaveResult SuccessWithData<T>(IEnumerable<SaveProcessExecutor<T>> data, string saltForHash = "") where T : class
-  // {
-  //   return SuccessWithValues(data.ToDictionary(
-  //     k => k.Storage,
-  //     v =>
-  //     {
-  //       if (v.Entity != null)
-  //         return new DbSaveResultData(
-  //           v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
-  //           v.WithHash ? v.Entity.HashObject(saltForHash) : null
-  //         );
-  //       return new DbSaveResultData(-1);
-  //     }));
-  // }
-
-  private DbSaveResult(IDictionary<IStorage, DbSaveResultData> pkValues) : base(true, ResultErrorItem.None)
-  {
-    ReturnedValues = pkValues.AsReadOnly();
-  }
-
+  
+  private static EntityResult SuccessWithValues(Dictionary<IStorage, EntityResultData> pkValues) => new(pkValues);
+  
   /// <summary>
   /// Return the first PK value. Value must exist.
   /// </summary>
