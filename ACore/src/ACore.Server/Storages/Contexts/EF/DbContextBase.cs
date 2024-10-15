@@ -104,7 +104,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
       await SaveChangesAsync();
       if (isNew) saveInfoHelper.InsertDbAction(existsEntity);
 
-      if (saveInfoHelper.SaveInfoItem != null)
+      if (saveInfoHelper.SaveInfoItem != null && !_isDatabaseInit)
         await mediator.Publish(new EntitySaveNotification(saveInfoHelper.SaveInfoItem));
     }
   }

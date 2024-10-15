@@ -1,6 +1,5 @@
 ﻿using ACore.Server.Configuration;
 using ACore.Server.Storages;
-using ACore.Server.Storages.Definitions.Models;
 using ACore.Tests.Base.Models;
 using ACore.Tests.Server.TestImplementations.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +18,7 @@ public class MongoTestStorage : ITestStorage
 
   public MongoTestStorage(TestData testData, IConfigurationRoot configuration)
   {
-    _dbName = testData.GetDbName(StorageTypeEnum.Postgres);
+    _dbName = testData.GetDbName();
     _dbConnectionString = string.Format(configuration["TestSettings:ConnectionStringMongo"] ?? throw new InvalidOperationException(), _dbName);
   }
 

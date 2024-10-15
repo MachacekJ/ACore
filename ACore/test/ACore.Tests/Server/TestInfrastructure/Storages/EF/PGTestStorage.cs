@@ -1,5 +1,4 @@
 ﻿using ACore.Server.Configuration;
-using ACore.Server.Storages.Definitions.Models;
 using ACore.Tests.Base.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +17,7 @@ public class PGTestStorage : ITestStorage
 
   public PGTestStorage(TestData testData, IConfigurationRoot configuration)
   {
-    _dbName = testData.GetDbName(StorageTypeEnum.Postgres);
+    _dbName = testData.GetDbName();
     _dbConnectionString = string.Format(configuration["TestSettings:ConnectionStringPG"] ?? throw new InvalidOperationException(), _dbName);
     _dbConnectionStringMaster = string.Format(configuration["TestSettings:ConnectionStringPG"] ?? throw new InvalidOperationException(), "postgres");
   }

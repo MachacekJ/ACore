@@ -11,7 +11,8 @@ namespace ACore.Server.Storages.Contexts.EF;
 
 public abstract partial class DbContextBase
 {
-  private string StorageVersionBaseSettingKey => $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageDefinition.Type)}_{nameof(ISettingsDbModuleStorage)}";
+  private bool _isDatabaseInit = false;
+ // private string StorageVersionBaseSettingKey => $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageDefinition.Type)}_{nameof(ISettingsDbModuleStorage)}";
   private string StorageVersionKey => $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageDefinition.Type)}_{ModuleName}";
 
   public async Task UpSchema()
@@ -21,7 +22,8 @@ public abstract partial class DbContextBase
     var lastVersion = new Version("0.0.0.0");
 
     // Get the latest implemented version, if any.
-    if (!await DbIsEmpty())
+    _isDatabaseInit = await EFStorageDefinition.DatabaseIsInit(this, _options, mediator, Logger);
+    if (!_isDatabaseInit)
     {
       var ver = await mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionKey));
       if (ver is { IsSuccess: true, ResultValue: not null })
@@ -91,21 +93,23 @@ public abstract partial class DbContextBase
     return updatedToVersion;
   }
 
-  private async Task<bool> DbIsEmpty()
-  {
-    var res = true;
-    try
-    {
-      var isSettingTable = await mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionBaseSettingKey));
-      res = isSettingTable is { IsSuccess: true, ResultValue: null };
-    }
-    catch
-    {
-      // Log contains errors from EF.
-      // 2024-10-12 07:46:42.368 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'ACore.Server.Modules.SettingsDbModule.Storage.SQL.PG.SettingsDbModuleSqlPGStorageImpl'.
-      Logger.LogInformation("Setting table has not been found.");
-    }
-
-    return res;
-  }
+  // private async Task<bool> DbIsEmpty()
+  // {
+  //    
+  //   var res = true;
+  //   
+  //   try
+  //   {
+  //     var isSettingTable = await mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionBaseSettingKey));
+  //     res = isSettingTable is { IsSuccess: true, ResultValue: null };
+  //   }
+  //   catch
+  //   {
+  //     // Log contains errors from EF.
+  //     // 2024-10-12 07:46:42.368 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'ACore.Server.Modules.SettingsDbModule.Storage.SQL.PG.SettingsDbModuleSqlPGStorageImpl'.
+  //     Logger.LogInformation("Setting table has not been found.");
+  //   }
+  //
+  //   return res;
+  // }
 }

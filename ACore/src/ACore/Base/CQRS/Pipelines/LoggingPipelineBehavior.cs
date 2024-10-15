@@ -18,7 +18,7 @@ public class LoggingPipelineBehavior<TRequest, TResponse>(ILogger<LoggingPipelin
     var duration = new Stopwatch();
     TResponse? response;
 
-    // Serialization could be expensive for all requests.
+    // Serialization could be expensive for all requests. Enable only for debug.
     if (logger.IsEnabled(LogLevel.Debug))
     {
       logger.LogDebug("Request '{request}'.Id:{id};Data:{data}", typeof(TRequest).Name, id, JsonSerializer.Serialize(request));
@@ -43,8 +43,8 @@ public class LoggingPipelineBehavior<TRequest, TResponse>(ILogger<LoggingPipelin
       // This is a serious exception error.
       if (!isSeriousError && (response is ExceptionResult || (response.GetType().IsGenericType && response.GetType().GetGenericTypeDefinition() == typeof(ExceptionResult<>))))
       {
-        var aa = (Exception)(response.PropertyValue(nameof(ExceptionResult.Exception)) ?? throw new Exception($"{nameof(ExceptionResult.Exception)} doesn't exist."));
-        LogError(request, response, aa.MessageRecursive(true));
+        var exception = (Exception)(response.PropertyValue(nameof(ExceptionResult.Exception)) ?? throw new Exception($"{nameof(ExceptionResult.Exception)} doesn't exist."));
+        LogError(request, response, exception.MessageRecursive(true));
         isSeriousError = true;
       }
 

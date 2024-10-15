@@ -46,7 +46,7 @@ internal abstract class SettingsDbModuleSqlStorageImpl : DbContextBase, ISetting
 
     var allSettingsCacheResult = await _mediator.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
 
-    if (allSettingsCacheResult.IsSuccess && allSettingsCacheResult.ResultValue != null)
+    if (allSettingsCacheResult is { IsSuccess: true, ResultValue: not null })
     {
       if (allSettingsCacheResult.ResultValue.ObjectValue == null)
       {

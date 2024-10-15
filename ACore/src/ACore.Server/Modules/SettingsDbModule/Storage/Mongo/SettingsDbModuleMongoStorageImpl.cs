@@ -17,6 +17,7 @@ namespace ACore.Server.Modules.SettingsDbModule.Storage.Mongo;
 
 internal class SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModuleMongoStorageImpl> options, IMediator mediator, ILogger<SettingsDbModuleMongoStorageImpl> logger) : DbContextBase(options, mediator, logger), ISettingsDbModuleStorage
 {
+  private readonly IMediator _mediator = mediator;
   private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheCategories.Entity, nameof(SettingsPKMongoEntity));
 
   protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();
@@ -48,30 +49,30 @@ internal class SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModul
 
     await SaveChangesAsync();
 
-    await mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
+    await _mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
   }
-
+  
   private async Task<SettingsPKMongoEntity?> GetSettingsAsync(string key, bool exceptedValue = true)
   {
     List<SettingsPKMongoEntity>? allSettings;
 
-    var allSettingsCache = await mediator.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
+    var allSettingsCacheResult = await _mediator.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
 
-    if (allSettingsCache != null)
+    if (allSettingsCacheResult is { IsSuccess: true, ResultValue: not null })
     {
-      if (allSettingsCache.ResultValue == null)
+      if (allSettingsCacheResult.ResultValue.ObjectValue == null)
       {
         var ex = new Exception("The key '" + key + "' is not represented in settings table.");
         Logger.LogCritical("GetSettingsValue->" + key, ex);
         throw ex;
       }
 
-      allSettings = allSettingsCache.ResultValue.ObjectValue as List<SettingsPKMongoEntity>;
+      allSettings = allSettingsCacheResult.ResultValue.ObjectValue as List<SettingsPKMongoEntity>;
     }
     else
     {
       allSettings = await Settings.ToListAsync();
-      await mediator.Send(new MemoryCacheModuleSaveCommand(CacheKeyTableSetting, allSettings));
+      await _mediator.Send(new MemoryCacheModuleSaveCommand(CacheKeyTableSetting, allSettings));
     }
 
     if (allSettings == null)
@@ -93,6 +94,6 @@ internal class SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModul
     modelBuilder.Entity<SettingsPKMongoEntity>().ToCollection(CollectionNames.ObjectNameMapping[nameof(SettingsPKMongoEntity)].TableName);
     SetDatabaseNames<SettingsPKMongoEntity>(modelBuilder);
   }
-  
+
   private static void SetDatabaseNames<T>(ModelBuilder modelBuilder) where T : class => SetDatabaseNames<T>(CollectionNames.ObjectNameMapping, modelBuilder);
 }

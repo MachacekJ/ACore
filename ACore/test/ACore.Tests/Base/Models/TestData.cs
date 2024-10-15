@@ -1,74 +1,37 @@
 ﻿using System.Reflection;
-using ACore.Server.Storages.Definitions.Models;
 
 namespace ACore.Tests.Base.Models;
 
 public class TestData
 {
-  private readonly string _methodName = string.Empty;
-  private readonly string _testId = string.Empty;
-  private string _testName = null!;
-  private readonly string[] _replaceLetter = { ".", "<", ">", "+" };
-
   private const int MaximumLengthOfDb = 63;
 
-  private readonly List<string> _shrinkStrings =
-  [
-    nameof(ACore),
-    "TestsIntegrations",
-    "ServerT",
-    "StoragesT",
-    "ModulesT"
-  ];
-
-  public DatabaseManipulationEnum DatabaseManipulation { get; set; } = DatabaseManipulationEnum.Default;
-
-  public string TestId
-  {
-    get => _testId;
-    private init
-    {
-      _testId = value + (string.IsNullOrEmpty(_methodName) ? string.Empty : "." + _methodName);
-
-      if (string.IsNullOrEmpty(_testId))
-        _testId = "UNKNOWN_TEST_ID" + Guid.NewGuid();
-
-      _testName = _testId;
-    }
-  }
+  private readonly string[] _replaceLetter = [".", "<", ">", "+"];
+  private readonly string[] _replaceDbLetter = ["_", "-"];
 
   /// <summary>
   /// Name of test important for DB name and log file name.
+  /// Name is derived by <see cref="MemberInfo"/> from ctor.
   /// </summary>
-  public string TestName
+  public string TestName { get; }
+
+  public TestData(MemberInfo method)
   {
-    get
-    {
-      if (_testName == null)
-        throw new Exception("TestName is null. Set TestId.");
-      return _replaceLetter.Aggregate(_testName, (current, letter) => current.Replace(letter, "_"));
-    }
-    set => _testName = value;
+    ArgumentNullException.ThrowIfNull(method);
+    TestName = method.DeclaringType?.FullName ?? throw new ArgumentNullException(nameof(method));
+    TestName = _replaceLetter.Aggregate(TestName, (current, letter) => current.Replace(letter, "_"));
   }
 
-  public TestData(MemberInfo? method)
+  public string GetDbName()
   {
-    if (method == null)
-      return;
-
-    TestId = method.DeclaringType?.FullName ?? throw new ArgumentNullException(nameof(method));
-  }
-
-  public string GetDbName(StorageTypeEnum typeEnum)
-  {
-    var testName = _shrinkStrings.Aggregate(TestName, (current, name)
-      => current.Replace($"{name}_", string.Empty)).ToLower();
-    //if (typeEnum == StorageTypeEnum.Postgres || typeEnum == StorageTypeEnum.Mongo)
+    var testName = TestName.ToLower();
     testName += Guid.NewGuid();
-    testName = testName.Replace("-", string.Empty);
 
     if (testName.Length > MaximumLengthOfDb)
       testName = testName.Substring(testName.Length - MaximumLengthOfDb);
+
+    testName = _replaceDbLetter.Aggregate(testName, (current, letter) => current.Replace(letter, "_"));
+
     return testName;
   }
 }

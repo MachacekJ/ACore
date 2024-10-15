@@ -20,7 +20,7 @@ namespace ACore.Tests.Base;
 public abstract class TestsBase
 {
   private IMediator? _mediator;
-  private ServiceCollection _services = new();
+  private ServiceCollection _services = [];
   protected IConfigurationRoot? Configuration { get; set; }
 
   protected IMediator Mediator
@@ -29,7 +29,7 @@ public abstract class TestsBase
     private set => _mediator = value;
   }
 
-  protected static TestData TestData { get; set; } = new(null);
+  protected static TestData TestData { get; set; } = new(MethodBase.GetCurrentMethod() ?? throw new ArgumentException($"Method name is null {nameof(RunTestAsync)}"));
 
   private ILogger<TestsBase>? Log { get; set; }
   protected InMemorySink LogInMemorySink { get; set; } = new();
@@ -55,10 +55,7 @@ public abstract class TestsBase
 
     TestData = testData;
     await SettingStartTestAsync(_services);
-
-    if (CheckTest() == false)
-      return;
-
+    
     ArgumentNullException.ThrowIfNull(Log);
     Log.LogInformation("Start test Test {TestName}", TestData.TestName);
 
@@ -116,7 +113,7 @@ public abstract class TestsBase
     var logDir = Path.Combine(RootDir, "Logs");
     var serilog = new LoggerConfiguration()
       .MinimumLevel.Verbose()
-      .WriteTo.File(Path.Combine(logDir, TestData?.TestName ?? "unknownTestName") + ".txt", retainedFileTimeLimit: TimeSpan.FromDays(1), retainedFileCountLimit: 1)
+      .WriteTo.File(Path.Combine(logDir, TestData.TestName) + ".txt", retainedFileTimeLimit: TimeSpan.FromDays(1), retainedFileCountLimit: 1)
       .WriteTo.Sink(LogInMemorySink)
       .WriteTo.InMemory(restrictedToMinimumLevel: LogEventLevel.Debug)
       .CreateLogger();
@@ -147,15 +144,7 @@ public abstract class TestsBase
     dic = dic.Replace("\\bin\\Release\\net8.0", string.Empty);
     return dic;
   }
-
-  private bool CheckTest()
-  {
-    if (string.IsNullOrEmpty(TestData?.TestId))
-      throw new Exception("Test does not have id.");
-
-    return true;
-  }
-
+  
   private async Task SettingStartTestAsync(ServiceCollection services)
   {
     _services = [];

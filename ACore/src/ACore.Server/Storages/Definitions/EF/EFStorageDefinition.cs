@@ -1,5 +1,8 @@
+using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
 namespace ACore.Server.Storages.Definitions.EF;
@@ -23,6 +26,9 @@ public abstract class EFStorageDefinition : StorageDefinition
   /// </summary>
   public abstract bool IsTransactionEnabled { get; }
 
+  public abstract Task<bool> DatabaseIsInit<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
+    where T : DbContext;
+
   /// <summary>
   /// For a relational database, use the value 0 if the primary key automatically generates the id after saving. 
   /// </summary>
@@ -36,7 +42,7 @@ public abstract class EFStorageDefinition : StorageDefinition
   protected virtual long CreatePKLong<TEntity, TPK>(DbSet<TEntity> dbSet)
     where TEntity : PKEntity<TPK>
     => PKLongEntity.NewId;
-  
+
   protected virtual Guid CreatePKGuid<TEntity, TPK>()
     where TEntity : PKEntity<TPK>
     => PKGuidEntity.NewId;
