@@ -13,7 +13,7 @@ namespace ACore.Server.Modules.SettingsDbModule.Storage.SQL;
 
 internal abstract class SettingsDbModuleSqlStorageImpl : DbContextBase, ISettingsDbModuleStorage
 {
-  private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheCategories.Entity, nameof(SettingsEntity));
+  private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheMainCategories.Entity, nameof(SettingsEntity));
   private readonly IMediator _mediator;
   protected override string ModuleName => nameof(ISettingsDbModuleStorage);
 
@@ -51,7 +51,7 @@ internal abstract class SettingsDbModuleSqlStorageImpl : DbContextBase, ISetting
       if (allSettingsCacheResult.ResultValue.ObjectValue == null)
       {
         var ex = new Exception("The key '" + key + "' is not represented in settings table.");
-        Logger.LogCritical("GetSettingsValue->" + key, ex);
+        Logger.LogError("GetSettingsValue->" + key, ex);
         throw ex;
       }
 

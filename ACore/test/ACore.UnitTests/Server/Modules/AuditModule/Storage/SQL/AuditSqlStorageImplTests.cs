@@ -1,0 +1,301 @@
+﻿using ACore.Base.Cache;
+using ACore.Base.CQRS.Results;
+using ACore.Extensions;
+using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
+using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
+using ACore.Server.Modules.AuditModule.Storage.SQL;
+using ACore.Server.Modules.AuditModule.Storage.SQL.Memory;
+using ACore.Server.Modules.AuditModule.Storage.SQL.Models;
+using ACore.Server.Storages.Models.SaveInfo;
+using ACore.UnitTests.Server.Modules.AuditModule.Storage.SQL.FakeClasses;
+using ACore.UnitTests.TestImplementations;
+using FluentAssertions;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+
+namespace ACore.UnitTests.Server.Modules.AuditModule.Storage.SQL;
+
+public class AuditSqlStorageImplCacheTests
+{
+  private const string FakeTableName = "fakeTable";
+  private const string FakeUserName = "fakeUser";
+  private static readonly CacheKey TableCacheKey = AuditSqlStorageImpl.AuditTableCacheKey(FakeTableName, null, 1);
+  private static readonly CacheKey UserCacheKey = AuditSqlStorageImpl.AuditUserCacheKey(FakeUserName);
+  
+  [Fact]
+  public async Task NoCacheValues()
+  {
+    // Arrange.
+    var cacheQueryCalls = new List<string>();
+    var cacheSaveCalls = new List<string>();
+    var saveInfoItem = CreateSaveInfoItem();
+    var mediator = new Mock<IMediator>();
+    SetupMemoryQueryCommand(mediator, cacheQueryCalls);
+    SetupMemorySaveCommand(mediator, cacheSaveCalls);
+    var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object);
+
+    // Act.
+    await auditSqlStorageImplAsSut.SaveAuditAsync(saveInfoItem);
+
+    // Assert
+    EntityAsserts(auditSqlStorageImplAsSut, saveInfoItem);
+    TableCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
+    UserCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
+    ColumnCacheCallsAssert(cacheQueryCalls, cacheSaveCalls, auditSqlStorageImplAsSut.AuditTables.Single(e => e.TableName == FakeTableName).Id);
+  }
+
+  [Fact]
+  public async Task ExistingTableCacheValues()
+  {
+    // Arrange
+    var cacheQueryCalls = new List<string>();
+    var cacheSaveCalls = new List<string>();
+    var saveInfoItem = CreateSaveInfoItem();
+    var auditTableEntity = new AuditTableEntity
+    {
+      SchemaName = saveInfoItem.SchemaName,
+      Version = saveInfoItem.Version,
+      TableName = saveInfoItem.TableName,
+    };
+    var mediator = new Mock<IMediator>();
+    SetupMemorySaveCommand(mediator, cacheSaveCalls);
+    SetupMemoryQueryCommand(mediator, cacheQueryCalls, mem
+      => Result.Success(mem?.Key.ToString() == TableCacheKey.ToString() ? new CacheValue(auditTableEntity) : new CacheValue(null)));
+    var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object, (db) =>
+    {
+      db.AuditTables.Add(auditTableEntity);
+      db.SaveChanges();
+    });
+
+    // Act.
+    await auditSqlStorageImplAsSut.SaveAuditAsync(saveInfoItem);
+
+    // Assert
+    EntityAsserts(auditSqlStorageImplAsSut, saveInfoItem);
+    UserCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
+    ColumnCacheCallsAssert(cacheQueryCalls, cacheSaveCalls, auditSqlStorageImplAsSut.AuditTables.Single(e => e.TableName == FakeTableName).Id);
+    cacheQueryCalls.Where(e => e == TableCacheKey.ToString()).ToList().Should().HaveCount(1);
+    cacheSaveCalls.Where(e => e == TableCacheKey.ToString()).ToList().Should().HaveCount(0);
+  }
+
+  [Fact]
+  public async Task ExistingUserCacheValues()
+  {
+    // Arrange
+    var cacheQueryCalls = new List<string>();
+    var cacheSaveCalls = new List<string>();
+    var saveInfoItem = CreateSaveInfoItem();
+    var auditUserEntity = new AuditUserEntity
+    {
+      UserId = saveInfoItem.UserId
+    };
+    var mediator = new Mock<IMediator>();
+    SetupMemorySaveCommand(mediator, cacheSaveCalls);
+    SetupMemoryQueryCommand(mediator, cacheQueryCalls, mem
+      => Result.Success(mem?.Key.ToString() == UserCacheKey.ToString() ? new CacheValue(auditUserEntity) : new CacheValue(null)));
+
+    var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object, (db) =>
+    {
+      db.AuditUsers.Add(auditUserEntity);
+      db.SaveChanges();
+    });
+
+    // Act.
+    await auditSqlStorageImplAsSut.SaveAuditAsync(saveInfoItem);
+
+    // Assert
+    EntityAsserts(auditSqlStorageImplAsSut, saveInfoItem);
+    TableCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
+    ColumnCacheCallsAssert(cacheQueryCalls, cacheSaveCalls, auditSqlStorageImplAsSut.AuditTables.Single(e => e.TableName == FakeTableName).Id);
+
+    cacheQueryCalls.Where(e => e == UserCacheKey.ToString()).ToList().Should().HaveCount(1);
+    cacheSaveCalls.Where(e => e == UserCacheKey.ToString()).ToList().Should().HaveCount(0);
+  }
+
+  [Fact]
+  public async Task ExistingColumnCacheValues()
+  {
+    // Arrange
+    var idTable = 1;
+    var columnCacheKey = AuditSqlStorageImpl.AuditColumnCacheKey(idTable);
+    var cacheQueryCalls = new List<string>();
+    var cacheSaveCalls = new List<string>();
+    var saveInfoItem = CreateSaveInfoItem();
+    var auditColumnEntities = new List<AuditColumnEntity>
+    {
+      new()
+      {
+        AuditTableId = idTable,
+        ColumnName = saveInfoItem.ChangedColumns[0].ColumnName,
+        PropName = saveInfoItem.ChangedColumns[0].PropName,
+        DataType = saveInfoItem.ChangedColumns[0].DataType,
+      },
+      new()
+      {
+        AuditTableId = idTable,
+        ColumnName = saveInfoItem.ChangedColumns[1].ColumnName,
+        PropName = saveInfoItem.ChangedColumns[1].PropName,
+        DataType = saveInfoItem.ChangedColumns[1].DataType,
+      }
+    };
+    var mediator = new Mock<IMediator>();
+    SetupMemorySaveCommand(mediator, cacheSaveCalls);
+    SetupMemoryQueryCommand(mediator, cacheQueryCalls, mem
+      =>
+    {
+      var dic = auditColumnEntities.ToDictionary(auditColumnEntity => auditColumnEntity.PropName, auditColumnEntity => auditColumnEntity.Id);
+      return Result.Success(mem?.Key.ToString() == columnCacheKey.ToString() ? new CacheValue(dic) : new CacheValue(null));
+    });
+
+    var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object, (db) =>
+    {
+      db.AuditColumns.AddRange(auditColumnEntities);
+      db.SaveChanges();
+    });
+
+    // Act.
+    await auditSqlStorageImplAsSut.SaveAuditAsync(saveInfoItem);
+
+    // Assert
+    EntityAsserts(auditSqlStorageImplAsSut, saveInfoItem);
+    TableCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
+    UserCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
+    
+    cacheQueryCalls.Where(e => e == columnCacheKey.ToString()).ToList().Should().HaveCount(1);
+    cacheSaveCalls.Where(e => e == columnCacheKey.ToString()).ToList().Should().HaveCount(0);
+  }
+  
+  [Fact]
+  public async Task MissingColumnCacheValues()
+  {
+    // Arrange
+    var idTable = 1;
+    var columnCacheKey = AuditSqlStorageImpl.AuditColumnCacheKey(idTable);
+    var cacheQueryCalls = new List<string>();
+    var cacheSaveCalls = new List<string>();
+    var saveInfoItem = CreateSaveInfoItem();
+    saveInfoItem.ChangedColumns.Add(new SaveInfoColumnItem(true, "TestProp3", "TestColumn3", typeof(int).ACoreTypeName(), true, 1, 2));
+    var auditColumnEntities = new List<AuditColumnEntity>
+    {
+      new()
+      {
+        AuditTableId = idTable,
+        ColumnName = saveInfoItem.ChangedColumns[0].ColumnName,
+        PropName = saveInfoItem.ChangedColumns[0].PropName,
+        DataType = saveInfoItem.ChangedColumns[0].DataType,
+      },
+      new()
+      {
+        AuditTableId = idTable,
+        ColumnName = saveInfoItem.ChangedColumns[1].ColumnName,
+        PropName = saveInfoItem.ChangedColumns[1].PropName,
+        DataType = saveInfoItem.ChangedColumns[1].DataType,
+      }
+    };
+    var mediator = new Mock<IMediator>();
+    SetupMemorySaveCommand(mediator, cacheSaveCalls);
+    SetupMemoryQueryCommand(mediator, cacheQueryCalls, mem
+      =>
+    {
+      var dic = auditColumnEntities.ToDictionary(auditColumnEntity => auditColumnEntity.PropName, auditColumnEntity => auditColumnEntity.Id);
+      return Result.Success(mem?.Key.ToString() == columnCacheKey.ToString() ? new CacheValue(dic) : new CacheValue(null));
+    });
+
+    var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object, (db) =>
+    {
+      db.AuditColumns.AddRange(auditColumnEntities);
+      db.SaveChanges();
+    });
+
+    // Act.
+    await auditSqlStorageImplAsSut.SaveAuditAsync(saveInfoItem);
+
+    // Assert
+    EntityAsserts(auditSqlStorageImplAsSut, saveInfoItem);
+    TableCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
+    UserCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
+    ColumnCacheCallsAssert(cacheQueryCalls, cacheSaveCalls, auditSqlStorageImplAsSut.AuditTables.Single(e => e.TableName == FakeTableName).Id);
+  }
+
+  private AuditSqlStorageImpl CreateAuditSqlStorageImplAsSut(IMediator mediator, Action<FakeAuditSqlStorageImpl>? seedData = null)
+  {
+    var dbContextOptions = new DbContextOptions<AuditSqlStorageImpl>();
+    var loggerMocked = (new MoqLoggger<AuditSqlMemoryStorageImpl>()).LoggerMocked;
+    var res = new FakeAuditSqlStorageImpl(dbContextOptions, mediator, loggerMocked);
+    seedData?.Invoke(res);
+    return res;
+  }
+
+  private SaveInfoItem CreateSaveInfoItem()
+    => new(true, FakeTableName, null, 1, 1, EntityState.Added, FakeUserName)
+    {
+      ChangedColumns =
+      [
+        new SaveInfoColumnItem(true, "TestProp1", "TestColumn1", typeof(int).ACoreTypeName(), true, 1, 2),
+        new SaveInfoColumnItem(true, "TestProp2", "TestColumn2", typeof(int).ACoreTypeName(), true, 1, 2),
+      ]
+    };
+
+  private void SetupMemorySaveCommand(Mock<IMediator> mediator, List<string> cacheSaveCalls)
+  {
+    var result = Result.Success(new CacheValue(null));
+    mediator
+      .Setup(i => i.Send(It.IsAny<MemoryCacheModuleSaveCommand>(), It.IsAny<CancellationToken>()))
+      .Callback<IRequest<Result>, CancellationToken>((q, _) =>
+      {
+        if (q is MemoryCacheModuleSaveCommand mem)
+          cacheSaveCalls.Add(mem.Key.ToString());
+      })
+      .ReturnsAsync(() => result);
+  }
+
+  private void SetupMemoryQueryCommand(Mock<IMediator> mediator, List<string> cacheQueryCalls, Func<MemoryCacheModuleGetQuery?, Result<CacheValue>>? customResultFunc = null)
+  {
+    var result = Result.Success(new CacheValue(null));
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+    mediator
+      .Setup(i => i.Send(It.IsAny<MemoryCacheModuleGetQuery>(), It.IsAny<CancellationToken>()))
+      .Callback<IRequest<Result<CacheValue?>>, CancellationToken>((q, _) =>
+      {
+        MemoryCacheModuleGetQuery? mem2 = null;
+        if (q is MemoryCacheModuleGetQuery mem)
+        {
+          mem2 = mem;
+          cacheQueryCalls.Add(mem.Key.ToString());
+        }
+
+        if (customResultFunc != null)
+          result = customResultFunc(mem2);
+      })
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+      .ReturnsAsync(() => result);
+  }
+
+  private void EntityAsserts(AuditSqlStorageImpl auditSqlStorageImplAsSut, SaveInfoItem saveInfoItem)
+  {
+    auditSqlStorageImplAsSut.AuditTables.Count().Should().Be(1);
+    auditSqlStorageImplAsSut.Audits.Count().Should().Be(1);
+    auditSqlStorageImplAsSut.AuditUsers.Count().Should().Be(1);
+    auditSqlStorageImplAsSut.AuditColumns.Count().Should().Be(saveInfoItem.ChangedColumns.Count);
+  }
+
+  private void TableCacheCallsAssert(IEnumerable<string> cacheQueryCalls, IEnumerable<string> cacheSaveCalls)
+  {
+    cacheQueryCalls.Where(e => e == TableCacheKey.ToString()).ToList().Should().HaveCount(1);
+    cacheSaveCalls.Where(e => e == TableCacheKey.ToString()).ToList().Should().HaveCount(1);
+  }
+
+  private void UserCacheCallsAssert(IEnumerable<string> cacheQueryCalls, IEnumerable<string> cacheSaveCalls)
+  {
+    cacheQueryCalls.Where(e => e == UserCacheKey.ToString()).ToList().Should().HaveCount(1);
+    cacheSaveCalls.Where(e => e == UserCacheKey.ToString()).ToList().Should().HaveCount(1);
+  }
+
+  private void ColumnCacheCallsAssert(IEnumerable<string> cacheQueryCalls, IEnumerable<string> cacheSaveCalls, int idTable)
+  {
+    var columnCacheKey = AuditSqlStorageImpl.AuditColumnCacheKey(idTable);
+    cacheQueryCalls.Where(e => e == columnCacheKey.ToString()).ToList().Should().HaveCount(1);
+    cacheSaveCalls.Where(e => e == columnCacheKey.ToString()).ToList().Should().HaveCount(1);
+  }
+}

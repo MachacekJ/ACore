@@ -7,7 +7,7 @@ using ACore.Server.Storages.Contexts.EF.Models.PK;
 namespace ACore.Server.Modules.SettingsDbModule.Storage.SQL.Models;
 
 [Auditable(1)]
-public class SettingsEntity: PKIntEntity
+internal class SettingsEntity: PKIntEntity
 {
   [MaxLength(256)]
   public string Key { get; set; }

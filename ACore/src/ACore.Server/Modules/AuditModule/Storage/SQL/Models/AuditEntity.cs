@@ -1,14 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ACore.Server.Storages.Contexts.EF.Models.PK;
 using Microsoft.EntityFrameworkCore;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 namespace ACore.Server.Modules.AuditModule.Storage.SQL.Models;
 
-internal class AuditEntity
+internal class AuditEntity : PKLongEntity
 {
-  [Key]
-  public long Id { get; set; }
   public int AuditTableId { get; set; }
   public long? PKValue { get; set; }
 

@@ -18,7 +18,7 @@ namespace ACore.Server.Modules.SettingsDbModule.Storage.Mongo;
 internal class SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModuleMongoStorageImpl> options, IMediator mediator, ILogger<SettingsDbModuleMongoStorageImpl> logger) : DbContextBase(options, mediator, logger), ISettingsDbModuleStorage
 {
   private readonly IMediator _mediator = mediator;
-  private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheCategories.Entity, nameof(SettingsPKMongoEntity));
+  private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheMainCategories.Entity, nameof(SettingsPKMongoEntity));
 
   protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();
   protected override EFStorageDefinition EFStorageDefinition => new MongoStorageDefinition();
@@ -63,7 +63,7 @@ internal class SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModul
       if (allSettingsCacheResult.ResultValue.ObjectValue == null)
       {
         var ex = new Exception("The key '" + key + "' is not represented in settings table.");
-        Logger.LogCritical("GetSettingsValue->" + key, ex);
+        Logger.LogError("GetSettingsValue->" + key, ex);
         throw ex;
       }
 

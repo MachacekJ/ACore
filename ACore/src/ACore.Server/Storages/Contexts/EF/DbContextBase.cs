@@ -207,12 +207,12 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     return base.SaveChanges();
   }
 
-  public sealed override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+  public  override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
   {
     return base.SaveChangesAsync(cancellationToken);
   }
 
-  public sealed override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
+  public  override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
   {
     return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
   }

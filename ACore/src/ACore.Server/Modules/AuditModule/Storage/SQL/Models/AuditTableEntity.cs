@@ -3,7 +3,6 @@ using ACore.Server.Storages.Contexts.EF.Models.PK;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-
 namespace ACore.Server.Modules.AuditModule.Storage.SQL.Models;
 
 internal class AuditTableEntity : PKIntEntity

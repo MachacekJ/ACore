@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace ACore.UnitTests.FakeMoq;
+namespace ACore.UnitTests.TestImplementations;
 
-public class LoggerHelper<T>
+public class MoqLoggger<T>
   where T : class
 {
  

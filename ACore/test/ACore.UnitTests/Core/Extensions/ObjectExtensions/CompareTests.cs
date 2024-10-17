@@ -1,4 +1,3 @@
-using System.Text;
 using ACore.Extensions;
 using ACore.UnitTests.Core.Extensions.ObjectExtensions.FakeData;
 using FluentAssertions;
@@ -9,9 +8,9 @@ namespace ACore.UnitTests.Core.Extensions.ObjectExtensions;
 
 public class CompareTests
 {
-  private static DateTime _testDate = new DateTime(2020, 12, 23);
-  private static Guid _testGuid = Guid.NewGuid();
-  private static byte[] _testByteArray = Encoding.UTF8.GetBytes("Hello World");
+  private static readonly DateTime TestDate = new(2020, 12, 23);
+  private static readonly Guid TestGuid = Guid.NewGuid();
+  private static readonly byte[] TestByteArray = "Hello World"u8.ToArray();
   private static ObjectId _testObjectId = ObjectId.GenerateNewId();
 
   [Theory]
@@ -23,7 +22,7 @@ public class CompareTests
 
     // Assert
     res.Should().HaveCount(expectedResults.Length);
-    for (int i = 0; i < res.Length; i++)
+    for (var i = 0; i < res.Length; i++)
     {
       CompareResult(res[i], expectedResults[i]);
     }
@@ -81,20 +80,20 @@ public class CompareTests
       },
       new object?[]
       {
-        new Fake1Class { DateTime = _testDate }, new Fake1Class { DateTime = _testDate }, BaseComparisionWithEx([
-          new ComparisonResult(nameof(Fake1Class.DateTime), typeof(DateTime?), false, _testDate, _testDate)
+        new Fake1Class { DateTime = TestDate }, new Fake1Class { DateTime = TestDate }, BaseComparisionWithEx([
+          new ComparisonResult(nameof(Fake1Class.DateTime), typeof(DateTime?), false, TestDate, TestDate)
         ], false),
       },
       new object?[]
       {
-        new Fake1Class { Guid = _testGuid }, new Fake1Class { Guid = _testGuid }, BaseComparisionWithEx([
-          new ComparisonResult(nameof(Fake1Class.Guid), typeof(Guid?), false, _testGuid, _testGuid)
+        new Fake1Class { Guid = TestGuid }, new Fake1Class { Guid = TestGuid }, BaseComparisionWithEx([
+          new ComparisonResult(nameof(Fake1Class.Guid), typeof(Guid?), false, TestGuid, TestGuid)
         ], false),
       },
       new object?[]
       {
-        new Fake1Class { ByteArr = _testByteArray }, new Fake1Class { ByteArr = new List<byte>(_testByteArray).ToArray() }, BaseComparisionWithEx([
-          new ComparisonResult(nameof(Fake1Class.ByteArr), typeof(byte[]), false, new List<byte>(_testByteArray).ToArray(), new List<byte>(_testByteArray).ToArray())
+        new Fake1Class { ByteArr = TestByteArray }, new Fake1Class { ByteArr = new List<byte>(TestByteArray).ToArray() }, BaseComparisionWithEx([
+          new ComparisonResult(nameof(Fake1Class.ByteArr), typeof(byte[]), false, new List<byte>(TestByteArray).ToArray(), new List<byte>(TestByteArray).ToArray())
         ], false),
       },
       new object?[]
@@ -111,9 +110,9 @@ public class CompareTests
       },
       new object?[]
       {
-        new Fake1Class { MongoId = _testObjectId }, new Fake1Class { DateTime = _testDate }, BaseComparisionWithEx([
+        new Fake1Class { MongoId = _testObjectId }, new Fake1Class { DateTime = TestDate }, BaseComparisionWithEx([
           new ComparisonResult(nameof(Fake1Class.MongoId), typeof(ObjectId?), true, new ObjectId(_testObjectId.ToByteArray()), null),
-          new ComparisonResult(nameof(Fake1Class.DateTime), typeof(DateTime?), true, null, _testDate)
+          new ComparisonResult(nameof(Fake1Class.DateTime), typeof(DateTime?), true, null, TestDate)
         ], false),
       },
     };

@@ -24,7 +24,7 @@ public class SettingsDbModuleSqlMemoryStorageImplTests : SettingsDbModuleTestsBa
 
 
 #pragma warning disable xUnit1013
-  public static async Task CheckSettingEntity(ISettingsDbModuleStorage dbModule, IMediator mediator)
+  private static async Task CheckSettingEntity(ISettingsDbModuleStorage dbModule, IMediator mediator)
 #pragma warning restore xUnit1013
   {
     string key = "key";
@@ -40,7 +40,7 @@ public class SettingsDbModuleSqlMemoryStorageImplTests : SettingsDbModuleTestsBa
     val2.Should().Be(value2);
 
     // Check if is value in cache
-    var keyCache = CacheKey.Create(CacheCategories.Entity, nameof(SettingsEntity));
+    var keyCache = CacheKey.Create(CacheMainCategories.Entity, nameof(SettingsEntity));
     var cacheValue = await mediator.Send(new MemoryCacheModuleGetQuery(keyCache));
     var mem = cacheValue.ResultValue?.ObjectValue as List<SettingsEntity>;
     Assert.True(mem != null && mem.First(a => a.Key == key).Value == value2);

@@ -1,5 +1,5 @@
 using ACore.UnitTests.Core.Base.CQRS.Notifications.ACoreNotificationPublisher.FakeClasses;
-using ACore.UnitTests.FakeMoq;
+using ACore.UnitTests.TestImplementations;
 using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,17 +8,20 @@ namespace ACore.UnitTests.Core.Base.CQRS.Notifications.ACoreNotificationPublishe
 
 public class PublishTests
 {
+  /// <summary>
+  /// When some task throws an exception, this exception must be thrown up and must not be hidden.
+  /// </summary>
   [Fact]
   public async Task ThrowExceptionTest()
   {
     // Arrange
-    var loggerHelper = new LoggerHelper<ThrowNotificationHandler>();
+    var loggerHelper = new MoqLoggger<ThrowNotificationHandler>();
     var throwNotification = new ThrowNotification();
     var allHandlers = AllHandlers(loggerHelper.LoggerMocked, true);
-    var sut = CreateNotificationPublisherAsSut();
+    var aCoreNotificationPublisherSut = CreateNotificationPublisherAsSut();
 
     // Act
-    Func<Task> ac = async () =>  await sut.Publish(allHandlers, throwNotification, CancellationToken.None);
+    Func<Task> ac = async () =>  await aCoreNotificationPublisherSut.Publish(allHandlers, throwNotification, CancellationToken.None);
     
     // Assert
     await ac.Should().ThrowAsync<NotImplementedException>();
@@ -28,7 +31,7 @@ public class PublishTests
   public async Task NotThrowExceptionTest()
   {
     // Arrange
-    var loggerHelper = new LoggerHelper<ThrowNotificationHandler>();
+    var loggerHelper = new MoqLoggger<ThrowNotificationHandler>();
     var throwNotification = new ThrowNotification();
     var allHandlers = AllHandlers(loggerHelper.LoggerMocked, false);
     var sut = CreateNotificationPublisherAsSut();
