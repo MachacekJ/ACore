@@ -11,9 +11,7 @@ namespace ACore.UnitTests.Server.Modules.AuditModule.Storage.SQL.FakeClasses;
 internal class FakeAuditSqlStorageImpl(DbContextOptions<AuditSqlStorageImpl> options, IMediator mediator, ILogger<AuditSqlMemoryStorageImpl> logger) : AuditSqlStorageImpl(options, mediator, logger)
 {
   protected override EFStorageDefinition EFStorageDefinition { get; } = new MemoryEFStorageDefinition();
-
-
-
+  
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)

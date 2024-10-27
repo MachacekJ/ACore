@@ -14,8 +14,8 @@ namespace ACore.Tests.Core.Modules.MemoryCacheModule
     {
       base.RegisterServices(sc);
       sc.AddACore(o =>
-        o.AddSaltForHash("test")
-          .AddMemoryCacheModule(op =>
+        //o.AddSaltForHash("test")
+          o.AddMemoryCacheModule(op =>
             op.AddCacheCategories(
               CacheTestCategories.CacheTest,
               CacheTestCategories.CacheTest2

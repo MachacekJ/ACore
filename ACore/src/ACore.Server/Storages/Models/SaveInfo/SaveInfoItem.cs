@@ -13,7 +13,6 @@ public class SaveInfoItem
   public string UserId { get; private set; }
   public long? PkValue { get; private set; }
   public string? PkValueString { get; set; }
-  public DateTime Created { get; set; }
 
   public SaveInfoItem(bool isAuditable, string tableName, string? schemaName, int version, object pkValue, EntityState entityState, string userId)
   {

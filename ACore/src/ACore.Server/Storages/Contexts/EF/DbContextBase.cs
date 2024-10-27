@@ -33,7 +33,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
 
   protected abstract string ModuleName { get; }
 
-  protected async Task Save<TEntity, TPK>(TEntity newData, string? hashToCheck = null)
+  protected internal async Task Save<TEntity, TPK>(TEntity newData, string? hashToCheck = null)
     where TEntity : PKEntity<TPK>
   {
     ArgumentNullException.ThrowIfNull(newData);
@@ -191,31 +191,6 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     throw new Exception($"Unsupported type of primary key for entity '{typeof(TEntity).Name}.'");
   }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-
-  #endregion
-
-
-  #region Break Save inheritance
-
-  public sealed override int SaveChanges(bool acceptAllChangesOnSuccess)
-  {
-    return base.SaveChanges(acceptAllChangesOnSuccess);
-  }
-
-  public sealed override int SaveChanges()
-  {
-    return base.SaveChanges();
-  }
-
-  public  override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
-  {
-    return base.SaveChangesAsync(cancellationToken);
-  }
-
-  public  override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
-  {
-    return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-  }
 
   #endregion
 }

@@ -9,5 +9,5 @@ public interface IMemoryCacheModuleStorage
   void Set<TItem>(CacheKey key, TItem value);
   bool TryGetValue<TItem>(CacheKey key, out TItem? value);
   void Remove(CacheKey key);
-  void RemoveCategory(CacheCategory mainCategory, CacheCategory? subCategory);
+  void RemoveCategory(CacheCategory mainCategory, CacheCategory? subCategory = null);
 }

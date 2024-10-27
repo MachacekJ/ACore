@@ -15,7 +15,7 @@ public class PublishTests
   public async Task ThrowExceptionTest()
   {
     // Arrange
-    var loggerHelper = new MoqLoggger<ThrowNotificationHandler>();
+    var loggerHelper = new MoqLogger<ThrowNotificationHandler>();
     var throwNotification = new ThrowNotification();
     var allHandlers = AllHandlers(loggerHelper.LoggerMocked, true);
     var aCoreNotificationPublisherSut = CreateNotificationPublisherAsSut();
@@ -31,7 +31,7 @@ public class PublishTests
   public async Task NotThrowExceptionTest()
   {
     // Arrange
-    var loggerHelper = new MoqLoggger<ThrowNotificationHandler>();
+    var loggerHelper = new MoqLogger<ThrowNotificationHandler>();
     var throwNotification = new ThrowNotification();
     var allHandlers = AllHandlers(loggerHelper.LoggerMocked, false);
     var sut = CreateNotificationPublisherAsSut();

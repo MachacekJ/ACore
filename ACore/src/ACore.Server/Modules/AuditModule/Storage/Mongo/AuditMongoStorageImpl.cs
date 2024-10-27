@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.EntityFrameworkCore.Extensions;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace ACore.Server.Modules.AuditModule.Storage.Mongo;
 
@@ -21,8 +22,7 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
   protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();
   protected override EFStorageDefinition EFStorageDefinition => new MongoStorageDefinition();
   protected override string ModuleName => nameof(IAuditStorageModule);
-
-  // ReSharper disable once UnusedAutoPropertyAccessor.Global
+  
   public DbSet<AuditMongoEntity> Audits { get; set; }
 
   public async Task SaveAuditAsync(SaveInfoItem saveInfoItem)
@@ -41,7 +41,6 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
       },
       EntityState = saveInfoItem.EntityState,
       Created = DateTime.UtcNow,
-   //   Columns = []
       Columns = saveInfoItem.ChangedColumns.Where(e => e.IsAuditable).Select(e => new AuditMongoValueEntity
       {
         PropName = e.PropName,
@@ -52,19 +51,6 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
         OldValue = e.OldValue.ToAuditValue(),
       }).ToList()
     };
-
-    // foreach (var column in saveInfoItem.ChangedColumns.Where(e => e.IsAuditable))
-    // {
-    //   auditEntity.Columns.Add(new AuditMongoValueEntity
-    //   {
-    //     PropName = column.PropName,
-    //     Property = column.ColumnName,
-    //     DataType = column.DataType,
-    //     IsChanged = column.IsChanged,
-    //     NewValue = column.NewValue.ToAuditValue(),
-    //     OldValue = column.OldValue.ToAuditValue(),
-    //   });
-    // }
 
     await Audits.AddAsync(auditEntity);
     await SaveChangesAsync();
@@ -79,14 +65,16 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
     var ll = new List<AuditInfoItem>();
     foreach (var auditMongoEntity in valuesTable)
     {
-      var aa = new AuditInfoItem(collectionName, null, auditMongoEntity.Version, pkValue, auditMongoEntity.EntityState, auditMongoEntity.User.Id);
-      aa.Created = auditMongoEntity.Created;
+      var auditInfoItem = new AuditInfoItem(collectionName, null, auditMongoEntity.Version, pkValue, auditMongoEntity.EntityState, auditMongoEntity.User.Id)
+      {
+        Created = auditMongoEntity.Created
+      };
 
       if (auditMongoEntity.Columns != null)
       {
         foreach (var col in auditMongoEntity.Columns)
         {
-          aa.AddColumnEntry(new AuditInfoColumnItem(
+          auditInfoItem.AddColumnEntry(new AuditInfoColumnItem(
             col.PropName, col.Property,
             col.DataType, col.IsChanged,
             col.OldValue.ConvertObjectToDataType(col.DataType),
@@ -95,7 +83,7 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
         }
       }
 
-      ll.Add(aa);
+      ll.Add(auditInfoItem);
     }
 
     return ll.ToArray();

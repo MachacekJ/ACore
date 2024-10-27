@@ -3,7 +3,7 @@ using Moq;
 
 namespace ACore.UnitTests.TestImplementations;
 
-public class MoqLoggger<T>
+public class MoqLogger<T>
   where T : class
 {
  
