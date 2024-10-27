@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
-using Microsoft.EntityFrameworkCore;
+using ACore.Server.Storages.Models.SaveInfo;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 namespace ACore.Server.Modules.AuditModule.Storage.SQL.Models;
@@ -18,7 +19,7 @@ internal class AuditEntity : PKLongEntity
   
   public DateTime DateTime { get; set; }
   
-  public EntityState EntityState { get; set; }
+  public SaveInfoStateEnum EntityState { get; set; }
 
   [ForeignKey("AuditTableId")]
   public AuditTableEntity AuditTable { get; set; }

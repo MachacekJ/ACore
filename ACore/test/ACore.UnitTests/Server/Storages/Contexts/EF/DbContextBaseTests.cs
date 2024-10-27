@@ -3,6 +3,7 @@ using ACore.Extensions;
 using ACore.Server.Modules.ICAMModule.CQRS.ICAMGetCurrentUser;
 using ACore.Server.Modules.ICAMModule.Models;
 using ACore.Server.Storages.CQRS.Notifications;
+using ACore.Server.Storages.Models.SaveInfo;
 using ACore.UnitTests.Server.Storages.Contexts.EF.FakeClasses;
 using ACore.UnitTests.TestImplementations;
 using FluentAssertions;
@@ -39,7 +40,7 @@ public class DbContextBaseTests
 
     var entitySaveNotification = notification as EntitySaveNotification;
     entitySaveNotification.Should().NotBeNull();
-    entitySaveNotification?.SaveInfo.EntityState.Should().Be(EntityState.Added);
+    entitySaveNotification?.SaveInfo.EntityState.Should().Be(SaveInfoStateEnum.Added);
     entitySaveNotification?.SaveInfo.IsAuditable.Should().BeFalse();
     entitySaveNotification?.SaveInfo.Version.Should().Be(0);
     entitySaveNotification?.SaveInfo.TableName.Should().Be(nameof(FakeLongEntity));

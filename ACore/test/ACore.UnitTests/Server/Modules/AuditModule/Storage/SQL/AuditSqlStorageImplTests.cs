@@ -228,7 +228,7 @@ public class AuditSqlStorageImplCacheTests
   }
 
   private SaveInfoItem CreateSaveInfoItem()
-    => new(true, FakeTableName, null, 1, 1, EntityState.Added, FakeUserName)
+    => new(true, FakeTableName, null, 1, 1, SaveInfoStateEnum.Added, FakeUserName)
     {
       ChangedColumns =
       [

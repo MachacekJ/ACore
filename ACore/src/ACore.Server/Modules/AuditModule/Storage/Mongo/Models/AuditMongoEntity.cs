@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
+using ACore.Server.Storages.Models.SaveInfo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
@@ -27,7 +27,7 @@ internal class AuditMongoEntity
   public DateTime Created { get; set; }
   
   [BsonElement("s")]
-  public EntityState EntityState { get; set; }
+  public SaveInfoStateEnum EntityState { get; set; }
   
   [BsonElement("u")]
   public AuditMongoUserEntity User { get; set; }

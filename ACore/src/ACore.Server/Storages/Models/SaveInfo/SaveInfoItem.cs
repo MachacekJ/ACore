@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace ACore.Server.Storages.Models.SaveInfo;
+﻿namespace ACore.Server.Storages.Models.SaveInfo;
 
 public class SaveInfoItem
 {
@@ -9,12 +7,12 @@ public class SaveInfoItem
   public string? SchemaName { get; }
   public int Version { get; }
   public List<SaveInfoColumnItem> ChangedColumns { get; set; } = [];
-  public EntityState EntityState { get; private set; }
+  public SaveInfoStateEnum EntityState { get; private set; }
   public string UserId { get; private set; }
   public long? PkValue { get; private set; }
   public string? PkValueString { get; set; }
 
-  public SaveInfoItem(bool isAuditable, string tableName, string? schemaName, int version, object pkValue, EntityState entityState, string userId)
+  public SaveInfoItem(bool isAuditable, string tableName, string? schemaName, int version, object pkValue, SaveInfoStateEnum entityState, string userId)
   {
     IsAuditable = isAuditable;
     TableName = tableName;
@@ -29,7 +27,7 @@ public class SaveInfoItem
   => ChangedColumns.Add(columnItem);
   
 
-  public void SetEntityState(EntityState entityState)
+  public void SetEntityState(SaveInfoStateEnum entityState)
   {
     EntityState = entityState;
   }

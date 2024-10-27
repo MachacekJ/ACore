@@ -31,7 +31,7 @@ public class SaveInfoHelper<TEntity, TPK>(IMediator mediator, IModel model, EFSt
     var tableName = GetTableName(_dbEntityType) ?? throw new Exception($"Unknown db table name for entity class '{typeof(TEntity).Name}'");
     var schemaName = _dbEntityType.GetSchema();
     var userId = await GetUserId();
-    _saveInfoItem = new SaveInfoItem(auditableAttribute != null, tableName, schemaName, auditableAttribute?.Version ?? 0, initData.Id, EntityState.Detached, userId);
+    _saveInfoItem = new SaveInfoItem(auditableAttribute != null, tableName, schemaName, auditableAttribute?.Version ?? 0, initData.Id, SaveInfoStateEnum.Unknown, userId);
     _saveInfoItem.SetPK(initData.Id);
   }
 
@@ -50,7 +50,7 @@ public class SaveInfoHelper<TEntity, TPK>(IMediator mediator, IModel model, EFSt
     }
 
     _saveInfoItem.SetPK(savedData.Id);
-    _saveInfoItem.SetEntityState(EntityState.Added);
+    _saveInfoItem.SetEntityState(SaveInfoStateEnum.Added);
   }
 
   public void UpdateDbAction(TEntity oldData)
@@ -68,7 +68,7 @@ public class SaveInfoHelper<TEntity, TPK>(IMediator mediator, IModel model, EFSt
     }
 
 
-    _saveInfoItem.SetEntityState(EntityState.Modified);
+    _saveInfoItem.SetEntityState(SaveInfoStateEnum.Modified);
   }
 
   public void DeleteDbAction()
@@ -85,26 +85,9 @@ public class SaveInfoHelper<TEntity, TPK>(IMediator mediator, IModel model, EFSt
       _saveInfoItem.AddColumnEntry(new SaveInfoColumnItem(colName.IsAuditable, d.Name, colName.Name, d.Type.ACoreTypeName(), d.IsChange, d.LeftValue, d.RightValue));
     }
 
-    _saveInfoItem.SetEntityState(EntityState.Deleted);
+    _saveInfoItem.SetEntityState(SaveInfoStateEnum.Deleted);
   }
-
-  // /// <summary>
-  // /// Resolves problem with this situation. We have settings table where is audit on and audit structure is not created yet.
-  // /// In this case is audit will be skipped.  
-  // /// </summary>
-  // private async Task<bool> IsAuditEnabledAsync()
-  // {
-  //   // Check if db structure is already created.
-  //   var isAuditTable = await mediator.Send(new SettingsDbGetQuery(storageDefinition.Type, AuditSettingKey));
-  //
-  //   if (isAuditTable.IsSuccess && string.IsNullOrEmpty(isAuditTable.ResultValue))
-  //   {
-  //     return false;
-  //   }
-  //   
-  //   return true;
-  // }
-
+  
   private string? GetTableName(IReadOnlyEntityType dbEntityType)
   {
     var tableName = dbEntityType.GetTableName();
