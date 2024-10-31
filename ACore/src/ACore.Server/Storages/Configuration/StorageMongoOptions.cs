@@ -1,4 +1,4 @@
-namespace ACore.Server.Storages.Definitions.EF.MongoStorage.Configuration;
+namespace ACore.Server.Storages.Configuration;
 
 public class StorageMongoOptions(string readWriteConnectionString, string collectionName, string? readOnlyConnectionString = null)
 {

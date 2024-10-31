@@ -8,9 +8,9 @@ namespace ACore.Server.Modules.SettingsDbModule.Storage.SQL.PG;
 
 public static class DefaultNames
 {
-  public static Dictionary<string, EFNameDefinition> ObjectNameMapping => new()
+  public static Dictionary<string, EFDbNames> ObjectNameMapping => new()
   {
-    { nameof(SettingsEntity), new EFNameDefinition("setting", SettingsEntityColumnNames) },
+    { nameof(SettingsEntity), new EFDbNames("setting", SettingsEntityColumnNames) },
   };
 
   private static Dictionary<Expression<Func<SettingsEntity, object>>, string> SettingsEntityColumnNames => new()

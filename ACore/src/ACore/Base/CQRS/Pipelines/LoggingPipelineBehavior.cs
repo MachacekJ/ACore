@@ -15,14 +15,14 @@ public class LoggingPipelineBehavior<TRequest, TResponse>(ILogger<LoggingPipelin
   public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
   {
     var id = Guid.NewGuid();
-    var duration = new Stopwatch();
+    Stopwatch? duration = null;
     TResponse? response;
 
     // Serialization could be expensive for all requests. Enable only for debug.
     if (logger.IsEnabled(LogLevel.Debug))
     {
       logger.LogDebug("Request '{request}'.Id:{id};Data:{data}", typeof(TRequest).Name, id, JsonSerializer.Serialize(request));
-      duration.Start();
+      duration = Stopwatch.StartNew();
     }
 
     try
@@ -51,13 +51,12 @@ public class LoggingPipelineBehavior<TRequest, TResponse>(ILogger<LoggingPipelin
       // This is s serious error e.g. configuration.
       if (!isSeriousError)
         LogError(request, response);
-      
     }
 
     if (!logger.IsEnabled(LogLevel.Debug))
       return response;
 
-    duration.Stop();
+    duration?.Stop();
     logger.LogDebug("Response '{request}'.Id:{id};Duration:{duration};Data:{data}", typeof(TRequest).Name, id, duration, JsonSerializer.Serialize(response));
 
     return response;
@@ -77,7 +76,7 @@ public class LoggingPipelineBehavior<TRequest, TResponse>(ILogger<LoggingPipelin
       exception += e.MessageRecursive(true);
     }
 
-    logger.LogError("ErrorId:'{errorId}'; Request:'{requestName}'; ErrorCode:{errorCode}; Error{error}; DataRequest{dataRequest}; DataResponse{dataResponse}",
+    logger.LogError("ErrorId:'{errorId}'; Request:'{requestName}'; ErrorCode:{errorCode}; Error:{error}; DataRequest{dataRequest}; DataResponse{dataResponse}",
       response.Id, typeof(TRequest).Name, response.ResultErrorItem.Code, response.ResultErrorItem.Message + exception, dataRequest, dataResponse);
   }
 }

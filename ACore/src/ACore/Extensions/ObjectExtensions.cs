@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.Json;
+using ACore.Extensions.Models;
 
 namespace ACore.Extensions;
 
@@ -14,10 +15,10 @@ public static class ObjectExtensions
   private static PropertyInfo? GetProperty(this object self, string propertyName)
     => self.GetType().GetProperty(propertyName);
 
-  public static ComparisonResult[] Compare<T>(this T leftObj, T? rightObj, string? parentName = null)
+  public static ComparisonResultData[] Compare<T>(this T leftObj, T? rightObj, string? parentName = null)
     where T : class
   {
-    var results = new List<ComparisonResult>();
+    var results = new List<ComparisonResultData>();
     var rightProperties = rightObj == null ? null : GetProperties(rightObj);
     var leftProperties = GetProperties(leftObj);
 
@@ -28,7 +29,7 @@ public static class ObjectExtensions
 
       if (rightProperties == null)
       {
-        results.Add(new ComparisonResult(leftProperty.Name, leftProperty.PropertyType, true, leftValue, null));
+        results.Add(new ComparisonResultData(leftProperty.Name, leftProperty.PropertyType, true, leftValue, null));
         continue;
       }
 
@@ -48,7 +49,7 @@ public static class ObjectExtensions
         if (!isChange && rightValue != null && leftValue != null)
           isChange = CompareValue(leftValue, rightValue);
 
-        results.Add(new ComparisonResult(leftProperty.Name, leftProperty.PropertyType, isChange, leftValue, rightValue));
+        results.Add(new ComparisonResultData(leftProperty.Name, leftProperty.PropertyType, isChange, leftValue, rightValue));
         break;
       }
     }

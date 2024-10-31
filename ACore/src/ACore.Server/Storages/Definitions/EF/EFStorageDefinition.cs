@@ -29,7 +29,7 @@ public abstract class EFStorageDefinition : StorageDefinition
   /// <summary>
   /// Is database after first schema up. e.g. I cannot save audit information about change data in setting table, before audit database tables are created.  
   /// </summary>
-  public abstract Task<bool> DatabaseHasFirstUp<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
+  public abstract Task<bool> DatabaseHasInitUpdate<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
     where T : DbContext;
 
   /// <summary>

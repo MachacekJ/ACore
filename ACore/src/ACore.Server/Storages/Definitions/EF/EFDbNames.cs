@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace ACore.Server.Storages.Definitions.EF;
 
-public class EFNameDefinition(string tableName, IDictionary columns)
+public class EFDbNames(string tableName, IDictionary columns)
 {
   private readonly IDictionary? _columns = columns;
   private Dictionary<string, string>? _columnNames;

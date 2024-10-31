@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ACore.Base.CQRS.Extensions;
 
-public static class MediatRServiceConfigurationExtensions
+public static class MediatrServiceConfigurationExtensions
 {
   public static void AllNotificationWithoutException(this MediatRServiceConfiguration config)
   {

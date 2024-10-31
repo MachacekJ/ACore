@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
-namespace ACore.Server.Storages.Definitions.EF.MemoryEFStorage;
+namespace ACore.Server.Storages.Definitions.EF;
 
 public class MemoryEFStorageDefinition : EFStorageDefinition
 {
@@ -17,7 +17,7 @@ public class MemoryEFStorageDefinition : EFStorageDefinition
   public override string DataAnnotationTableNameKey => string.Empty;
   public override bool IsTransactionEnabled => false;
 
-  public override async Task<bool> DatabaseHasFirstUp<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
+  public override async Task<bool> DatabaseHasInitUpdate<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
   {
     var isSettingTable = await mediator.Send(new SettingsDbGetQuery(StorageTypeEnum.MemoryEF, $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageTypeEnum.MemoryEF)}_{nameof(ISettingsDbModuleStorage)}"));
     return isSettingTable is { IsSuccess: true, ResultValue: null };

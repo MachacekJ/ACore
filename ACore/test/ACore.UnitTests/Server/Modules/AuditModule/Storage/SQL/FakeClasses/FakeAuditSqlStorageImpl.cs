@@ -1,7 +1,6 @@
 ﻿using ACore.Server.Modules.AuditModule.Storage.SQL;
 using ACore.Server.Modules.AuditModule.Storage.SQL.Memory;
 using ACore.Server.Storages.Definitions.EF;
-using ACore.Server.Storages.Definitions.EF.MemoryEFStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

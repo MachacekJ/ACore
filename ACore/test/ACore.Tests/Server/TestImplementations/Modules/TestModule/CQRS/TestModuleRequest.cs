@@ -10,7 +10,7 @@ public class TestModuleRequest<TResponse> : IRequest<TResponse>
   
 }
 
-public class TestModuleQueryRequest<TResponse> : EntityQueryRequest<TResponse>
+public class TestModuleQueryRequest<TResponse> : HashEntityQueryRequest<TResponse>
   where TResponse : Result;
 
 public class TestModuleCommandRequest<TResponse>(string? hashToCheck) : EntityCommandRequest<TResponse>(hashToCheck)

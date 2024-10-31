@@ -12,4 +12,5 @@ public class MemoryCacheModuleOptions(bool isActive) : CacheOptions, IModuleOpti
 
   public string ModuleName => nameof(MemoryCacheModule);
   public bool IsActive => isActive;
+  public IEnumerable<string>? Dependencies => null;
 }

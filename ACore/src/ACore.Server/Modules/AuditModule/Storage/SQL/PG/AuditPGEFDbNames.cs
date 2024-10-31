@@ -8,13 +8,13 @@ namespace ACore.Server.Modules.AuditModule.Storage.SQL.PG;
 
 public static class AuditPGEFDbNames
 {
-  public static Dictionary<string, EFNameDefinition> ObjectNameMapping => new()
+  public static Dictionary<string, EFDbNames> ObjectNameMapping => new()
   {
-    { nameof(AuditColumnEntity), new EFNameDefinition("audit_column", AuditColumnEntityColumnNames) },
-    { nameof(AuditEntity), new EFNameDefinition("audit", AuditEntityColumnNames) },
-    { nameof(AuditTableEntity), new EFNameDefinition("audit_table", AuditTableEntityColumnNames) },
-    { nameof(AuditUserEntity), new EFNameDefinition("audit_user", AuditUserEntityColumnNames) },
-    { nameof(AuditValueEntity), new EFNameDefinition("audit_value", AuditValueColumnNames) },
+    { nameof(AuditColumnEntity), new EFDbNames("audit_column", AuditColumnEntityColumnNames) },
+    { nameof(AuditEntity), new EFDbNames("audit", AuditEntityColumnNames) },
+    { nameof(AuditTableEntity), new EFDbNames("audit_table", AuditTableEntityColumnNames) },
+    { nameof(AuditUserEntity), new EFDbNames("audit_user", AuditUserEntityColumnNames) },
+    { nameof(AuditValueEntity), new EFDbNames("audit_value", AuditValueColumnNames) },
   };
 
   private static Dictionary<Expression<Func<AuditColumnEntity, object>>, string> AuditColumnEntityColumnNames => new()

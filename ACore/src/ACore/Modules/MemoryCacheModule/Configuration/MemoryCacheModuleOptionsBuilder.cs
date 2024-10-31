@@ -12,12 +12,6 @@ public class MemoryCacheModuleOptionsBuilder : CacheOptionsBuilder
   private MemoryCacheModuleOptionsBuilder()
   {
   }
-  
-  public MemoryCacheModuleOptionsBuilder ConfigureMemoryCache(Action<MemoryCacheOptions>? memoryCacheOptionsAction = null)
-  {
-    _memoryCacheOptionsAction = memoryCacheOptionsAction;
-    return this;
-  }
 
   public MemoryCacheModuleOptions Build()
   {

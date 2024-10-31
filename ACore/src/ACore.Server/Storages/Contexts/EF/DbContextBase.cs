@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text.Json;
 using ACore.Configuration;
 using ACore.Extensions;
 using ACore.Server.Configuration.CQRS.OptionsGet;
@@ -14,7 +15,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
-using Newtonsoft.Json;
 using Guid = System.Guid;
 
 namespace ACore.Server.Storages.Contexts.EF;
@@ -91,7 +91,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
       catch (Exception ex)
       {
         await transaction.RollbackAsync();
-        throw new Exception($"Save entity '{existsEntity.GetType().ACoreTypeName()}' failed is rollback: Data {JsonConvert.SerializeObject(existsEntity)}", ex);
+        throw new Exception($"Save entity '{existsEntity.GetType().ACoreTypeName()}' failed is rollback: Data {JsonSerializer.Serialize(existsEntity)}", ex);
       }
     }
     else
@@ -140,7 +140,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     => typeof(T).FullName ?? throw new Exception($"{nameof(Type.FullName)} cannot be retrieved.");
 
 
-  protected static void SetDatabaseNames<T>(Dictionary<string, EFNameDefinition> objectNameMapping, ModelBuilder modelBuilder) where T : class
+  protected static void SetDatabaseNames<T>(Dictionary<string, EFDbNames> objectNameMapping, ModelBuilder modelBuilder) where T : class
   {
     if (objectNameMapping.TryGetValue(typeof(T).Name, out var auditColumnEntityObjectNames))
     {
@@ -167,6 +167,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
   
   #region id
 
+#pragma warning disable CS8605 // Unboxing a possibly null value.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
   private async Task<TEntity?> GetEntityById<TEntity, TPK>(TPK id)
     where TEntity : PKEntity<TPK>
@@ -191,6 +192,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     throw new Exception($"Unsupported type of primary key for entity '{typeof(TEntity).Name}.'");
   }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8605 // Unboxing a possibly null value.
 
   #endregion
 }

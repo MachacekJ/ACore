@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
-namespace ACore.Server.Storages.Definitions.EF.PGStorage;
+namespace ACore.Server.Storages.Definitions.EF;
 
 public class PGStorageDefinition : EFStorageDefinition
 {
@@ -14,7 +14,7 @@ public class PGStorageDefinition : EFStorageDefinition
   public override string DataAnnotationTableNameKey => "Relational:TableName";
   public override bool IsTransactionEnabled => true;
 
-  public override async Task<bool> DatabaseHasFirstUp<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
+  public override async Task<bool> DatabaseHasInitUpdate<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
   {
     var sql = "select count(*) as C from information_schema.tables where table_schema = 'public'";
     var res = await dbContext.Database.SqlQueryRaw<int>(sql).ToListAsync();

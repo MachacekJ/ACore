@@ -1,4 +1,4 @@
-﻿namespace ACore.Server.Storages.CQRS.Handlers;
+﻿namespace ACore.Server.Storages.CQRS.Handlers.Models;
 
 public class StorageExecutorItem(Task task)
 {

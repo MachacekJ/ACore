@@ -8,14 +8,14 @@ namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL
 
 public static class DefaultNames
 {
-  public static Dictionary<string, EFNameDefinition> ObjectNameMapping => new()
+  public static Dictionary<string, EFDbNames> ObjectNameMapping => new()
   {
-    { nameof(TestNoAuditEntity), new EFNameDefinition("test_no_audit", TestNoAuditEntityColumnNames) },
-    { nameof(TestAuditEntity), new EFNameDefinition("test_audit", TestAuditEntityColumnNames) },
-    { nameof(TestValueTypeEntity), new EFNameDefinition("test_value_type", TestValueTypeEntityColumnNames) },
-    { nameof(TestPKGuidEntity), new EFNameDefinition("test_pk_guid", TestPKGuidEntityColumnNames) },
-    { nameof(TestPKStringEntity), new EFNameDefinition("test_pk_string", TestPKStringEntityColumnNames) },
-    { nameof(TestPKLongEntity), new EFNameDefinition("test_pk_long", TestPKLongEntityColumnNames) }
+    { nameof(TestNoAuditEntity), new EFDbNames("test_no_audit", TestNoAuditEntityColumnNames) },
+    { nameof(TestAuditEntity), new EFDbNames("test_audit", TestAuditEntityColumnNames) },
+    { nameof(TestValueTypeEntity), new EFDbNames("test_value_type", TestValueTypeEntityColumnNames) },
+    { nameof(TestPKGuidEntity), new EFDbNames("test_pk_guid", TestPKGuidEntityColumnNames) },
+    { nameof(TestPKStringEntity), new EFDbNames("test_pk_string", TestPKStringEntityColumnNames) },
+    { nameof(TestPKLongEntity), new EFDbNames("test_pk_long", TestPKLongEntityColumnNames) }
   };
 
   private static Dictionary<Expression<Func<TestNoAuditEntity, object>>, string> TestNoAuditEntityColumnNames => new()

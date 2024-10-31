@@ -8,10 +8,8 @@ public class StorageEntityExecutorItem : StorageExecutorItem
 {
   public StorageEntityExecutorItem(object entity, IStorage storage, Task task) : base(task)
   {
-    if (entity.GetType().IsSubclassOfRawGeneric(typeof(PKEntity<>)))
-    {
+    if (!entity.GetType().IsSubclassOfRawGeneric(typeof(PKEntity<>)))
       throw new ArgumentException($"Entity '{entity.GetType().FullName}' must be a subclass of a PKEntity.");
-    }
 
     Entity = entity;
     Storage = storage;

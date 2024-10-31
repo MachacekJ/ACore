@@ -1,3 +1,3 @@
-﻿namespace ACore.Models.BaseRR;
-
-public class RequestBase;
+﻿// namespace ACore.Models.BaseRR;
+//
+// public class RequestBase;

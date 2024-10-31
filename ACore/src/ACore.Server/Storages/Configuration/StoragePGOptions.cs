@@ -1,4 +1,4 @@
-namespace ACore.Server.Storages.Definitions.EF.PGStorage.Configuration;
+namespace ACore.Server.Storages.Configuration;
 
 public class StoragePGOptions(string readWriteConnectionString, string? readOnlyConnectionString = null)
 {

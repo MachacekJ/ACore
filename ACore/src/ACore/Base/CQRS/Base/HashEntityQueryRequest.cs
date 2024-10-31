@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ACore.Base.CQRS.Base;
 
-public class EntityQueryRequest<TResponse> : IRequest<TResponse>
+public class HashEntityQueryRequest<TResponse> : IRequest<TResponse>
   where TResponse : Result;
 
 public class EntityCommandRequest<TResponse>(string? hashToCheck): IRequest<TResponse>

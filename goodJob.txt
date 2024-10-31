@@ -1,5 +1,11 @@
 https://github.com/axuno/SmartFormat
+
+How to Deploy .NET Apps to Kubernetes
 https://www.youtube.com/watch?v=E8ilDMg7Dak
+
+MD
+https://pandao.github.io/editor.md/en.html
+
 
 
 https://www.milanjovanovic.tech/blog/how-to-use-ef-core-interceptors?utm_source=newsletter&utm_medium=email&utm_campaign=tnw110

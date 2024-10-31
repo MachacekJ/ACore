@@ -7,9 +7,9 @@ namespace ACore.Server.Modules.SettingsDbModule.Storage.Mongo;
 
 public static class CollectionNames
 {
-  public static Dictionary<string, EFNameDefinition> ObjectNameMapping => new()
+  public static Dictionary<string, EFDbNames> ObjectNameMapping => new()
   {
-    { nameof(SettingsPKMongoEntity), new EFNameDefinition("setting", SettingMongoEntityColumnNames) },
+    { nameof(SettingsPKMongoEntity), new EFDbNames("setting", SettingMongoEntityColumnNames) },
   };
   
   private static Dictionary<Expression<Func<SettingsPKMongoEntity, object>>, string> SettingMongoEntityColumnNames => new()

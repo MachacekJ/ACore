@@ -3,6 +3,9 @@ using Mapster;
 
 namespace ACore.Server.Storages.Contexts.EF.Models.PK;
 
+/// <summary>
+/// Primary key of entity.
+/// </summary>
 public abstract class PKEntity<TPK>(TPK id)
 {
   [Key]

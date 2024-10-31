@@ -20,7 +20,7 @@ public class CacheOptionsBuilder : ModuleOptionsBuilder
 
   protected CacheOptions BuildBase()
   {
-    return new CacheOptions()
+    return new CacheOptions
     {
       Categories = _categories
     };

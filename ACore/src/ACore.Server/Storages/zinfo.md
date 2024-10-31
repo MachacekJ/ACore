@@ -8,7 +8,7 @@ Supported types of storages
 
 ## Folders
 - **Attributes** - attributes for entity class and props decoration. Class for attributes working
-```sh
+```csharp
 [CheckSum]
 internal class TestNoAuditEntity : PKIntEntity
 {
