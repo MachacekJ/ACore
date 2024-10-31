@@ -6,7 +6,7 @@ using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
 using ACore.Server.Storages.Definitions.EF.MongoStorage;
-using ACore.Server.Storages.Models.SaveInfo;
+using ACore.Server.Storages.Models.EntityEvent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -25,23 +25,23 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
   
   public DbSet<AuditMongoEntity> Audits { get; set; }
 
-  public async Task SaveAuditAsync(SaveInfoItem saveInfoItem)
+  public async Task SaveAuditAsync(EntityEventItem entityEventItem)
   {
-    if (saveInfoItem.IsAuditable == false || !saveInfoItem.ChangedColumns.Any())
+    if (entityEventItem.IsAuditable == false || !entityEventItem.ChangedColumns.Any())
       return;
 
     var auditEntity = new AuditMongoEntity
     {
       Id = PKMongoEntity.NewId,
-      ObjectId = GetObjectId(saveInfoItem.TableName, new ObjectId(saveInfoItem.PkValueString)),
-      Version = saveInfoItem.Version,
+      ObjectId = GetObjectId(entityEventItem.TableName, new ObjectId(entityEventItem.PkValueString)),
+      Version = entityEventItem.Version,
       User = new AuditMongoUserEntity
       {
-        Id = saveInfoItem.UserId
+        Id = entityEventItem.UserId
       },
-      EntityState = saveInfoItem.EntityState,
+      EntityState = entityEventItem.EntityState,
       Created = DateTime.UtcNow,
-      Columns = saveInfoItem.ChangedColumns.Where(e => e.IsAuditable).Select(e => new AuditMongoValueEntity
+      Columns = entityEventItem.ChangedColumns.Where(e => e.IsAuditable).Select(e => new AuditMongoValueEntity
       {
         PropName = e.PropName,
         Property = e.ColumnName,

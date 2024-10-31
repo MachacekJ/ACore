@@ -1,5 +1,6 @@
 ﻿using ACore.Base.CQRS.Results;
 using ACore.Server.Storages.CQRS.Handlers;
+using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
@@ -11,13 +12,13 @@ internal class TestPKGuidSaveHandler(IStorageResolver storageResolver)
 {
   public override async Task<Result> Handle(TestPKGuidSaveCommand request, CancellationToken cancellationToken)
   {
-    return await StorageEntityAction((storage) =>
+    return await StorageEntityParallelAction((storage) =>
     {
       switch (storage)
       {
         case TestModuleSqlStorageImpl:
           var en = TestPKGuidEntity.Create(request.Data);
-          return new StorageEntityExecutor<TestPKGuidEntity>(en, storage, storage.SaveTestEntity<TestPKGuidEntity, Guid>(en));
+          return new StorageEntityExecutorItem<TestPKGuidEntity>(en, storage, storage.SaveTestEntity<TestPKGuidEntity, Guid>(en));
         default:
           throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }

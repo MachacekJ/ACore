@@ -1,9 +1,9 @@
 ﻿using ACore.Base.CQRS.Results;
-using ACore.Server.Storages.Models.SaveInfo;
+using ACore.Server.Storages.Models.EntityEvent;
 
 namespace ACore.Server.Modules.AuditModule.CQRS.AuditSave;
 
-public class AuditSaveCommand(SaveInfoItem saveInfoItem) : AuditModuleRequest<Result>
+public class AuditSaveCommand(EntityEventItem entityEventItem) : AuditModuleRequest<Result>
 {
-  public SaveInfoItem SaveInfoItem => saveInfoItem;
+  public EntityEventItem EntityEventItem => entityEventItem;
 }

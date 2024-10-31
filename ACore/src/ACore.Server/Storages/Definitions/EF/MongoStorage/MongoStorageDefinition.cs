@@ -17,7 +17,7 @@ public class MongoStorageDefinition : EFStorageDefinition
   public override string DataAnnotationTableNameKey => "Mongo:CollectionName";
   public override bool IsTransactionEnabled => false;
 
-  public override async Task<bool> DatabaseIsInit<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
+  public override async Task<bool> DatabaseHasFirstUp<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
   {
     var ext = options.FindExtension<MongoOptionsExtension>() ?? throw new Exception($"{nameof(MongoOptionsExtension)} has not been found in extensions.");
     var connectionString = ext.ConnectionString;

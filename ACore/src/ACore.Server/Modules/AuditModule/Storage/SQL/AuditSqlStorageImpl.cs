@@ -3,12 +3,13 @@ using ACore.Base.Cache;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.AuditModule.Models;
+using ACore.Server.Modules.AuditModule.Storage.Extensions;
 using ACore.Server.Modules.AuditModule.Storage.Helpers;
 using ACore.Server.Modules.AuditModule.Storage.SQL.Models;
 using ACore.Server.Storages;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Scripts;
-using ACore.Server.Storages.Models.SaveInfo;
+using ACore.Server.Storages.Models.EntityEvent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -82,24 +83,24 @@ internal abstract class AuditSqlStorageImpl(DbContextOptions options, IMediator 
     return res.ToArray();
   }
 
-  public async Task SaveAuditAsync(SaveInfoItem saveInfoItem)
+  public async Task SaveAuditAsync(EntityEventItem entityEventItem)
   {
-    if (saveInfoItem.IsAuditable == false || !saveInfoItem.ChangedColumns.Any())
+    if (entityEventItem.IsAuditable == false || !entityEventItem.ChangedColumns.Any())
       return;
 
-    var auditTableId = await AuditTableId(saveInfoItem.TableName, saveInfoItem.SchemaName, saveInfoItem.Version);
+    var auditTableId = await AuditTableId(entityEventItem.TableName, entityEventItem.SchemaName, entityEventItem.Version);
     var auditEntity = new AuditEntity
     {
       AuditTableId = auditTableId,
-      PKValue = saveInfoItem.PkValue,
-      PKValueString = saveInfoItem.PkValueString,
-      AuditUserId = await GetAuditUserIdAsync(saveInfoItem.UserId),
+      PKValue = entityEventItem.PkValue,
+      PKValueString = entityEventItem.PkValueString,
+      AuditUserId = await GetAuditUserIdAsync(entityEventItem.UserId),
       DateTime = DateTime.UtcNow,
-      EntityState = saveInfoItem.EntityState,
+      EntityState = entityEventItem.EntityState,
       AuditValues = new ObservableCollectionListSource<AuditValueEntity>()
     };
 
-    var auditableColumns = saveInfoItem.ChangedColumns.Where(e => e.IsAuditable).ToImmutableArray();
+    var auditableColumns = entityEventItem.ChangedColumns.Where(e => e.IsAuditable).ToImmutableArray();
     var auditColumnIds = await AuditColumnId(auditTableId, auditableColumns);
     foreach (var value in auditableColumns)
     {
@@ -169,7 +170,7 @@ internal abstract class AuditSqlStorageImpl(DbContextOptions options, IMediator 
     return tableEntity.Id;
   }
 
-  private async Task<Dictionary<string, int>> AuditColumnId(int tableId, IEnumerable<SaveInfoColumnItem> columns)
+  private async Task<Dictionary<string, int>> AuditColumnId(int tableId, IEnumerable<EntityEventColumnItem> columns)
   {
     var keyCache = AuditColumnCacheKey(tableId);
     var res = new Dictionary<string, int>();

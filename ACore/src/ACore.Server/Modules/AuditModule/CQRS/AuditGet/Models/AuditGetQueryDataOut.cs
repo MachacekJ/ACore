@@ -1,5 +1,5 @@
 using ACore.Server.Modules.AuditModule.Models;
-using ACore.Server.Storages.Models.SaveInfo;
+using ACore.Server.Storages.Models.EntityEvent;
 
 namespace ACore.Server.Modules.AuditModule.CQRS.AuditGet.Models;
 
@@ -28,13 +28,13 @@ public static class AuditGetQueryDataOutExtensions
     return auditValueData.Columns.SingleOrDefault(e => e.ColumnName == columnName);
   }
 
-  public static AuditInfoStateEnum ToAuditStateEnum(this SaveInfoStateEnum entityState)
+  public static AuditInfoStateEnum ToAuditStateEnum(this EntityEventEnum entityState)
   {
     return entityState switch
     {
-      SaveInfoStateEnum.Added => AuditInfoStateEnum.Added,
-      SaveInfoStateEnum.Deleted => AuditInfoStateEnum.Deleted,
-      SaveInfoStateEnum.Modified => AuditInfoStateEnum.Modified,
+      EntityEventEnum.Added => AuditInfoStateEnum.Added,
+      EntityEventEnum.Deleted => AuditInfoStateEnum.Deleted,
+      EntityEventEnum.Modified => AuditInfoStateEnum.Modified,
       _ => throw new ArgumentOutOfRangeException(nameof(entityState), entityState, null)
     };
   }

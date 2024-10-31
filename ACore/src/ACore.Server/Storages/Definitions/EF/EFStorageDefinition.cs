@@ -26,7 +26,10 @@ public abstract class EFStorageDefinition : StorageDefinition
   /// </summary>
   public abstract bool IsTransactionEnabled { get; }
 
-  public abstract Task<bool> DatabaseIsInit<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
+  /// <summary>
+  /// Is database after first schema up. e.g. I cannot save audit information about change data in setting table, before audit database tables are created.  
+  /// </summary>
+  public abstract Task<bool> DatabaseHasFirstUp<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
     where T : DbContext;
 
   /// <summary>
@@ -42,7 +45,7 @@ public abstract class EFStorageDefinition : StorageDefinition
   protected virtual long CreatePKLong<TEntity, TPK>(DbSet<TEntity> dbSet)
     where TEntity : PKEntity<TPK>
     => PKLongEntity.NewId;
-
+  
   protected virtual Guid CreatePKGuid<TEntity, TPK>()
     where TEntity : PKEntity<TPK>
     => PKGuidEntity.NewId;
@@ -51,6 +54,9 @@ public abstract class EFStorageDefinition : StorageDefinition
     where TEntity : PKEntity<TPK>
     => PKStringEntity.NewId;
 
+  /// <summary>
+  /// Primary key for mongo db
+  /// </summary>
   protected abstract ObjectId CreatePKObjectId<TEntity, TPK>()
     where TEntity : PKEntity<TPK>;
 

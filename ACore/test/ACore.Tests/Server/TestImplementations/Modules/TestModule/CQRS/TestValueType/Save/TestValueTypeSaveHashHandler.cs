@@ -1,5 +1,6 @@
 ﻿using ACore.Base.CQRS.Results;
 using ACore.Server.Storages.CQRS.Handlers;
+using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL;
@@ -12,16 +13,16 @@ internal class TestValueTypeSaveHashHandler<TPK>(IStorageResolver storageResolve
 {
   public override async Task<Result> Handle(TestValueTypeSaveCommand<TPK> request, CancellationToken cancellationToken)
   {
-    return await StorageEntityAction((storage) =>
+    return await StorageEntityParallelAction((storage) =>
     {
       switch (storage)
       {
         case TestModuleMongoStorageImpl:
           var enMongo = Storages.Mongo.Models.TestValueTypeEntity.Create(request.Data);
-          return new StorageEntityExecutor(enMongo, storage, storage.SaveTestEntity<Storages.Mongo.Models.TestValueTypeEntity, ObjectId>(enMongo));
+          return new StorageEntityExecutorItem(enMongo, storage, storage.SaveTestEntity<Storages.Mongo.Models.TestValueTypeEntity, ObjectId>(enMongo));
         case TestModuleSqlStorageImpl:
           var en = TestValueTypeEntity.Create(request.Data);
-          return new StorageEntityExecutor(en, storage, storage.SaveTestEntity<TestValueTypeEntity, int>(en));
+          return new StorageEntityExecutorItem(en, storage, storage.SaveTestEntity<TestValueTypeEntity, int>(en));
         default:
           throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }

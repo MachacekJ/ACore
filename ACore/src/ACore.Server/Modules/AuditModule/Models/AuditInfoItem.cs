@@ -1,4 +1,4 @@
-﻿using ACore.Server.Storages.Models.SaveInfo;
+﻿using ACore.Server.Storages.Models.EntityEvent;
 using MongoDB.Bson;
 
 namespace ACore.Server.Modules.AuditModule.Models;
@@ -10,13 +10,13 @@ public class AuditInfoItem
   public string? SchemaName { get; }
   public int Version { get; }
   public List<AuditInfoColumnItem> Columns { get; set; } = [];
-  public SaveInfoStateEnum EntityState { get; private set; }
+  public EntityEventEnum EntityState { get; private set; }
   public string UserId { get; private set; }
   public long? PkValue { get; private set; }
   public string? PkValueString { get; set; }
   public DateTime Created { get; set; }
 
-  public AuditInfoItem(string tableName, string? schemaName, int version, object pkValue, SaveInfoStateEnum entityState, string userId)
+  public AuditInfoItem(string tableName, string? schemaName, int version, object pkValue, EntityEventEnum entityState, string userId)
   {
     IsAuditable = false;
     TableName = tableName;

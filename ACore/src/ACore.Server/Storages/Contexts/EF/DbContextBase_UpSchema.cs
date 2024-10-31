@@ -10,7 +10,7 @@ namespace ACore.Server.Storages.Contexts.EF;
 
 public abstract partial class DbContextBase
 {
-  private bool _isDatabaseInit = false;
+  private bool _isDatabaseInit;
  // private string StorageVersionBaseSettingKey => $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageDefinition.Type)}_{nameof(ISettingsDbModuleStorage)}";
   private string StorageVersionKey => $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageDefinition.Type)}_{ModuleName}";
 
@@ -21,7 +21,7 @@ public abstract partial class DbContextBase
     var lastVersion = new Version("0.0.0.0");
 
     // Get the latest implemented version, if any.
-    _isDatabaseInit = await EFStorageDefinition.DatabaseIsInit(this, _options, mediator, Logger);
+    _isDatabaseInit = await EFStorageDefinition.DatabaseHasFirstUp(this, _options, mediator, Logger);
     if (!_isDatabaseInit)
     {
       var ver = await mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionKey));

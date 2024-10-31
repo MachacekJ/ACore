@@ -11,6 +11,6 @@ public abstract class SettingsDbModuleRequestHandler<TRequest, TResponse>(IStora
   where TRequest : IRequest<TResponse>
   where TResponse : Result
 {
-  protected Task<Result> StorageAction(Func<ISettingsDbModuleStorage, StorageExecutor> executor)
-    => base.StorageAction(executor);
+  protected Task<Result> StorageAction(Func<ISettingsDbModuleStorage, StorageExecutorItem> executor)
+    => base.StorageParallelAction(executor);
 }

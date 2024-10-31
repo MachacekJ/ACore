@@ -3,7 +3,7 @@ using ACore.Extensions;
 using ACore.Server.Modules.ICAMModule.CQRS.ICAMGetCurrentUser;
 using ACore.Server.Modules.ICAMModule.Models;
 using ACore.Server.Storages.CQRS.Notifications;
-using ACore.Server.Storages.Models.SaveInfo;
+using ACore.Server.Storages.Models.EntityEvent;
 using ACore.UnitTests.Server.Storages.Contexts.EF.FakeClasses;
 using ACore.UnitTests.TestImplementations;
 using FluentAssertions;
@@ -36,22 +36,22 @@ public class DbContextBaseTests
     allNotifications.Should().ContainSingle();
 
     var notification = allNotifications.Single();
-    notification.Should().BeOfType<EntitySaveNotification>();
+    notification.Should().BeOfType<EntityEventNotification>();
 
-    var entitySaveNotification = notification as EntitySaveNotification;
+    var entitySaveNotification = notification as EntityEventNotification;
     entitySaveNotification.Should().NotBeNull();
-    entitySaveNotification?.SaveInfo.EntityState.Should().Be(SaveInfoStateEnum.Added);
-    entitySaveNotification?.SaveInfo.IsAuditable.Should().BeFalse();
-    entitySaveNotification?.SaveInfo.Version.Should().Be(0);
-    entitySaveNotification?.SaveInfo.TableName.Should().Be(nameof(FakeLongEntity));
-    entitySaveNotification?.SaveInfo.SchemaName.Should().BeNull();
-    entitySaveNotification?.SaveInfo.PkValue.Should().Be(1);
-    entitySaveNotification?.SaveInfo.PkValueString.Should().BeNull();
-    entitySaveNotification?.SaveInfo.UserId.Should().Be(_fakeUser.ToString());
+    entitySaveNotification?.EntityEvent.EntityState.Should().Be(EntityEventEnum.Added);
+    entitySaveNotification?.EntityEvent.IsAuditable.Should().BeFalse();
+    entitySaveNotification?.EntityEvent.Version.Should().Be(0);
+    entitySaveNotification?.EntityEvent.TableName.Should().Be(nameof(FakeLongEntity));
+    entitySaveNotification?.EntityEvent.SchemaName.Should().BeNull();
+    entitySaveNotification?.EntityEvent.PkValue.Should().Be(1);
+    entitySaveNotification?.EntityEvent.PkValueString.Should().BeNull();
+    entitySaveNotification?.EntityEvent.UserId.Should().Be(_fakeUser.ToString());
 
-    entitySaveNotification?.SaveInfo.ChangedColumns.Should().HaveCount(2);
+    entitySaveNotification?.EntityEvent.ChangedColumns.Should().HaveCount(2);
 
-    var idProp = entitySaveNotification?.SaveInfo.ChangedColumns.FirstOrDefault(e => e.PropName == nameof(FakeLongEntity.Id));
+    var idProp = entitySaveNotification?.EntityEvent.ChangedColumns.FirstOrDefault(e => e.PropName == nameof(FakeLongEntity.Id));
     idProp.Should().NotBeNull();
     idProp?.ColumnName.Should().Be(nameof(FakeLongEntity.Id));
     idProp?.IsChanged.Should().BeTrue();
@@ -60,7 +60,7 @@ public class DbContextBaseTests
     idProp?.NewValue.Should().Be(1);
     idProp?.OldValue.Should().BeNull();
 
-    var prop1Prop = entitySaveNotification?.SaveInfo.ChangedColumns.FirstOrDefault(e => e.PropName == nameof(FakeLongEntity.TestProp));
+    var prop1Prop = entitySaveNotification?.EntityEvent.ChangedColumns.FirstOrDefault(e => e.PropName == nameof(FakeLongEntity.TestProp));
     prop1Prop.Should().NotBeNull();
     prop1Prop?.ColumnName.Should().Be(nameof(FakeLongEntity.TestProp));
     prop1Prop?.IsChanged.Should().BeTrue();
@@ -90,7 +90,7 @@ public class DbContextBaseTests
   private void SetupSaveNotification(Mock<IMediator> mediator, List<INotification>? notifications = null)
   {
     mediator
-      .Setup(i => i.Publish(It.IsAny<EntitySaveNotification>(), It.IsAny<CancellationToken>()))
+      .Setup(i => i.Publish(It.IsAny<EntityEventNotification>(), It.IsAny<CancellationToken>()))
       .Callback<INotification, CancellationToken>((notification, _) => { notifications?.Add(notification); });
   }
 }

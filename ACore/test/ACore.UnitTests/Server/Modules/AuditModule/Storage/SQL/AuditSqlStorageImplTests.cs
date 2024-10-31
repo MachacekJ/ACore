@@ -6,7 +6,7 @@ using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.AuditModule.Storage.SQL;
 using ACore.Server.Modules.AuditModule.Storage.SQL.Memory;
 using ACore.Server.Modules.AuditModule.Storage.SQL.Models;
-using ACore.Server.Storages.Models.SaveInfo;
+using ACore.Server.Storages.Models.EntityEvent;
 using ACore.UnitTests.Server.Modules.AuditModule.Storage.SQL.FakeClasses;
 using ACore.UnitTests.TestImplementations;
 using FluentAssertions;
@@ -175,7 +175,7 @@ public class AuditSqlStorageImplCacheTests
     var cacheQueryCalls = new List<string>();
     var cacheSaveCalls = new List<string>();
     var saveInfoItem = CreateSaveInfoItem();
-    saveInfoItem.ChangedColumns.Add(new SaveInfoColumnItem(true, "TestProp3", "TestColumn3", typeof(int).ACoreTypeName(), true, 1, 2));
+    saveInfoItem.ChangedColumns.Add(new EntityEventColumnItem(true, "TestProp3", "TestColumn3", typeof(int).ACoreTypeName(), true, 1, 2));
     var auditColumnEntities = new List<AuditColumnEntity>
     {
       new()
@@ -227,13 +227,13 @@ public class AuditSqlStorageImplCacheTests
     return res;
   }
 
-  private SaveInfoItem CreateSaveInfoItem()
-    => new(true, FakeTableName, null, 1, 1, SaveInfoStateEnum.Added, FakeUserName)
+  private EntityEventItem CreateSaveInfoItem()
+    => new(true, FakeTableName, null, 1, 1, EntityEventEnum.Added, FakeUserName)
     {
       ChangedColumns =
       [
-        new SaveInfoColumnItem(true, "TestProp1", "TestColumn1", typeof(int).ACoreTypeName(), true, 1, 2),
-        new SaveInfoColumnItem(true, "TestProp2", "TestColumn2", typeof(int).ACoreTypeName(), true, 1, 2),
+        new EntityEventColumnItem(true, "TestProp1", "TestColumn1", typeof(int).ACoreTypeName(), true, 1, 2),
+        new EntityEventColumnItem(true, "TestProp2", "TestColumn2", typeof(int).ACoreTypeName(), true, 1, 2),
       ]
     };
 
@@ -272,12 +272,12 @@ public class AuditSqlStorageImplCacheTests
       .ReturnsAsync(() => result);
   }
 
-  private void EntityAsserts(AuditSqlStorageImpl auditSqlStorageImplAsSut, SaveInfoItem saveInfoItem)
+  private void EntityAsserts(AuditSqlStorageImpl auditSqlStorageImplAsSut, EntityEventItem entityEventItem)
   {
     auditSqlStorageImplAsSut.AuditTables.Count().Should().Be(1);
     auditSqlStorageImplAsSut.Audits.Count().Should().Be(1);
     auditSqlStorageImplAsSut.AuditUsers.Count().Should().Be(1);
-    auditSqlStorageImplAsSut.AuditColumns.Count().Should().Be(saveInfoItem.ChangedColumns.Count);
+    auditSqlStorageImplAsSut.AuditColumns.Count().Should().Be(entityEventItem.ChangedColumns.Count);
   }
 
   private void TableCacheCallsAssert(IEnumerable<string> cacheQueryCalls, IEnumerable<string> cacheSaveCalls)

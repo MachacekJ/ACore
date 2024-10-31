@@ -21,8 +21,7 @@ public class SettingsDbModuleSqlMemoryStorageImplTests : SettingsDbModuleTestsBa
       await CheckSettingEntity( MemorySettingStorageModule ?? throw new ArgumentNullException($"{nameof(MemorySettingStorageModule)} is null."), Mediator);
     });
   }
-
-
+  
 #pragma warning disable xUnit1013
   private static async Task CheckSettingEntity(ISettingsDbModuleStorage dbModule, IMediator mediator)
 #pragma warning restore xUnit1013

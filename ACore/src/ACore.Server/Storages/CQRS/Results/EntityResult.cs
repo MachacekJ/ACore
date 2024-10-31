@@ -3,15 +3,10 @@ using ACore.Base.CQRS.Results;
 using ACore.Base.CQRS.Results.Models;
 using ACore.Extensions;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
-using ACore.Server.Storages.CQRS.Handlers;
+using ACore.Server.Storages.CQRS.Handlers.Models;
+using ACore.Server.Storages.CQRS.Results.Models;
 
 namespace ACore.Server.Storages.CQRS.Results;
-
-public class EntityResultData(object pk, string? hash = null)
-{
-  public object PK => pk;
-  public string? Hash => hash;
-}
 
 public class EntityResult : Result
 {
@@ -20,7 +15,7 @@ public class EntityResult : Result
   private EntityResult(IDictionary<IStorage, EntityResultData> pkValues) : base(true, ResultErrorItem.None) 
     => ReturnedValues = pkValues.AsReadOnly();
   
-  public static EntityResult SuccessWithEntityData(IEnumerable<StorageEntityExecutor> data, string saltForHash = "")
+  public static EntityResult SuccessWithEntityData(IEnumerable<StorageEntityExecutorItem> data, string saltForHash = "")
   {
     return SuccessWithValues(data.ToDictionary(
       k => k.Storage,

@@ -9,6 +9,6 @@ public class SettingsDbSaveHandler(IStorageResolver storageResolver) : SettingsD
   public override async Task<Result> Handle(SettingsDbSaveCommand request, CancellationToken cancellationToken)
   {
     return await StorageAction((storage)
-      => new StorageExecutor(storage.Setting_SaveAsync(request.Key, request.Value, request.IsSystem)));
+      => new StorageExecutorItem(storage.Setting_SaveAsync(request.Key, request.Value, request.IsSystem)));
   }
 }

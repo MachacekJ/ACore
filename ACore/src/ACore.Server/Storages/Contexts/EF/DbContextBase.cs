@@ -44,8 +44,8 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     if (id == null)
       ArgumentNullException.ThrowIfNull(id);
 
-    var saveInfoHelper = new SaveInfoHelper<TEntity, TPK>(mediator, Model, EFStorageDefinition, newData);
-    await saveInfoHelper.Initialize();
+    var databaseOperationEventHelper = new EntityEventHelper<TEntity, TPK>(mediator, Model, EFStorageDefinition, newData);
+    await databaseOperationEventHelper.Initialize();
 
     var dbSet = GetDbSet<TEntity>();
     var isNew = EFStorageDefinition.IsNew(id);
@@ -70,7 +70,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
           throw new DBConcurrencyException($"Entity '{typeof(TEntity).Name}' with id '{id.ToString()}' has been changed.");
       }
 
-      saveInfoHelper.UpdateDbAction(existsEntity);
+      databaseOperationEventHelper.UpdateEntityAction(existsEntity);
       newData.Adapt(existsEntity);
     }
     else
@@ -102,10 +102,10 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     async Task SaveInternal()
     {
       await SaveChangesAsync();
-      if (isNew) saveInfoHelper.InsertDbAction(existsEntity);
+      if (isNew) databaseOperationEventHelper.AddEntityAction(existsEntity);
 
-      if (saveInfoHelper.SaveInfoItem != null && !_isDatabaseInit)
-        await mediator.Publish(new EntitySaveNotification(saveInfoHelper.SaveInfoItem));
+      if (databaseOperationEventHelper.EntityEventOperationItem != null && !_isDatabaseInit)
+        await mediator.Publish(new EntityEventNotification(databaseOperationEventHelper.EntityEventOperationItem));
     }
   }
 
@@ -116,16 +116,16 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     if (id == null)
       throw new Exception($"{typeof(TEntity).Name}:{id} doesn't exist.");
 
-    var saveInfoHelper = new SaveInfoHelper<TEntity, TPK>(mediator, Model, EFStorageDefinition, entityToDelete);
+    var saveInfoHelper = new EntityEventHelper<TEntity, TPK>(mediator, Model, EFStorageDefinition, entityToDelete);
     await saveInfoHelper.Initialize();
 
     var dbSet = GetDbSet<TEntity>();
     dbSet.Remove(entityToDelete);
 
     await SaveChangesAsync();
-    saveInfoHelper.DeleteDbAction();
-    if (saveInfoHelper.SaveInfoItem != null)
-      await mediator.Publish(new EntitySaveNotification(saveInfoHelper.SaveInfoItem));
+    saveInfoHelper.DeleteEntityAction();
+    if (saveInfoHelper.EntityEventOperationItem != null)
+      await mediator.Publish(new EntityEventNotification(saveInfoHelper.EntityEventOperationItem));
   }
 
   protected void RegisterDbSet<T>(DbSet<T>? dbSet) where T : class
