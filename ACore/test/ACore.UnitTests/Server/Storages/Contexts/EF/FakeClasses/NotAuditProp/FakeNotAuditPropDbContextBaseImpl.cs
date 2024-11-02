@@ -5,13 +5,15 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace ACore.UnitTests.Server.Storages.Contexts.EF.FakeClasses;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-public class FakeDbContextBaseImpl : DbContextBase
+namespace ACore.UnitTests.Server.Storages.Contexts.EF.FakeClasses.NotAuditProp;
+
+public class FakeNotAuditPropDbContextBaseImpl : DbContextBase
 {
-  public DbSet<FakeLongEntity> Fakes { get; set; }
+  public DbSet<FakeNotAuditPropLongEntity> Fakes { get; set; }
   
-  public FakeDbContextBaseImpl(DbContextOptions<FakeDbContextBaseImpl> options, IMediator mediator, ILogger<FakeDbContextBaseImpl> logger) : base(options, mediator, logger)
+  public FakeNotAuditPropDbContextBaseImpl(DbContextOptions<FakeNotAuditPropDbContextBaseImpl> options, IMediator mediator, ILogger<FakeNotAuditPropDbContextBaseImpl> logger) : base(options, mediator, logger)
   {
     RegisterDbSet(Fakes);
   }

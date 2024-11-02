@@ -5,6 +5,9 @@ namespace ACore.UnitTests.Core.Extensions.ObjectExtensions.FakeData;
 public class Fake1Class
 {
   public int? Int { get; set; }
+  public long? Long { get; set; }
+  public short? Short { get; set; }
+  public byte? Byte { get; set; }
   public DateTime? DateTime { get; set; }
   public Guid? Guid { get; set; }
   public byte[]? ByteArr { get; set; }

@@ -109,7 +109,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     }
   }
 
-  protected async Task Delete<TEntity, TPK>(TPK id)
+  protected internal async Task Delete<TEntity, TPK>(TPK id)
     where TEntity : PKEntity<TPK>
   {
     var entityToDelete = await GetEntityById<TEntity, TPK>(id) ?? throw new Exception($"{typeof(TEntity).Name}:{id} doesn't exist.");

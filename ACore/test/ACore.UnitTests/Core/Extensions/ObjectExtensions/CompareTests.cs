@@ -125,6 +125,15 @@ public class CompareTests
     var single = results.SingleOrDefault(e => e.Name == nameof(Fake1Class.Int));
     baseR.Add(single ?? new ComparisonResultData(nameof(Fake1Class.Int), typeof(int?), isChange, null, null));
 
+    single = results.SingleOrDefault(e => e.Name == nameof(Fake1Class.Long));
+    baseR.Add(single ?? new ComparisonResultData(nameof(Fake1Class.Long), typeof(long?), isChange, null, null));
+    
+    single = results.SingleOrDefault(e => e.Name == nameof(Fake1Class.Short));
+    baseR.Add(single ?? new ComparisonResultData(nameof(Fake1Class.Short), typeof(short?), isChange, null, null));
+    
+    single = results.SingleOrDefault(e => e.Name == nameof(Fake1Class.Byte));
+    baseR.Add(single ?? new ComparisonResultData(nameof(Fake1Class.Byte), typeof(byte?), isChange, null, null));
+
     single = results.SingleOrDefault(e => e.Name == nameof(Fake1Class.DateTime));
     baseR.Add(single ?? new ComparisonResultData(nameof(Fake1Class.DateTime), typeof(DateTime?), isChange, null, null));
 
