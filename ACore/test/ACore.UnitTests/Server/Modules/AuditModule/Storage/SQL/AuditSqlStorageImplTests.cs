@@ -1,6 +1,6 @@
-﻿using ACore.Base.Cache;
-using ACore.Base.CQRS.Results;
-using ACore.Extensions;
+﻿using ACore.Extensions;
+using ACore.Models.Cache;
+using ACore.Models.Result;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.AuditModule.Storage.SQL;

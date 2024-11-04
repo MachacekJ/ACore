@@ -3,7 +3,7 @@ using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.PG;
 
 namespace ACore.Tests.Server.Tests.Modules.AuditModule.PG;
 
-public class AuditModulePGStorageTestBase() : AuditModuleTestsBase(StorageTypeEnum.Postgres)
+public class Audit() : AuditModuleTestsBase(StorageTypeEnum.Postgres)
 {
   protected string GetTableName(string entityName)
   {

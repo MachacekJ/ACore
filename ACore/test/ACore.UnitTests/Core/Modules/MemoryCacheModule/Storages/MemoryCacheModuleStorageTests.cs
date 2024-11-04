@@ -1,5 +1,5 @@
-﻿using ACore.Base.Cache;
-using ACore.Configuration;
+﻿using ACore.Configuration;
+using ACore.Models.Cache;
 using ACore.Modules.MemoryCacheModule.Configuration;
 using ACore.Modules.MemoryCacheModule.Storages;
 using ACore.UnitTests.Core.Modules.MemoryCacheModule.FakeClasses;

@@ -2,6 +2,7 @@
 using ACore.Server.Modules.AuditModule.Storage.Helpers;
 using ACore.Server.Modules.AuditModule.Storage.Mongo.Models;
 using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
@@ -24,10 +25,10 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
   
   public DbSet<AuditMongoEntity> Audits { get; set; }
 
-  public async Task SaveAuditAsync(EntityEventItem entityEventItem)
+  public async Task<DatabaseOperationResult> SaveAuditAsync(EntityEventItem entityEventItem)
   {
     if (entityEventItem.IsAuditable == false || !entityEventItem.ChangedColumns.Any())
-      return;
+      return DatabaseOperationResult.Success(DatabaseOperationTypeEnum.Unknown);
 
     var auditEntity = new AuditMongoEntity
     {
@@ -53,6 +54,7 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
 
     await Audits.AddAsync(auditEntity);
     await SaveChangesAsync();
+    return DatabaseOperationResult.Success(DatabaseOperationTypeEnum.Added);
   }
 
   public async Task<AuditInfoItem[]> AuditItemsAsync<TPK>(string collectionName, TPK pkValue, string? schemaName = null)

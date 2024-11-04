@@ -1,4 +1,4 @@
-﻿using ACore.Base.CQRS.Results;
+﻿using ACore.Models.Result;
 using ACore.Server.Modules.AuditModule.Storage;
 using ACore.Server.Storages.CQRS.Handlers;
 using ACore.Server.Storages.Services.StorageResolvers;

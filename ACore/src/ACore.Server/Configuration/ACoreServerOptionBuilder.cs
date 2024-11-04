@@ -34,7 +34,7 @@ public class ACoreServerOptionBuilder
     return this;
   }
 
-  public ACoreServerOptionBuilder AddAuditModule(Action<AuditModuleOptionsBuilder>? action)
+  public ACoreServerOptionBuilder AddAuditModule(Action<AuditModuleOptionsBuilder>? action = null)
   {
     action?.Invoke(_auditModuleOptionsBuilder);
     _settingsDbModuleOptionsBuilder.Activate();

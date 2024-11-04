@@ -1,5 +1,4 @@
-﻿using ACore.Base.CQRS.Results;
-using ACore.Server.Storages.CQRS.Handlers;
+﻿using ACore.Models.Result;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL;
@@ -12,15 +11,13 @@ internal class TestNoAuditSaveHandler(IStorageResolver storageResolver, IMediato
 {
   public override async Task<Result> Handle(TestNoAuditSaveCommand request, CancellationToken cancellationToken)
   {
-    // var saltForHash = (await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt), cancellationToken)).ResultValue
-    //                   ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
     return await StorageEntityParallelAction((storage) =>
     {
       switch (storage)
       {
         case TestModuleSqlStorageImpl:
           var en = TestNoAuditEntity.Create(request.Data);
-          return new StorageEntityExecutorItem<TestNoAuditEntity>(en, storage, storage.SaveTestEntity<TestNoAuditEntity, int>(en, request.Hash));
+          return new StorageEntityExecutorItem<TestNoAuditEntity>(en, storage, storage.SaveTestEntity<TestNoAuditEntity, int>(en, request.SumHash));
         default:
           throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }

@@ -1,13 +1,14 @@
-﻿using ACore.Base.CQRS.Pipelines;
-using ACore.Base.CQRS.Pipelines.Models;
-using ACore.Base.CQRS.Results;
-using ACore.Base.CQRS.Results.Models;
+﻿using ACore.CQRS.Pipelines;
+using ACore.CQRS.Pipelines.Models;
+using ACore.CQRS.Results;
+using ACore.CQRS.Results.Models;
+using ACore.Models.Result;
 using ACore.UnitTests.Core.Base.CQRS.Pipelines.FakeClasses;
 using ACore.UnitTests.TestImplementations;
 using FluentAssertions;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
-using ValidationResult = ACore.Base.CQRS.Results.ValidationResult;
+using ValidationResult = ACore.CQRS.Results.ValidationResult;
 
 namespace ACore.UnitTests.Core.Base.CQRS.Pipelines;
 

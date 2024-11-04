@@ -9,7 +9,7 @@ namespace ACore.Tests.Server.Tests.Modules.AuditModule.PG;
 /// <summary>
 /// Test audit items when entity class contains audit attributes.
 /// </summary>
-public class AuditModulePGStorageTestBaseTests : AuditModulePGStorageTestBase
+public class AuditTests : Audit
 {
   [Fact]
   public async Task NoAuditTest()

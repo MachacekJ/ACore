@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ACore.Server.Storages.Attributes;
+using ACore.Attributes;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Models;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
 
-[CheckSum]
+[SumHash]
 internal class TestNoAuditEntity : PKIntEntity
 {
   [MaxLength(200)]

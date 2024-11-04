@@ -10,9 +10,7 @@ public class AuditModuleTestsBase(StorageTypeEnum st) : StorageTestsBase(st)
   protected override void SetupACoreServer(ACoreServerOptionBuilder builder)
   {
     base.SetupACoreServer(builder);
-    builder.AddAuditModule(a =>
-    {
-    });
+    builder.AddAuditModule();
   }
 
   protected override void SetupACoreTest(ACoreTestOptionsBuilder builder)

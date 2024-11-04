@@ -1,5 +1,5 @@
-﻿using ACore.Base.Cache;
-using ACore.Base.CQRS.Results;
+﻿using ACore.Models.Cache;
+using ACore.Models.Result;
 
 namespace ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 

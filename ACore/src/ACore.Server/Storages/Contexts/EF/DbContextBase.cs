@@ -1,10 +1,10 @@
-﻿using System.Data;
-using System.Text.Json;
+﻿using System.Text.Json;
+using ACore.Attributes;
 using ACore.Configuration;
 using ACore.Extensions;
 using ACore.Server.Configuration.CQRS.OptionsGet;
-using ACore.Server.Storages.Attributes;
 using ACore.Server.Storages.Contexts.EF.Helpers;
+using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.CQRS.Notifications;
@@ -33,7 +33,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
 
   protected abstract string ModuleName { get; }
 
-  protected internal async Task Save<TEntity, TPK>(TEntity newData, string? hashToCheck = null)
+  protected internal async Task<DatabaseOperationResult> Save<TEntity, TPK>(TEntity newData, string? hashToCheck = null)
     where TEntity : PKEntity<TPK>
   {
     ArgumentNullException.ThrowIfNull(newData);
@@ -49,25 +49,38 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
 
     var dbSet = GetDbSet<TEntity>();
     var isNew = EFStorageDefinition.IsNew(id);
+  
+    var hashIsRequired = newData.GetType().IsSumHashAllowed();
+    var saltForHash = string.Empty;
+    if (hashIsRequired)
+    {
+      // Gets salt from global app settings.
+      saltForHash = (await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt))).ResultValue ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
+      if (string.IsNullOrEmpty(saltForHash))
+        Logger.LogWarning($"Please configure salt for hash. Check application settings and paste hash string to section '{nameof(ACoreOptions)}.{nameof(ACoreOptions.SaltForHash)}'");
+    }
 
     if (!isNew)
     {
-      existsEntity = await GetEntityById<TEntity, TPK>(id) ?? throw new Exception($"{typeof(TEntity).Name}:{id} doesn't exist.");
+      var existsEntityNullable = await GetEntityById<TEntity, TPK>(id);
+      if (existsEntityNullable == null)
+        return DatabaseOperationResult.ErrorEntityNotExists(typeof(TEntity).Name, id.ToString() ?? string.Empty);
+      
+      existsEntity = existsEntityNullable;
+      
       //check db entity concurrency with hash
-      if (newData.GetType().IsHashCheck())
+      if (hashIsRequired)
       {
         if (hashToCheck == null)
-          throw new ArgumentNullException($"For update entity '{typeof(TEntity).Name}:{id}' is required a hash.");
-
-        // Gets salt from global app settings.
-        var saltForHash = (await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt))).ResultValue ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
-
-        if (string.IsNullOrEmpty(saltForHash))
-          Logger.LogWarning($"Please configure salt for hash. Check application settings and paste hash string to section '{nameof(ACoreOptions)}.{nameof(ACoreOptions.SaltForHash)}'");
-
+          throw new ArgumentNullException($"For update entity '{typeof(TEntity).Name}:{id}' is required a checkSum hash.");
+        
         //Check consistency of entity.
-        if (hashToCheck != existsEntity.HashObject(saltForHash))
-          throw new DBConcurrencyException($"Entity '{typeof(TEntity).Name}' with id '{id.ToString()}' has been changed.");
+        if (hashToCheck != existsEntity.GetSumHash(saltForHash))
+          return DatabaseOperationResult.ErrorConcurrency(typeof(TEntity).Name, id.ToString() ?? string.Empty);
+        
+        // Item has not been modified, save doesn't required.
+        if (newData.GetSumHash(saltForHash) == hashToCheck)
+          return DatabaseOperationResult.Success(DatabaseOperationTypeEnum.UnModified, hashToCheck);
       }
 
       databaseOperationEventHelper.UpdateEntityAction(existsEntity);
@@ -97,7 +110,9 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     else
       await SaveInternal();
 
-    return;
+    return DatabaseOperationResult.Success(
+      isNew ? DatabaseOperationTypeEnum.Added : DatabaseOperationTypeEnum.Modified, 
+      hashIsRequired ? existsEntity.GetSumHash(saltForHash): null);
 
     async Task SaveInternal()
     {
@@ -109,7 +124,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     }
   }
 
-  protected internal async Task Delete<TEntity, TPK>(TPK id)
+  protected internal async Task<DatabaseOperationResult> Delete<TEntity, TPK>(TPK id)
     where TEntity : PKEntity<TPK>
   {
     var entityToDelete = await GetEntityById<TEntity, TPK>(id) ?? throw new Exception($"{typeof(TEntity).Name}:{id} doesn't exist.");
@@ -126,6 +141,8 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     saveInfoHelper.DeleteEntityAction();
     if (saveInfoHelper.EntityEventOperationItem != null)
       await mediator.Publish(new EntityEventNotification(saveInfoHelper.EntityEventOperationItem));
+
+    return DatabaseOperationResult.Success(DatabaseOperationTypeEnum.Deleted);
   }
 
   protected void RegisterDbSet<T>(DbSet<T>? dbSet) where T : class

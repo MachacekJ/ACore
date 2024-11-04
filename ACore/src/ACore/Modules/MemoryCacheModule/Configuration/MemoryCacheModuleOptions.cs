@@ -1,5 +1,5 @@
-using ACore.Base.Modules.Configuration;
 using ACore.Configuration.Cache;
+using ACore.Modules.Base.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 

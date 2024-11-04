@@ -1,6 +1,8 @@
-﻿namespace ACore.Server.Storages.CQRS.Handlers.Models;
+﻿using ACore.Server.Storages.Contexts.EF.Models;
 
-public class StorageExecutorItem(Task task)
+namespace ACore.Server.Storages.CQRS.Handlers.Models;
+
+public class StorageExecutorItem(Task<DatabaseOperationResult> task)
 {
-  public Task Task => task;
+  public Task<DatabaseOperationResult> Task => task;
 }

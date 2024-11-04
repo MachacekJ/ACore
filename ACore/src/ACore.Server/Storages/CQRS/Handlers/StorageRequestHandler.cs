@@ -1,5 +1,6 @@
 ﻿using System.Runtime.ExceptionServices;
-using ACore.Base.CQRS.Results;
+using ACore.Models.Result;
+using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.CQRS.Results;
 using ACore.Server.Storages.Services.StorageResolvers;
@@ -16,7 +17,7 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
 {
   public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
-  protected async Task<Result> StorageEntityParallelAction<TStorage>(Func<TStorage, StorageEntityExecutorItem> executor, string hashSalt = "")
+  protected async Task<Result> StorageEntityParallelAction<TStorage>(Func<TStorage, StorageEntityExecutorItem> executor, string sumHashSalt = "")
     where TStorage : IStorage
   {
     var allTask = storageResolver.WriteToStorages<TStorage>()
@@ -25,7 +26,7 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
     await WaitForAllParallelTasks(allTask.OfType<StorageExecutorItem>()
                               ?? throw new ArgumentNullException($"{nameof(allTask)}"));
 
-    return EntityResult.SuccessWithEntityData(allTask, hashSalt);
+    return EntityResult.SuccessWithEntityData(allTask);
   }
   
   protected async Task<Result> StorageParallelAction<TStorage>(Func<TStorage, StorageExecutorItem> executor)
@@ -41,7 +42,7 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
   
   private static async Task WaitForAllParallelTasks(IEnumerable<StorageExecutorItem> allTask)
   {
-    Task? taskSum = null;
+    Task<DatabaseOperationResult[]>? taskSum = null;
     try
     {
       taskSum = Task.WhenAll(allTask.Select(e => e.Task));

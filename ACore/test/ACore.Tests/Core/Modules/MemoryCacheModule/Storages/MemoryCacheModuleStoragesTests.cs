@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using ACore.Base.Cache;
 using ACore.Configuration;
+using ACore.Models.Cache;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

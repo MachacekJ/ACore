@@ -1,4 +1,4 @@
-﻿using ACore.Base.Cache;
+﻿using ACore.Models.Cache;
 
 namespace ACore.Tests.Core.Modules.MemoryCacheModule;
 

@@ -1,3 +1,5 @@
-﻿namespace ACore.Server.Storages.CQRS.Results.Models;
+﻿using ACore.Server.Storages.Contexts.EF.Models;
 
-public record EntityResultData(object PK, string? Hash = null);
+namespace ACore.Server.Storages.CQRS.Results.Models;
+
+public record EntityResultData(object PK, DatabaseOperationResult OperationResult);

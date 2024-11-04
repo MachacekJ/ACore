@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
-using ACore.Base.Cache;
 using ACore.Configuration.Cache;
+using ACore.Models.Cache;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 

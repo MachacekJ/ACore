@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using ACore.Base.Cache;
-using ACore.Base.CQRS.Results;
+using ACore.CQRS.Results;
+using ACore.Models.Cache;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheRemove;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;

@@ -1,4 +1,4 @@
-using ACore.Base.CQRS.Notifications;
+using ACore.CQRS.Notifications;
 using ACore.Server.Modules.AuditModule.CQRS.AuditSave;
 using ACore.Server.Storages.CQRS.Notifications;
 using MediatR;

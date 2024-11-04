@@ -1,4 +1,4 @@
-using ACore.Base.CQRS.Extensions;
+using ACore.CQRS.Extensions;
 using ACore.Server.Configuration;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Configuration;
 using Autofac;

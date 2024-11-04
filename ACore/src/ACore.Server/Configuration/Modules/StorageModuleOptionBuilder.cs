@@ -1,4 +1,4 @@
-using ACore.Base.Modules.Configuration;
+using ACore.Modules.Base.Configuration;
 using ACore.Server.Storages.Configuration;
 
 namespace ACore.Server.Configuration.Modules;

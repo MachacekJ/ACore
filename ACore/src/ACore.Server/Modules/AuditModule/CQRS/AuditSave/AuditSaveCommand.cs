@@ -1,4 +1,4 @@
-﻿using ACore.Base.CQRS.Results;
+﻿using ACore.Models.Result;
 using ACore.Server.Storages.Models.EntityEvent;
 
 namespace ACore.Server.Modules.AuditModule.CQRS.AuditSave;

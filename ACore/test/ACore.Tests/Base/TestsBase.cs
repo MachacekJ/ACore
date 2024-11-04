@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Reflection;
-using ACore.Base.Cache;
 using ACore.Extensions;
+using ACore.Models.Cache;
 using ACore.Tests.Base.Models;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;

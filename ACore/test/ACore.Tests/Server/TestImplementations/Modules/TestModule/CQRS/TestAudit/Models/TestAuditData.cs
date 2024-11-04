@@ -3,9 +3,9 @@ using TestAuditEntity = ACore.Tests.Server.TestImplementations.Modules.TestModul
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Models;
 
-public class TestAuditData<T>
+public class TestAuditData<TPK>
 {
-  public T Id { get; set; } = default(T) ?? throw new Exception($"Cannot create {nameof(Id)} for type {typeof(T).Name}");
+  public TPK Id { get; set; } = default(TPK) ?? throw new Exception($"Cannot create {nameof(Id)} for type {typeof(TPK).Name}");
   public string Name { get; set; } = string.Empty;
 
   public string? NullValue { get; set; }

@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using ACore.Base.Cache;
+using ACore.Models.Cache;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 using ACore.Server.Modules.SettingsDbModule.Storage;
 using ACore.Server.Modules.SettingsDbModule.Storage.SQL.Models;

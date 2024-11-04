@@ -1,4 +1,4 @@
-﻿using ACore.Base.CQRS.Results;
+﻿using ACore.Models.Result;
 using ACore.Server.Storages.Services.StorageResolvers;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Models;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo;

@@ -86,6 +86,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Base\Modules\" />
+	  <Folder Include="Modules\Base\" />
 	</ItemGroup>
 </Project>

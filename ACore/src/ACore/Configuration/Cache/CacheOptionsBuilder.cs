@@ -1,5 +1,5 @@
-using ACore.Base.Cache;
-using ACore.Base.Modules.Configuration;
+using ACore.Models.Cache;
+using ACore.Modules.Base.Configuration;
 
 namespace ACore.Configuration.Cache;
 

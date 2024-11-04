@@ -1,22 +1,31 @@
-﻿using ACore.Base.Cache;
+﻿using ACore.Models.Cache;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheRemove;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.SettingsDbModule.Storage.Mongo.Models;
 using ACore.Server.Storages;
 using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using MongoDB.EntityFrameworkCore.Extensions;
 
 namespace ACore.Server.Modules.SettingsDbModule.Storage.Mongo;
 
-internal class SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModuleMongoStorageImpl> options, IMediator mediator, ILogger<SettingsDbModuleMongoStorageImpl> logger) : DbContextBase(options, mediator, logger), ISettingsDbModuleStorage
+internal class SettingsDbModuleMongoStorageImpl : DbContextBase, ISettingsDbModuleStorage
 {
-  private readonly IMediator _mediator = mediator;
+  private readonly IMediator _mediator;
+
+  public SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModuleMongoStorageImpl> options, IMediator mediator, ILogger<SettingsDbModuleMongoStorageImpl> logger) : base(options, mediator, logger)
+  {
+    _mediator = mediator;
+    RegisterDbSet(Settings);
+  }
+
   private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheMainCategories.Entity, nameof(SettingsPKMongoEntity));
 
   protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();
@@ -31,7 +40,7 @@ internal class SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModul
     => (await GetSettingsAsync(key, isRequired))?.Value;
 
 
-  public async Task Setting_SaveAsync(string key, string value, bool isSystem = false)
+  public async Task<DatabaseOperationResult> Setting_SaveAsync(string key, string value, bool isSystem = false)
   {
     var setting = await Settings.FirstOrDefaultAsync(i => i.Key == key);
     if (setting == null)
@@ -46,11 +55,12 @@ internal class SettingsDbModuleMongoStorageImpl(DbContextOptions<SettingsDbModul
     setting.Value = value;
     setting.IsSystem = isSystem;
 
-    await SaveChangesAsync();
+    var res = await Save<SettingsPKMongoEntity, ObjectId>(setting);
 
     await _mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
+    return res;
   }
-  
+
   private async Task<SettingsPKMongoEntity?> GetSettingsAsync(string key, bool exceptedValue = true)
   {
     List<SettingsPKMongoEntity>? allSettings;

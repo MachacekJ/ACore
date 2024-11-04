@@ -1,4 +1,4 @@
-using ACore.Base.CQRS.Results;
+using ACore.Models.Result;
 using MediatR;
 using Microsoft.Extensions.Options;
 

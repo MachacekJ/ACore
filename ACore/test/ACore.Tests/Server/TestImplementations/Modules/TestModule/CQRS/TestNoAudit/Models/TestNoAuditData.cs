@@ -12,10 +12,10 @@ public class TestNoAuditData(string name)
 
   public DateTime Created { get; set; }
 
-  internal static KeyValuePair<string, TestNoAuditData> Create(TestNoAuditEntity noAuditEntity, string saltForHash)
+  internal static KeyValuePair<string, TestNoAuditData> Create(TestNoAuditEntity noAuditEntity, string saltSumHash)
   {
     var testPKGuidData = noAuditEntity.Adapt<TestNoAuditData>();
-    return new KeyValuePair<string, TestNoAuditData>(noAuditEntity.HashObject(saltForHash), testPKGuidData);
+    return new KeyValuePair<string, TestNoAuditData>(noAuditEntity.GetSumHash(saltSumHash), testPKGuidData);
   }
 
   public static void MapConfig()

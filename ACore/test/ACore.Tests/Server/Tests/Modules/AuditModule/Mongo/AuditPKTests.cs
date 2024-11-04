@@ -11,34 +11,6 @@ namespace ACore.Tests.Server.Tests.Modules.AuditModule.Mongo;
 // ReSharper disable once InconsistentNaming
 public class AuditPKTests : AuditTestsBase
 {
-  // [Fact]
-  // public async Task IntPKTest()
-  // {
-  //   var method = MethodBase.GetCurrentMethod();
-  //   await RunTestAsync(method, async () => { await AuditPKTestHelper.IntPK(Mediator, GetTableName, GetColumnName); });
-  // }
-  //
-  // [Fact]
-  // public async Task LongPKTest()
-  // {
-  //   var method = MethodBase.GetCurrentMethod();
-  //   await RunTestAsync(method, async () => { await AuditPKTestHelper.LongPK(Mediator, GetTableName, GetColumnName); });
-  // }
-  //
-  // [Fact]
-  // public async Task GuidPKTest()
-  // {
-  //   var method = MethodBase.GetCurrentMethod();
-  //   await RunTestAsync(method, async () => { await AuditPKTestHelper.GuidPK(Mediator, GetTableName, GetColumnName); });
-  // }
-  //
-  // [Fact]
-  // public async Task StringPKTest()
-  // {
-  //   var method = MethodBase.GetCurrentMethod();
-  //   await RunTestAsync(method, async () => { await AuditPKTestHelper.StringPK(Mediator, GetTableName, GetColumnName); });
-  // }
-  //
   [Fact]
   public async Task ObjectIdPKNotImplTest()
   {

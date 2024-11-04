@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using ACore.Base.Cache;
+using ACore.Models.Cache;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.AuditModule.Models;
@@ -8,6 +8,7 @@ using ACore.Server.Modules.AuditModule.Storage.Helpers;
 using ACore.Server.Modules.AuditModule.Storage.SQL.Models;
 using ACore.Server.Storages;
 using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Models.EntityEvent;
 using MediatR;
@@ -83,10 +84,10 @@ internal abstract class AuditSqlStorageImpl(DbContextOptions options, IMediator 
     return res.ToArray();
   }
 
-  public async Task SaveAuditAsync(EntityEventItem entityEventItem)
+  public async Task<DatabaseOperationResult> SaveAuditAsync(EntityEventItem entityEventItem)
   {
     if (entityEventItem.IsAuditable == false || !entityEventItem.ChangedColumns.Any())
-      return;
+      return DatabaseOperationResult.Success(DatabaseOperationTypeEnum.UnModified);
 
     var auditTableId = await AuditTableId(entityEventItem.TableName, entityEventItem.SchemaName, entityEventItem.Version);
     var auditEntity = new AuditEntity
@@ -109,6 +110,7 @@ internal abstract class AuditSqlStorageImpl(DbContextOptions options, IMediator 
 
     await Audits.AddAsync(auditEntity);
     await SaveChangesAsync();
+    return DatabaseOperationResult.Success(DatabaseOperationTypeEnum.Added);
   }
 
   private async Task<int> GetAuditUserIdAsync(string userId)

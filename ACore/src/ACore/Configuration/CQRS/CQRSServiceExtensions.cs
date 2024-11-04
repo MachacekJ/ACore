@@ -1,5 +1,5 @@
-﻿using ACore.Base.CQRS.Extensions;
-using ACore.Base.CQRS.Pipelines;
+﻿using ACore.CQRS.Extensions;
+using ACore.CQRS.Pipelines;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;

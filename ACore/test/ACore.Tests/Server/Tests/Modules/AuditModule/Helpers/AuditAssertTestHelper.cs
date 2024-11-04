@@ -1,5 +1,6 @@
-using ACore.Base.CQRS.Results;
+using ACore.CQRS.Results;
 using ACore.Extensions;
+using ACore.Models.Result;
 using ACore.Server.Storages.CQRS.Results;
 using FluentAssertions;
 
@@ -26,7 +27,7 @@ public static class AuditAssertTestHelper
     dbSaveResult.ReturnedValues.Should().HaveCount(1);
     data.Should().HaveCount(1);
 
-    var pk = dbSaveResult.PrimaryKeySingle<TPK>();
+    var pk = dbSaveResult.SinglePrimaryKey<TPK>();
     var pkData = Convert.ChangeType(data.First().PropertyValue("Id"), typeof(TPK));
     pk.Should().Be(pkData);
 

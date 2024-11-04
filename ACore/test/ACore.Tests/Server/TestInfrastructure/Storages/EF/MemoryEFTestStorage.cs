@@ -5,8 +5,6 @@ namespace ACore.Tests.Server.TestInfrastructure.Storages.EF;
 
 public class MemoryEFTestStorage : ITestStorage
 {
- // private readonly IAuditUserProvider _userProvider = TestAuditUserProvider.CreateDefaultUser();
-  
   public void SetupACoreServer(ACoreServerOptionBuilder builder)
   {
     builder.DefaultStorage(storageOptionBuilder => storageOptionBuilder.AddMemoryDb());

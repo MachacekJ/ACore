@@ -1,4 +1,5 @@
 ﻿using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
@@ -27,12 +28,12 @@ internal class TestModuleMongoStorageImpl : DbContextBase, ITestStorageModule
     RegisterDbSet(TestValueTypes);
   }
   
-  public async Task SaveTestEntity<TEntity, TPK>(TEntity data, string? hashToCheck = null)
+  public async Task<DatabaseOperationResult> SaveTestEntity<TEntity, TPK>(TEntity data, string? hashToCheck = null)
     where TEntity : PKEntity<TPK>
     => await Save<TEntity, TPK>(data, hashToCheck);
   
   
-  public async Task DeleteTestEntity<TEntity, TPK>(TPK id)
+  public async Task<DatabaseOperationResult> DeleteTestEntity<TEntity, TPK>(TPK id)
     where TEntity : PKEntity<TPK>
     => await Delete<TEntity, TPK>(id);
 

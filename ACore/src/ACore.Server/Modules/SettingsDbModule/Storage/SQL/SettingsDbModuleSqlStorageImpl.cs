@@ -1,10 +1,11 @@
-﻿using ACore.Base.Cache;
+﻿using ACore.Models.Cache;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheRemove;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.SettingsDbModule.Storage.SQL.Models;
 using ACore.Server.Storages;
 using ACore.Server.Storages.Contexts.EF;
+using ACore.Server.Storages.Contexts.EF.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ internal abstract class SettingsDbModuleSqlStorageImpl : DbContextBase, ISetting
   public async Task<string?> Setting_GetAsync(string key, bool isRequired = true)
     => (await GetSettingsAsync(key, isRequired))?.Value;
 
-  public async Task Setting_SaveAsync(string key, string value, bool isSystem = false)
+  public async Task<DatabaseOperationResult> Setting_SaveAsync(string key, string value, bool isSystem = false)
   {
     var set = await Settings.FirstOrDefaultAsync(i => i.Key == key)
               ?? new SettingsEntity
@@ -35,9 +36,10 @@ internal abstract class SettingsDbModuleSqlStorageImpl : DbContextBase, ISetting
     set.Value = value;
     set.IsSystem = isSystem;
 
-    await Save<SettingsEntity, int>(set);
+    var res =  await Save<SettingsEntity, int>(set);
 
     await _mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
+    return res;
   }
 
   private async Task<SettingsEntity?> GetSettingsAsync(string key, bool exceptedValue = true)

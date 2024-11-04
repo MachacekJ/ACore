@@ -45,7 +45,7 @@ public class PublishTests
     loggerHelper.LogExceptions.Where(e => e.Message == new NotImplementedException().Message).Should().HaveCount(2);
   }
 
-  private static ACore.Base.CQRS.Notifications.ACoreNotificationPublisher CreateNotificationPublisherAsSut()
+  private static ACore.CQRS.Notifications.ACoreNotificationPublisher CreateNotificationPublisherAsSut()
     => new();
 
   private static List<NotificationHandlerExecutor> AllHandlers(ILogger<ThrowNotificationHandler> loggerHelper, bool throwExceptions)

@@ -1,4 +1,4 @@
-using ACore.Base.CQRS.Notifications;
+using ACore.CQRS.Notifications;
 using Microsoft.Extensions.Logging;
 
 namespace ACore.UnitTests.Core.Base.CQRS.Notifications.ACoreNotificationPublisher.FakeClasses;

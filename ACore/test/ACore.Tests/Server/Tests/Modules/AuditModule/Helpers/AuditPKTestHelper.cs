@@ -1,4 +1,4 @@
-using ACore.Base.CQRS.Results;
+using ACore.CQRS.Results;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet.Models;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Get;

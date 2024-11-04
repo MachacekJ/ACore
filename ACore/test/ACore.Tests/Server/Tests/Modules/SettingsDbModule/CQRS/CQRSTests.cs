@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using ACore.Base.CQRS.Results;
+using ACore.CQRS.Results;
 using ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbGet;
 using ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbSave;
 using FluentAssertions;

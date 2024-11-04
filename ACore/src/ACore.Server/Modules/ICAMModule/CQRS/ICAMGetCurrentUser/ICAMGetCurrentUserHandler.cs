@@ -1,4 +1,4 @@
-using ACore.Base.CQRS.Results;
+using ACore.Models.Result;
 using ACore.Server.Configuration;
 using ACore.Server.Modules.ICAMModule.Models;
 using Microsoft.Extensions.Options;

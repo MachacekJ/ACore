@@ -1,5 +1,5 @@
-﻿using ACore.Base.CQRS.Base;
-using ACore.Base.CQRS.Results;
+﻿using ACore.CQRS.Base;
+using ACore.Models.Result;
 using MediatR;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS;
@@ -13,7 +13,7 @@ public class TestModuleRequest<TResponse> : IRequest<TResponse>
 public class TestModuleQueryRequest<TResponse> : HashEntityQueryRequest<TResponse>
   where TResponse : Result;
 
-public class TestModuleCommandRequest<TResponse>(string? hashToCheck) : EntityCommandRequest<TResponse>(hashToCheck)
+public class TestModuleCommandRequest<TResponse>(string? sumHash) : EntityCommandRequest<TResponse>(sumHash)
   where TResponse : Result
 {
   

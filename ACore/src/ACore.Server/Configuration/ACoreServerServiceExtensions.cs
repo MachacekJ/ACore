@@ -1,7 +1,7 @@
-using ACore.Base.CQRS.Extensions;
 using Autofac;
 using ACore.Configuration;
 using ACore.Configuration.CQRS;
+using ACore.CQRS.Extensions;
 using ACore.Server.Configuration.CQRS.OptionsGet;
 using ACore.Server.Modules.AuditModule.Configuration;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet;

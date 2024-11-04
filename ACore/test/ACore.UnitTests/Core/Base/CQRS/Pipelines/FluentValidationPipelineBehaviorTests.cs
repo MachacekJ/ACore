@@ -1,6 +1,7 @@
-﻿using ACore.Base.CQRS.Pipelines;
-using ACore.Base.CQRS.Pipelines.Models;
-using ACore.Base.CQRS.Results;
+﻿using ACore.CQRS.Pipelines;
+using ACore.CQRS.Pipelines.Models;
+using ACore.CQRS.Results;
+using ACore.Models.Result;
 using ACore.UnitTests.Core.Base.CQRS.Pipelines.FakeClasses;
 using FluentAssertions;
 using FluentValidation;
@@ -54,8 +55,8 @@ public class FluentValidationPipelineBehaviorTests
     }, CancellationToken.None);
 
     // Assert
-    response.Should().BeOfType(typeof(ACore.Base.CQRS.Results.ValidationResult));
-    var validationResult = response as ACore.Base.CQRS.Results.ValidationResult ?? throw new Exception();
+    response.Should().BeOfType(typeof(ACore.CQRS.Results.ValidationResult));
+    var validationResult = response as ACore.CQRS.Results.ValidationResult ?? throw new Exception();
     AssertNotSuccess(response, validationResult.ValidationErrors);
 
   }
@@ -92,8 +93,8 @@ public class FluentValidationPipelineBehaviorTests
   {
     response.IsFailure.Should().BeTrue();
     response.IsSuccess.Should().BeFalse();
-    response.ResultErrorItem.Code.Should().Be(ACore.Base.CQRS.Results.ValidationResult.ResultErrorItemValidationInput.Code);
-    response.ResultErrorItem.Message.Should().Be(ACore.Base.CQRS.Results.ValidationResult.ResultErrorItemValidationInput.Message);
+    response.ResultErrorItem.Code.Should().Be(ACore.CQRS.Results.ValidationResult.ResultErrorItemValidationInput.Code);
+    response.ResultErrorItem.Message.Should().Be(ACore.CQRS.Results.ValidationResult.ResultErrorItemValidationInput.Message);
     validationErrors.Should().HaveCount(1);
     validationErrors[0].ValidationFailure.ErrorMessage.Should().Be(FakeErrorMessage);
     validationErrors[0].ValidationFailure.PropertyName.Should().Be(FakeProp);
