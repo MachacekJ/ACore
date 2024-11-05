@@ -90,10 +90,10 @@ public static class AuditCRUDTestHelper
     aCreated.NewValue.Should().Be(TestDateTime);
   }
 
-  public static async Task UpdateItemAsyncTest(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
+  public static async Task UpdateItemAsyncTest<TPK>(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
   {
     // Arrange
-    var item = new TestAuditData<int>
+    var item = new TestAuditData<TPK>
     {
       Created = TestDateTime,
       Name = TestName,
@@ -103,10 +103,10 @@ public static class AuditCRUDTestHelper
     };
 
     // Act.
-    var result = await mediator.Send(new TestAuditSaveCommand<int>(item));
+    var result = await mediator.Send(new TestAuditSaveCommand<TPK>(item));
 
-    var allData = (await mediator.Send(new TestAuditGetQuery<int>())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestAuditData<int>, int>(result, allData);
+    var allData = (await mediator.Send(new TestAuditGetQuery<TPK>())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestAuditData<TPK>, TPK>(result, allData);
 
     item.Id = itemId;
     item.Name = TestNameUpdate;
@@ -114,10 +114,10 @@ public static class AuditCRUDTestHelper
     item.NullValue2 = TestNameUpdate;
 
     // Update
-    await mediator.Send(new TestAuditSaveCommand<int>(item));
+    await mediator.Send(new TestAuditSaveCommand<TPK>(item));
 
     // Assert.
-    var resAuditItems = (await mediator.Send(new AuditGetQuery<int>(getTableName(TestAuditEntityName), itemId))).ResultValue;
+    var resAuditItems = (await mediator.Send(new AuditGetQuery<TPK>(getTableName(TestAuditEntityName), itemId))).ResultValue;
     ArgumentNullException.ThrowIfNull(resAuditItems);
     resAuditItems.Should().HaveCount(2);
     resAuditItems.Last().State.Should().Be(AuditInfoStateEnum.Modified);
@@ -172,10 +172,10 @@ public static class AuditCRUDTestHelper
     aNullValue3.NewValue.Should().BeNull();
   }
 
-  public static async Task UpdateItemWithoutChangesAsyncTest(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
+  public static async Task UpdateItemWithoutChangesAsyncTest<TPK>(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
   {
     // Action.
-    var item = new TestAuditData<int>
+    var item = new TestAuditData<TPK>
     {
       Created = TestDateTime,
       Name = TestName,
@@ -185,18 +185,18 @@ public static class AuditCRUDTestHelper
     };
 
     // Act.
-    var result = await mediator.Send(new TestAuditSaveCommand<int>(item));
+    var result = await mediator.Send(new TestAuditSaveCommand<TPK>(item));
 
-    var allData = (await mediator.Send(new TestAuditGetQuery<int>())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestAuditData<int>, int>(result, allData);
+    var allData = (await mediator.Send(new TestAuditGetQuery<TPK>())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestAuditData<TPK>, TPK>(result, allData);
 
     // Update
     item.Id = itemId;
-    await mediator.Send(new TestAuditSaveCommand<int>(item));
+    await mediator.Send(new TestAuditSaveCommand<TPK>(item));
 
 
     // Assert.
-    var resAuditItems = (await mediator.Send(new AuditGetQuery<int>(getTableName(TestAuditEntityName), itemId))).ResultValue;
+    var resAuditItems = (await mediator.Send(new AuditGetQuery<TPK>(getTableName(TestAuditEntityName), itemId))).ResultValue;
     ArgumentNullException.ThrowIfNull(resAuditItems);
     resAuditItems.Should().HaveCount(2);
     resAuditItems.Last().State.Should().Be(AuditInfoStateEnum.Modified);
@@ -207,10 +207,10 @@ public static class AuditCRUDTestHelper
     auditItem.Columns.All(c => c.IsChange).Should().Be(false);
   }
 
-  public static async Task DeleteItemTest(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
+  public static async Task DeleteItemTest<TPK>(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
   {
     // Arrange.
-    var item = new TestAuditData<int>
+    var item = new TestAuditData<TPK>
     {
       Created = TestDateTime,
       Name = TestName,
@@ -218,17 +218,17 @@ public static class AuditCRUDTestHelper
       NullValue = TestName
     };
 
-    var result = await mediator.Send(new TestAuditSaveCommand<int>(item));
-    var allData = (await mediator.Send(new TestAuditGetQuery<int>())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestAuditData<int>, int>(result, allData);
+    var result = await mediator.Send(new TestAuditSaveCommand<TPK>(item));
+    var allData = (await mediator.Send(new TestAuditGetQuery<TPK>())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestAuditData<TPK>, TPK>(result, allData);
 
     // Action.
-    var resultDelete = await mediator.Send(new TestAuditDeleteCommand<int>(itemId));
+    var resultDelete = await mediator.Send(new TestAuditDeleteCommand<TPK>(itemId));
 
     // Assert.
     resultDelete.IsSuccess.Should().BeTrue();
 
-    var resAuditItems = (await mediator.Send(new AuditGetQuery<int>(getTableName(TestAuditEntityName), itemId))).ResultValue;
+    var resAuditItems = (await mediator.Send(new AuditGetQuery<TPK>(getTableName(TestAuditEntityName), itemId))).ResultValue;
     ArgumentNullException.ThrowIfNull(resAuditItems);
     resAuditItems.Should().HaveCount(2);
     resAuditItems.Last().State.Should().Be(AuditInfoStateEnum.Deleted);

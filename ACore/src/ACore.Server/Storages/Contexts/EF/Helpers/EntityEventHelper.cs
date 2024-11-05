@@ -7,6 +7,7 @@ using ACore.Server.Storages.Models.EntityEvent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using MongoDB.Bson;
 
 namespace ACore.Server.Storages.Contexts.EF.Helpers;
 
@@ -56,7 +57,13 @@ public class EntityEventHelper<TEntity, TPK>(IMediator mediator, IModel model, E
 
     ArgumentNullException.ThrowIfNull(_dbEntityType);
 
-    var diff = oldData.Compare(initData);
+    var diff = oldData.Compare(initData, (leftValue, rightValue) =>
+    {
+      if (rightValue is ObjectId enumRight && leftValue is ObjectId enumLeft)
+        return !enumRight.Equals(enumLeft);
+      return null;
+    });
+
     foreach (var d in diff)
     {
       var colName = GetColumnName<TEntity>(d.Name, _dbEntityType);
@@ -83,7 +90,7 @@ public class EntityEventHelper<TEntity, TPK>(IMediator mediator, IModel model, E
 
     EntityEventOperationItem.SetEntityState(EntityEventEnum.Deleted);
   }
-  
+
   private string? GetTableName(IReadOnlyEntityType dbEntityType)
   {
     var tableName = dbEntityType.GetTableName();
@@ -105,7 +112,7 @@ public class EntityEventHelper<TEntity, TPK>(IMediator mediator, IModel model, E
     ArgumentNullException.ThrowIfNull(user.ResultValue);
     return user.ResultValue.ToString();
   }
-  
+
   private (string Name, bool IsAuditable) GetColumnName<T>(string propName, IEntityType dbEntityType)
   {
     if (propName.StartsWith('.'))
@@ -125,7 +132,7 @@ public class EntityEventHelper<TEntity, TPK>(IMediator mediator, IModel model, E
     columnName = property.GetColumnName();
     if (string.IsNullOrEmpty(storageDefinition.DataAnnotationColumnNameKey))
       return (columnName, isAuditable);
-    
+
     var anno = property.GetAnnotations().FirstOrDefault(e => e.Name == storageDefinition.DataAnnotationColumnNameKey);
     if (anno != null)
       columnName = anno.Value?.ToString() ?? throw new Exception($"Annotation '{storageDefinition.DataAnnotationColumnNameKey}' has not been found for property '{propName}'");

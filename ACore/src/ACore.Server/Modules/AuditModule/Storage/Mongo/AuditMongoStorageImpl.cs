@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.EntityFrameworkCore.Extensions;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace ACore.Server.Modules.AuditModule.Storage.Mongo;
@@ -22,7 +23,7 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
   protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();
   protected override EFStorageDefinition EFStorageDefinition => new MongoStorageDefinition();
   protected override string ModuleName => nameof(IAuditStorageModule);
-  
+
   public DbSet<AuditMongoEntity> Audits { get; set; }
 
   public async Task<DatabaseOperationResult> SaveAuditAsync(EntityEventItem entityEventItem)
@@ -47,8 +48,8 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
         Property = e.ColumnName,
         DataType = e.DataType,
         IsChanged = e.IsChanged,
-        NewValue = e.NewValue.ToAuditValue(),
-        OldValue = e.OldValue.ToAuditValue(),
+        NewValue = e.IsChanged ? e.NewValue.ToAuditValue() : null,
+        OldValue = e.OldValue.ToAuditValue()
       }).ToList()
     };
 

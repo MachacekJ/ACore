@@ -11,13 +11,15 @@ public static class ObjectExtensions
   private static PropertyInfo? GetProperty(this object self, string propertyName)
     => self.GetType().GetProperty(propertyName);
 
-  public static ComparisonResultData[] Compare<T>(this T leftObj, T? rightObj, string? parentName = null)
+  /// <summary>
+  /// customCompare is not null e.g. Bson.ObjectId namespace is not registered in <see cref="ACore"/> but I need to compare it from server where is registered.
+  /// </summary>
+  public static ComparisonResultData[] Compare<T>(this T leftObj, T? rightObj, Func<object, object, bool?>? customCompare = null, string? parentName = null)
     where T : class
   {
     var results = new List<ComparisonResultData>();
     var rightProperties = rightObj == null ? null : GetProperties(rightObj);
     var leftProperties = GetProperties(leftObj);
-
 
     foreach (var leftProperty in leftProperties)
     {
@@ -43,7 +45,7 @@ public static class ObjectExtensions
                        || (rightValue != null && leftValue == null);
 
         if (!isChange && rightValue != null && leftValue != null)
-          isChange = CompareValue(leftValue, rightValue);
+          isChange = CompareValue(leftValue, rightValue, customCompare);
 
         results.Add(new ComparisonResultData(leftProperty.Name, leftProperty.PropertyType, isChange, leftValue, rightValue));
         break;
@@ -53,8 +55,12 @@ public static class ObjectExtensions
     return results.ToArray();
   }
 
-  private static bool CompareValue(object leftValue, object rightValue)
+  private static bool CompareValue(object leftValue, object rightValue, Func<object, object, bool?>? customCompare = null)
   {
+    var res = customCompare?.Invoke(leftValue, rightValue);
+    if (res != null)
+      return res.Value;
+
     bool isChange;
     if (rightValue is byte[] enumRight && leftValue is byte[] enumLeft)
       isChange = !enumRight.SequenceEqual(enumLeft);

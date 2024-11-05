@@ -30,14 +30,14 @@ public class AuditTests : AuditTestsBase
   public async Task UpdateItemTest()
   {
     var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemAsyncTest(Mediator, GetTableName, GetColumnName); });
+    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemAsyncTest<ObjectId>(Mediator, GetTableName, GetColumnName); });
   }
   
   [Fact]
   public async Task UpdateItemWithoutChangesTest()
   {
     var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemWithoutChangesAsyncTest(Mediator, GetTableName, GetColumnName); });
+    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemWithoutChangesAsyncTest<ObjectId>(Mediator, GetTableName, GetColumnName); });
   }
   
   
@@ -45,6 +45,6 @@ public class AuditTests : AuditTestsBase
   public async Task DeleteItemTest()
   {
     var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.DeleteItemTest(Mediator, GetTableName, GetColumnName); });
+    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.DeleteItemTest<ObjectId>(Mediator, GetTableName, GetColumnName); });
   }
 }

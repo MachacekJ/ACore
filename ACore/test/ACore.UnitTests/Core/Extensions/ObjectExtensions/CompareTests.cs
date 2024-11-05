@@ -29,6 +29,41 @@ public class CompareTests
     }
   }
 
+  /// <summary>
+  /// Usecase - Bson.ObjectId namespace is not registered in <see cref="ACore"/> but I need to compare it from server where is registered.
+  /// </summary>
+  [Fact]
+  public void CustomCompare()
+  {
+    var cc = new ComparisonResultData(nameof(Fake1Class.MongoId), typeof(ObjectId?), false,
+      new ObjectId(_testObjectId.ToByteArray()),
+      new ObjectId(_testObjectId.ToByteArray()));
+    var expectedResults = BaseComparisionWithEx([cc], false);
+    // Arrange
+    var oldObject = new Fake1Class
+    {
+      MongoId = new ObjectId(_testObjectId.ToByteArray())
+    };
+    var newObject = new Fake1Class
+    {
+      MongoId = new ObjectId(_testObjectId.ToByteArray())
+    };
+
+    // Act
+    var res = oldObject.Compare(newObject, (leftValue, rightValue) =>
+    {
+      if (rightValue is ObjectId enumRight && leftValue is ObjectId enumLeft)
+        return !enumRight.Equals(enumLeft);
+      return null;
+    });
+
+    // Assert
+    for (var i = 0; i < res.Length; i++)
+    {
+      CompareResult(res[i], expectedResults[i]);
+    }
+  }
+
   private void CompareResult(ComparisonResultData resultData, ComparisonResultData expectedResultData)
   {
     resultData.Name.Should().Be(expectedResultData.Name);
@@ -127,10 +162,10 @@ public class CompareTests
 
     single = results.SingleOrDefault(e => e.Name == nameof(Fake1Class.Long));
     baseR.Add(single ?? new ComparisonResultData(nameof(Fake1Class.Long), typeof(long?), isChange, null, null));
-    
+
     single = results.SingleOrDefault(e => e.Name == nameof(Fake1Class.Short));
     baseR.Add(single ?? new ComparisonResultData(nameof(Fake1Class.Short), typeof(short?), isChange, null, null));
-    
+
     single = results.SingleOrDefault(e => e.Name == nameof(Fake1Class.Byte));
     baseR.Add(single ?? new ComparisonResultData(nameof(Fake1Class.Byte), typeof(byte?), isChange, null, null));
 

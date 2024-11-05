@@ -11,15 +11,12 @@ public static class AuditAssertTestHelper
   public static TPK AssertSinglePrimaryKeyWithResult<T, TPK>(Result? result, T[]? data)
     where T : class
   {
-    if (result is ExceptionResult er)
-      throw er.Exception;
-    
     ArgumentNullException.ThrowIfNull(result);
-    ArgumentNullException.ThrowIfNull(data);
-
     if (result is ExceptionResult exceptionResult)
       throw exceptionResult.Exception;
-
+    
+    ArgumentNullException.ThrowIfNull(data);
+    
     if (result.GetType().IsGenericType && result.GetType().GetGenericTypeDefinition() == typeof(ExceptionResult<>))
       throw result.PropertyValue(nameof(ExceptionResult<int>.Exception)) as Exception ?? throw new Exception();
 
