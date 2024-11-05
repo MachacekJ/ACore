@@ -1,26 +1,37 @@
 using ACore.Extensions;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
 using Mapster;
+using MongoDB.Bson;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Models;
 
-public class TestNoAuditData(string name)
+public class TestNoAuditData<TPK>(string name)
 {
-  public int Id { get; set; }
+  public TPK Id { get; set; } = default(TPK) ?? throw new Exception($"Cannot create {nameof(Id)} for type {typeof(TPK).Name}");
 
   public string Name { get; set; } = name;
 
   public DateTime Created { get; set; }
 
-  internal static KeyValuePair<string, TestNoAuditData> Create(TestNoAuditEntity noAuditEntity, string saltSumHash)
+  internal static KeyValuePair<string, TestNoAuditData<T>> Create<T>(TestNoAuditEntity noAuditEntity, string saltSumHash)
   {
-    var testPKGuidData = noAuditEntity.Adapt<TestNoAuditData>();
-    return new KeyValuePair<string, TestNoAuditData>(noAuditEntity.GetSumHash(saltSumHash), testPKGuidData);
+    var testPKGuidData = noAuditEntity.Adapt<TestNoAuditData<T>>();
+    return new KeyValuePair<string, TestNoAuditData<T>>(noAuditEntity.GetSumHash(saltSumHash), testPKGuidData);
   }
 
+  internal static KeyValuePair<string, TestNoAuditData<T>> Create<T>(Storages.Mongo.Models.TestNoAuditEntity noAuditEntity, string saltSumHash)
+  {
+    var testPKGuidData = noAuditEntity.Adapt<TestNoAuditData<T>>();
+    return new KeyValuePair<string, TestNoAuditData<T>>(noAuditEntity.GetSumHash(saltSumHash), testPKGuidData);
+  }
+}
+public static class TestNoAuditData
+{
   public static void MapConfig()
   {
-    TypeAdapterConfig<TestNoAuditEntity, TestNoAuditData>.NewConfig()
-      .ConstructUsing(src => new TestNoAuditData(src.Name));
+    TypeAdapterConfig<TestNoAuditEntity, TestNoAuditData<int>>.NewConfig()
+      .ConstructUsing(src => new TestNoAuditData<int>(src.Name));
+    TypeAdapterConfig<Storages.Mongo.Models.TestNoAuditEntity, TestNoAuditData<ObjectId>>.NewConfig()
+      .ConstructUsing(src => new TestNoAuditData<ObjectId>(src.Name));
   }
 }

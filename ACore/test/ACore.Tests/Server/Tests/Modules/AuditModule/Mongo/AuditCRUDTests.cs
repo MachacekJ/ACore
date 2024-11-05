@@ -16,7 +16,7 @@ public class AuditTests : AuditTestsBase
   public async Task NoAuditTest()
   {
     var method = MethodBase.GetCurrentMethod();
-    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.NoAuditAsyncTest(Mediator, GetTableName); });
+    await RunTestAsync(method, async () => { await AuditCRUDTestHelper.NoAuditAsyncTest<ObjectId>(Mediator, GetTableName); });
   }
   
   [Fact]

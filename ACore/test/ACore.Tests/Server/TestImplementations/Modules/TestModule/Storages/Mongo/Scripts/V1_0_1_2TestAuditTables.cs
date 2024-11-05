@@ -29,5 +29,9 @@ public class V1_0_1_2TestAuditTables : DbVersionScriptsBase
     var collectionName2 = DefaultNames.ObjectNameMapping[nameof(TestValueTypeEntity)].TableName;
     db.CreateCollection(collectionName2);
     logger.LogInformation("Collection '{collectionName}' in database '{DatabaseName}' has been created.", collectionName2, ext.DatabaseName);
+    
+    var collectionName3 = DefaultNames.ObjectNameMapping[nameof(TestNoAuditEntity)].TableName;
+    db.CreateCollection(collectionName3);
+    logger.LogInformation("Collection '{collectionName}' in database '{DatabaseName}' has been created.", collectionName, ext.DatabaseName);
   }
 }

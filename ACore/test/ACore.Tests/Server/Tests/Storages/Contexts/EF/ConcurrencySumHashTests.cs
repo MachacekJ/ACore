@@ -1,7 +1,6 @@
 using System.Reflection;
 using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.CQRS.Results;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Models;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Get;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Models;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Save;
@@ -25,13 +24,13 @@ public class ConcurrencySumHashTests : AuditTestsBase
     await RunTestAsync(method, async () =>
     {
       // Arrange
-      var item = new TestNoAuditData(TestName)
+      var item = new TestNoAuditData<int>(TestName)
       {
         Created = TestDateTime,
       };
 
       // Action
-      var result = await Mediator.Send(new TestNoAuditSaveCommand(item, null)) as EntityResult;
+      var result = await Mediator.Send(new TestNoAuditSaveCommand<int>(item, null)) as EntityResult;
 
       // Assert
       ArgumentNullException.ThrowIfNull(result);
@@ -70,32 +69,32 @@ public class ConcurrencySumHashTests : AuditTestsBase
     await RunTestAsync(method, async () =>
     {
       // Arrange
-      var item = new TestNoAuditData(TestName)
+      var item = new TestNoAuditData<int>(TestName)
       {
         Created = TestDateTime,
       };
 
       // Action
-      var result = await Mediator.Send(new TestNoAuditSaveCommand(item, null)) as EntityResult;
+      var result = await Mediator.Send(new TestNoAuditSaveCommand<int>(item, null)) as EntityResult;
 
       ArgumentNullException.ThrowIfNull(result);
       var hash = result.SingleDatabaseOperationResult().SumHash;
       hash.Should().NotBeNull();
       item.Id = result.SinglePrimaryKey<int>();
 
-      var result2 = await Mediator.Send(new TestNoAuditSaveCommand(item, hash)) as EntityResult;
+      var result2 = await Mediator.Send(new TestNoAuditSaveCommand<int>(item, hash)) as EntityResult;
       result2?.SingleDatabaseOperationResult().DatabaseOperationType.Should().Be(DatabaseOperationTypeEnum.UnModified);
       var hash2 = result2?.SingleDatabaseOperationResult().SumHash;
       hash2.Should().Be(hash);
       
-      var allData = (await Mediator.Send(new TestNoAuditGetQuery())).ResultValue;
+      var allData = (await Mediator.Send(new TestNoAuditGetQuery<int>())).ResultValue;
       ArgumentNullException.ThrowIfNull(allData);
       allData.Should().HaveCount(1);
       var savedItem = allData.Single();
       savedItem.Key.Should().Be(hash2).And.Be(hash);
 
       item.Name = "faketest";
-      var result3 = await Mediator.Send(new TestNoAuditSaveCommand(item, hash)) as EntityResult;
+      var result3 = await Mediator.Send(new TestNoAuditSaveCommand<int>(item, hash)) as EntityResult;
       var hash3 = result3?.SingleDatabaseOperationResult().SumHash;
       savedItem.Key.Should().NotBe(hash3);
       hash3.Should().NotBe(hash);

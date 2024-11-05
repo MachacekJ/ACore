@@ -11,6 +11,9 @@ public static class AuditAssertTestHelper
   public static TPK AssertSinglePrimaryKeyWithResult<T, TPK>(Result? result, T[]? data)
     where T : class
   {
+    if (result is ExceptionResult er)
+      throw er.Exception;
+    
     ArgumentNullException.ThrowIfNull(result);
     ArgumentNullException.ThrowIfNull(data);
 

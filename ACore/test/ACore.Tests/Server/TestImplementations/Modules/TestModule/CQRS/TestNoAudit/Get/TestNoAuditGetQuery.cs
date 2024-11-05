@@ -3,4 +3,4 @@ using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Get;
 
-public class TestNoAuditGetQuery : TestModuleQueryRequest<Result<Dictionary<string, TestNoAuditData>>>;
+public class TestNoAuditGetQuery<TPK> : TestModuleQueryRequest<Result<Dictionary<string, TestNoAuditData<TPK>>>>;

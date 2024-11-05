@@ -19,12 +19,14 @@ internal class TestModuleMongoStorageImpl : DbContextBase, ITestStorageModule
   protected override string ModuleName => nameof(ITestStorageModule);
   protected override EFStorageDefinition EFStorageDefinition => new MongoStorageDefinition();
 
-  internal DbSet<TestAuditEntity> Tests { get; set; }
+  internal DbSet<TestNoAuditEntity> TestNoAudits { get; set; }
+  internal DbSet<TestAuditEntity> TestAudits { get; set; }
   internal DbSet<TestValueTypeEntity> TestValueTypes { get; set; }
   
   public TestModuleMongoStorageImpl(DbContextOptions<TestModuleMongoStorageImpl> options, IMediator mediator, ILogger<TestModuleMongoStorageImpl> logger) : base(options, mediator, logger)
   {
-    RegisterDbSet(Tests);
+    RegisterDbSet(TestNoAudits);
+    RegisterDbSet(TestAudits);
     RegisterDbSet(TestValueTypes);
   }
   
@@ -41,7 +43,8 @@ internal class TestModuleMongoStorageImpl : DbContextBase, ITestStorageModule
   {
     var res = typeof(TEntity) switch
     {
-      { } entityType when entityType == typeof(TestAuditEntity) => Tests as DbSet<TEntity>,
+      { } entityType when entityType == typeof(TestAuditEntity) => TestAudits as DbSet<TEntity>,
+      { } entityType when entityType == typeof(TestNoAuditEntity) => TestNoAudits as DbSet<TEntity>,
       { } entityType when entityType == typeof(TestValueTypeEntity) => TestValueTypes as DbSet<TEntity>,
       _ => throw new Exception($"Unknown entity type {typeof(TEntity).Name}.")
     };
@@ -60,6 +63,12 @@ internal class TestModuleMongoStorageImpl : DbContextBase, ITestStorageModule
     modelBuilder.Entity<TestValueTypeEntity>().ToCollection(DefaultNames.ObjectNameMapping[nameof(TestValueTypeEntity)].TableName);
     modelBuilder.Entity<TestValueTypeEntity>().HasKey(p => p.Id);
     modelBuilder.Entity<TestValueTypeEntity>(builder =>
+      builder.Property(entity => entity.Id).HasElementName("_id")
+    );
+    
+    modelBuilder.Entity<TestNoAuditEntity>().ToCollection(DefaultNames.ObjectNameMapping[nameof(TestNoAuditEntity)].TableName);
+    modelBuilder.Entity<TestNoAuditEntity>().HasKey(p => p.Id);
+    modelBuilder.Entity<TestNoAuditEntity>(builder =>
       builder.Property(entity => entity.Id).HasElementName("_id")
     );
   }

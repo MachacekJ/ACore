@@ -22,21 +22,21 @@ public static class AuditCRUDTestHelper
   const string TestAuditEntityName = nameof(TestAuditEntity);
   const string TestNoAuditEntityName = nameof(TestNoAuditEntity);
 
-  public static async Task NoAuditAsyncTest(IMediator mediator, Func<string, string> getTableName)
+  public static async Task NoAuditAsyncTest<TPK>(IMediator mediator, Func<string, string> getTableName)
   {
     // Arrange
-    var item = new TestNoAuditData(TestName)
+    var item = new TestNoAuditData<TPK>(TestName)
     {
       Created = TestDateTime,
     };
 
     // Action
-    var result = await mediator.Send(new TestNoAuditSaveCommand(item, null));
+    var result = await mediator.Send(new TestNoAuditSaveCommand<TPK>(item, null));
 
     // Assert
-    var allData = (await mediator.Send(new TestNoAuditGetQuery())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestNoAuditData, int>(result, allData?.Values.ToArray());
-    var resAuditItems = (await mediator.Send(new AuditGetQuery<int>(getTableName(TestNoAuditEntityName), itemId))).ResultValue;
+    var allData = (await mediator.Send(new TestNoAuditGetQuery<TPK>())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestNoAuditData<TPK>, TPK>(result, allData?.Values.ToArray());
+    var resAuditItems = (await mediator.Send(new AuditGetQuery<TPK>(getTableName(TestNoAuditEntityName), itemId))).ResultValue;
 
     resAuditItems.Should().HaveCount(0);
   }

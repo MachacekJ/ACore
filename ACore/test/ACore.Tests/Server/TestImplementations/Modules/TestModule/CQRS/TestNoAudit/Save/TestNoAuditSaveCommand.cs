@@ -3,7 +3,7 @@ using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Save;
 
-public class TestNoAuditSaveCommand(TestNoAuditData data, string? sumHash): TestModuleCommandRequest<Result>(sumHash)
+public class TestNoAuditSaveCommand<TPK>(TestNoAuditData<TPK> data, string? sumHash): TestModuleCommandRequest<Result>(sumHash)
 {
-  public TestNoAuditData Data => data;
+  public TestNoAuditData<TPK> Data => data;
 }

@@ -4,7 +4,9 @@ using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Delete;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Get;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Save;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Get;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Save;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Get;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Save;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages;
@@ -41,6 +43,8 @@ public static class TestModuleServiceExtensions
     containerBuilder.RegisterGeneric(typeof(TestAuditGetHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(TestAuditSaveHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(TestAuditDeleteHandler<>)).AsImplementedInterfaces();
+    containerBuilder.RegisterGeneric(typeof(TestNoAuditGetHandler<>)).AsImplementedInterfaces();
+    containerBuilder.RegisterGeneric(typeof(TestNoAuditSaveHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(TestValueTypeGetHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(TestValueTypeSaveHashHandler<>)).AsImplementedInterfaces();
   }
