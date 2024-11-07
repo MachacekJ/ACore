@@ -1,4 +1,4 @@
-namespace ACore.Server.Modules.ICAMModule.Models;
+namespace ACore.Server.Modules.SecurityModule.Models;
 
 public enum UserTypeEnum
 {

@@ -10,11 +10,7 @@ internal class ScriptRegistrations : DbScriptBase
     {
       var all = new List<DbVersionScriptsBase>
       {
-       // new V1_0_1_1TestTable(),
-        new V1_0_1_2TestAuditTables(),
-        //  new V1_0_1_3TestAuditTypes(),
-        //   new V1_0_1_4TestPK()
-        new V1_0_1_5TestChildProperties()
+        new V1_0_1_2TestAuditTables()
       };
       return all;
     }

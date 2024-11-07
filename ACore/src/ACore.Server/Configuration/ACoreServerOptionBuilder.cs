@@ -1,6 +1,6 @@
 using ACore.Configuration;
 using ACore.Server.Modules.AuditModule.Configuration;
-using ACore.Server.Modules.ICAMModule.Configuration;
+using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
 using ACore.Server.Storages.Configuration;
 
@@ -11,7 +11,7 @@ public class ACoreServerOptionBuilder
   private readonly ACoreOptionsBuilder _aCoreOptionsBuilder = ACoreOptionsBuilder.Empty();
   private readonly SettingsDbModuleOptionsBuilder _settingsDbModuleOptionsBuilder = SettingsDbModuleOptionsBuilder.Empty();
   private  readonly AuditModuleOptionsBuilder _auditModuleOptionsBuilder = AuditModuleOptionsBuilder.Empty();
-  private  readonly ICAMModuleOptionsBuilder _icamModuleOptionsBuilder = ICAMModuleOptionsBuilder.Empty();
+  private  readonly SecurityModuleOptionsBuilder _securityModuleOptionsBuilder = SecurityModuleOptionsBuilder.Empty();
   public StorageOptionBuilder? DefaultStorageOptionBuilder;
   
   private ACoreServerOptionBuilder()
@@ -39,14 +39,14 @@ public class ACoreServerOptionBuilder
     action?.Invoke(_auditModuleOptionsBuilder);
     _settingsDbModuleOptionsBuilder.Activate();
     _auditModuleOptionsBuilder.Activate();
-    _icamModuleOptionsBuilder.Activate();
+    _securityModuleOptionsBuilder.Activate();
     return this;
   }
 
-  public ACoreServerOptionBuilder AddICAMModule(Action<ICAMModuleOptionsBuilder>? action)
+  public ACoreServerOptionBuilder AddICAMModule(Action<SecurityModuleOptionsBuilder>? action)
   {
-    action?.Invoke(_icamModuleOptionsBuilder);
-    _icamModuleOptionsBuilder.Activate();
+    action?.Invoke(_securityModuleOptionsBuilder);
+    _securityModuleOptionsBuilder.Activate();
     return this;
   }
 
@@ -64,7 +64,7 @@ public class ACoreServerOptionBuilder
       ACoreOptions = _aCoreOptionsBuilder.Build(),
       SettingsDbModuleOptions = _settingsDbModuleOptionsBuilder.Build(DefaultStorageOptionBuilder),
       AuditModuleOptions = _auditModuleOptionsBuilder.Build(DefaultStorageOptionBuilder),
-      ICAMModuleOptions = _icamModuleOptionsBuilder.Build()
+      SecurityModuleOptions = _securityModuleOptionsBuilder.Build()
     };
   }
 }

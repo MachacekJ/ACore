@@ -48,6 +48,7 @@ internal class AuditMongoStorageImpl(DbContextOptions<AuditMongoStorageImpl> opt
         Property = e.ColumnName,
         DataType = e.DataType,
         IsChanged = e.IsChanged,
+        // If the value is the same, the database may not be populated with the value. Saves space.
         NewValue = e.IsChanged ? e.NewValue.ToAuditValue() : null,
         OldValue = e.OldValue.ToAuditValue()
       }).ToList()

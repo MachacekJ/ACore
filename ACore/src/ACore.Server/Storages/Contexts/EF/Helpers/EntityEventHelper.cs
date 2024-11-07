@@ -1,6 +1,6 @@
 using ACore.Extensions;
 using ACore.Server.Modules.AuditModule.Attributes;
-using ACore.Server.Modules.ICAMModule.CQRS.ICAMGetCurrentUser;
+using ACore.Server.Modules.SecurityModule.CQRS.SecurityGetCurrentUser;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Definitions.EF;
 using ACore.Server.Storages.Models.EntityEvent;
@@ -106,7 +106,7 @@ public class EntityEventHelper<TEntity, TPK>(IMediator mediator, IModel model, E
 
   private async Task<string> GetUserId()
   {
-    var user = await mediator.Send(new ICAMGetCurrentUserQuery());
+    var user = await mediator.Send(new SecurityGetCurrentUserQuery());
     if (user.IsFailure)
       throw new Exception(user.ResultErrorItem.ToString());
     ArgumentNullException.ThrowIfNull(user.ResultValue);

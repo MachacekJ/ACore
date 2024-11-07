@@ -1,9 +1,9 @@
 ﻿using ACore.Models.Result;
 using MediatR;
 
-namespace ACore.Server.Modules.ICAMModule.CQRS;
+namespace ACore.Server.Modules.SecurityModule.CQRS;
 
-public abstract class ICAMModuleRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
+public abstract class SecurityModuleRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
   where TRequest : IRequest<TResponse>
   where TResponse : Result
 {

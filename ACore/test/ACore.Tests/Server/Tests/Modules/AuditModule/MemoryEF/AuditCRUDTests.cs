@@ -18,7 +18,6 @@ public class AuditTests : AuditTestsBase
     await RunTestAsync(method, async () => { await AuditCRUDTestHelper.NoAuditAsyncTest<int>(Mediator, GetTableName); });
   }
 
-
   [Fact]
   public async Task AddItemTest()
   {
@@ -39,8 +38,7 @@ public class AuditTests : AuditTestsBase
     var method = MethodBase.GetCurrentMethod();
     await RunTestAsync(method, async () => { await AuditCRUDTestHelper.UpdateItemWithoutChangesAsyncTest<int>(Mediator, GetTableName, GetColumnName); });
   }
-
-
+  
   [Fact]
   public async Task DeleteItemTest()
   {

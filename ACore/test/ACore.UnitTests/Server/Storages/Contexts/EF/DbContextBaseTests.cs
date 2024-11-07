@@ -1,6 +1,6 @@
 ﻿using ACore.Models.Result;
-using ACore.Server.Modules.ICAMModule.CQRS.ICAMGetCurrentUser;
-using ACore.Server.Modules.ICAMModule.Models;
+using ACore.Server.Modules.SecurityModule.CQRS.SecurityGetCurrentUser;
+using ACore.Server.Modules.SecurityModule.Models;
 using ACore.Server.Storages.CQRS.Notifications;
 using FluentAssertions;
 using MediatR;
@@ -17,7 +17,7 @@ public class DbContextBaseTests
   {
     var result = Result.Success(FakeUser);
     mediator
-      .Setup(i => i.Send(It.IsAny<ICAMGetCurrentUserQuery>(), It.IsAny<CancellationToken>()))
+      .Setup(i => i.Send(It.IsAny<SecurityGetCurrentUserQuery>(), It.IsAny<CancellationToken>()))
       .ReturnsAsync(() => result);
   }
   

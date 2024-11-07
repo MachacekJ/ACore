@@ -1,13 +1,13 @@
 using ACore.Models.Result;
 using ACore.Server.Configuration;
-using ACore.Server.Modules.ICAMModule.Models;
+using ACore.Server.Modules.SecurityModule.Models;
 using Microsoft.Extensions.Options;
 
-namespace ACore.Server.Modules.ICAMModule.CQRS.ICAMGetCurrentUser;
+namespace ACore.Server.Modules.SecurityModule.CQRS.SecurityGetCurrentUser;
 
-public class ICAMGetCurrentUserHandler(IOptions<ACoreServerOptions> options) : ICAMModuleRequestHandler<ICAMGetCurrentUserQuery, Result<UserData>>
+public class SecurityGetCurrentUserHandler(IOptions<ACoreServerOptions> options) : SecurityModuleRequestHandler<SecurityGetCurrentUserQuery, Result<UserData>>
 {
-  public override Task<Result<UserData>> Handle(ICAMGetCurrentUserQuery request, CancellationToken cancellationToken)
+  public override Task<Result<UserData>> Handle(SecurityGetCurrentUserQuery request, CancellationToken cancellationToken)
   {
     return Task.FromResult(Result.Success(new UserData(UserTypeEnum.Test, "1", "testUser")));
     // return request.UserType switch

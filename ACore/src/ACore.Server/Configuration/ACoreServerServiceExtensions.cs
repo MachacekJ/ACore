@@ -5,7 +5,7 @@ using ACore.CQRS.Extensions;
 using ACore.Server.Configuration.CQRS.OptionsGet;
 using ACore.Server.Modules.AuditModule.Configuration;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet;
-using ACore.Server.Modules.ICAMModule.Configuration;
+using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
 using ACore.Server.Storages.Configuration;
 using ACore.Server.Storages.Services.StorageResolvers;
@@ -53,8 +53,8 @@ public static class ACoreServerServiceExtensions
     if (aCoreServerOptions.AuditModuleOptions.IsActive)
       services.AddAuditModule(aCoreServerOptions.AuditModuleOptions);
 
-    if (aCoreServerOptions.ICAMModuleOptions.IsActive)
-      services.AddICAMModule(aCoreServerOptions.ICAMModuleOptions);
+    if (aCoreServerOptions.SecurityModuleOptions.IsActive)
+      services.AddSecurityModule(aCoreServerOptions.SecurityModuleOptions);
   }
 
   public static async Task UseACoreServer(this IServiceProvider provider)
@@ -84,8 +84,8 @@ public static class ACoreServerServiceExtensions
     if (!aCoreServerOptions.AuditModuleOptions.IsActive)
       return;
 
-    if (!aCoreServerOptions.ICAMModuleOptions.IsActive)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.ICAMModule)} must be activated.");
+    if (!aCoreServerOptions.SecurityModuleOptions.IsActive)
+      throw new Exception($"Module {nameof(ACore.Server.Modules.SecurityModule)} must be activated.");
     
     if (aCoreServerOptions.SettingsDbModuleOptions.IsActive == false)
       throw new Exception($"Module {nameof(ACore.Server.Modules.SettingsDbModule)} must be activated.");

@@ -4,10 +4,10 @@ using ACore.Server.Configuration;
 using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace ACore.Server.Modules.ICAMModule.CQRS;
+namespace ACore.Server.Modules.SecurityModule.CQRS;
 
-public class ICAMModulePipelineBehavior<TRequest, TResponse>(IOptions<ACoreServerOptions> serverOptions) : IPipelineBehavior<TRequest, TResponse>
-  where TRequest : ICAMModuleRequest<TResponse>
+public class SecurityModulePipelineBehavior<TRequest, TResponse>(IOptions<ACoreServerOptions> serverOptions) : IPipelineBehavior<TRequest, TResponse>
+  where TRequest : SecurityModuleRequest<TResponse>
   where TResponse : Result
 {
   public async Task<TResponse> Handle(

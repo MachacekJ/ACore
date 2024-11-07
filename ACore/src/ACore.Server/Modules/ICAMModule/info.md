@@ -1,2 +1,0 @@
-# WIKI
-Identity, Credential, and Access Management (ICAM) is a set of security tools, policies, and systems that helps organizations manage, monitor, and secure access to their information technology (IT) infrastructure.

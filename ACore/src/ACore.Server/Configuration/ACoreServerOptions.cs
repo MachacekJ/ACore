@@ -1,6 +1,6 @@
 using ACore.Configuration;
 using ACore.Server.Modules.AuditModule.Configuration;
-using ACore.Server.Modules.ICAMModule.Configuration;
+using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
 using ACore.Server.Storages.Configuration;
 
@@ -16,5 +16,5 @@ public class ACoreServerOptions
 
   public AuditModuleOptions AuditModuleOptions { get; init; } = new();
 
-  public ICAMModuleOptions ICAMModuleOptions { get; init; } = new();
+  public SecurityModuleOptions SecurityModuleOptions { get; init; } = new();
 }
