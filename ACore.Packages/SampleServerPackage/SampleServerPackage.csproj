@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="SampleServerPackage.Tests"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\ACore\src\ACore.Server\ACore.Server.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="ToDoModulePG\Repositories\Models\" />
+    </ItemGroup>
+
+</Project>

@@ -27,11 +27,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A374D79E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACore.UnitTests", "ACore\test\ACore.UnitTests\ACore.UnitTests.csproj", "{5860A426-2CEE-4EEA-A0B2-2971AE84CE37}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packages", "Packages", "{54039EF5-77AD-442B-B7FE-522070AAF752}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ACore.Packages", "ACore.Packages", "{54039EF5-77AD-442B-B7FE-522070AAF752}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleServerPackage", "Packages\SampleServerPackage\SampleServerPackage.csproj", "{16E3AE27-1BB6-4E0B-B0FB-F8E95EA07881}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleServerPackage", "ACore.Packages\SampleServerPackage\SampleServerPackage.csproj", "{16E3AE27-1BB6-4E0B-B0FB-F8E95EA07881}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleServerPackage.Tests", "Packages\SampleServerPackage.Tests\SampleServerPackage.Tests.csproj", "{CF9BCED3-7C12-4194-B388-8E33926DEB98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleServerPackage.Tests", "ACore.Packages\SampleServerPackage.Tests\SampleServerPackage.Tests.csproj", "{CF9BCED3-7C12-4194-B388-8E33926DEB98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
