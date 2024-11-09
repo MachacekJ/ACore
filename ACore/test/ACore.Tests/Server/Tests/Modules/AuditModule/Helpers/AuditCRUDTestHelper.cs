@@ -8,7 +8,7 @@ using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.S
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Get;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Models;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Save;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 using FluentAssertions;
 using MediatR;
 

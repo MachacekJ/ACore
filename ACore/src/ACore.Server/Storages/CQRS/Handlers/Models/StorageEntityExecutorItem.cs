@@ -6,19 +6,19 @@ namespace ACore.Server.Storages.CQRS.Handlers.Models;
 
 public class StorageEntityExecutorItem : StorageExecutorItem
 {
-  public StorageEntityExecutorItem(object entity, IStorage storage, Task<DatabaseOperationResult> task) : base(task)
+  public StorageEntityExecutorItem(object entity, IRepository repository, Task<RepositoryOperationResult> task) : base(task)
   {
     if (!entity.GetType().IsSubclassOfRawGeneric(typeof(PKEntity<>)))
       throw new ArgumentException($"Entity '{entity.GetType().FullName}' must be a subclass of a PKEntity.");
 
     Entity = entity;
-    Storage = storage;
+    Repository = repository;
   }
   
   public object Entity { get; }
-  public IStorage Storage { get; }
+  public IRepository Repository { get; }
 }
 
-public class StorageEntityExecutorItem<T>(T entity, IStorage storage, Task<DatabaseOperationResult> task) :
-  StorageEntityExecutorItem(entity, storage, task)
+public class StorageEntityExecutorItem<T>(T entity, IRepository repository, Task<RepositoryOperationResult> task) :
+  StorageEntityExecutorItem(entity, repository, task)
   where T : class;

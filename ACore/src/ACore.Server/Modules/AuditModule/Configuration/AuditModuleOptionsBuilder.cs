@@ -1,5 +1,5 @@
 using ACore.Server.Configuration.Modules;
-using ACore.Server.Modules.AuditModule.Storage;
+using ACore.Server.Modules.AuditModule.Repositories;
 using ACore.Server.Storages.Configuration;
 
 namespace ACore.Server.Modules.AuditModule.Configuration;
@@ -18,7 +18,7 @@ public class AuditModuleOptionsBuilder : StorageModuleOptionBuilder
   {
     return new AuditModuleOptions(IsActive)
     {
-      Storages = BuildStorage(defaultStorages, nameof(IAuditStorageModule)),
+      Storages = BuildStorage(defaultStorages, nameof(IAuditRepository)),
     };
   }
 }

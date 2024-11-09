@@ -1,5 +1,5 @@
 using Mapster;
-using TestAuditEntity = ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo.Models.TestAuditEntity;
+using TestAuditEntity = ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo.Models.TestAuditEntity;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Models;
 
@@ -15,7 +15,7 @@ public class TestAuditData<TPK>
 
   public DateTime Created { get; set; }
 
-  internal static TestAuditData<T> Create<T>(Storages.SQL.Models.TestAuditEntity entity)
+  internal static TestAuditData<T> Create<T>(Repositories.SQL.Models.TestAuditEntity entity)
     => entity.Adapt<TestAuditData<T>>();
 
   internal static TestAuditData<T> Create<T>(TestAuditEntity entity)

@@ -1,5 +1,5 @@
 ﻿using ACore.Models.Result;
-using ACore.Server.Modules.SettingsDbModule.Storage;
+using ACore.Server.Modules.SettingsDbModule.Repositories;
 using ACore.Server.Storages.CQRS.Handlers;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
@@ -12,6 +12,6 @@ public abstract class SettingsDbModuleRequestHandler<TRequest, TResponse>(IStora
   where TRequest : IRequest<TResponse>
   where TResponse : Result
 {
-  protected Task<Result> StorageAction(Func<ISettingsDbModuleStorage, StorageExecutorItem> executor)
+  protected Task<Result> StorageAction(Func<ISettingsDbModuleRepository, StorageExecutorItem> executor)
     => base.StorageParallelAction(executor);
 }

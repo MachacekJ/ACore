@@ -3,9 +3,9 @@ using ACore.Models.Cache;
 using ACore.Models.Result;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
-using ACore.Server.Modules.AuditModule.Storage.SQL;
-using ACore.Server.Modules.AuditModule.Storage.SQL.Memory;
-using ACore.Server.Modules.AuditModule.Storage.SQL.Models;
+using ACore.Server.Modules.AuditModule.Repositories.SQL;
+using ACore.Server.Modules.AuditModule.Repositories.SQL.Memory;
+using ACore.Server.Modules.AuditModule.Repositories.SQL.Models;
 using ACore.Server.Storages.Models.EntityEvent;
 using ACore.UnitTests.Server.Modules.AuditModule.Storage.SQL.FakeClasses;
 using ACore.UnitTests.TestImplementations;
@@ -20,8 +20,8 @@ public class AuditSqlStorageImplCacheTests
 {
   private const string FakeTableName = "fakeTable";
   private const string FakeUserName = "fakeUser";
-  private static readonly CacheKey TableCacheKey = AuditSqlStorageImpl.AuditTableCacheKey(FakeTableName, null, 1);
-  private static readonly CacheKey UserCacheKey = AuditSqlStorageImpl.AuditUserCacheKey(FakeUserName);
+  private static readonly CacheKey TableCacheKey = AuditSqlRepositoryImpl.AuditTableCacheKey(FakeTableName, null, 1);
+  private static readonly CacheKey UserCacheKey = AuditSqlRepositoryImpl.AuditUserCacheKey(FakeUserName);
   
   [Fact]
   public async Task NoCacheValuesTest()
@@ -118,7 +118,7 @@ public class AuditSqlStorageImplCacheTests
   {
     // Arrange
     var idTable = 1;
-    var columnCacheKey = AuditSqlStorageImpl.AuditColumnCacheKey(idTable);
+    var columnCacheKey = AuditSqlRepositoryImpl.AuditColumnCacheKey(idTable);
     var cacheQueryCalls = new List<string>();
     var cacheSaveCalls = new List<string>();
     var saveInfoItem = CreateSaveInfoItem();
@@ -171,7 +171,7 @@ public class AuditSqlStorageImplCacheTests
   {
     // Arrange
     var idTable = 1;
-    var columnCacheKey = AuditSqlStorageImpl.AuditColumnCacheKey(idTable);
+    var columnCacheKey = AuditSqlRepositoryImpl.AuditColumnCacheKey(idTable);
     var cacheQueryCalls = new List<string>();
     var cacheSaveCalls = new List<string>();
     var saveInfoItem = CreateSaveInfoItem();
@@ -218,11 +218,11 @@ public class AuditSqlStorageImplCacheTests
     ColumnCacheCallsAssert(cacheQueryCalls, cacheSaveCalls, auditSqlStorageImplAsSut.AuditTables.Single(e => e.TableName == FakeTableName).Id);
   }
 
-  private AuditSqlStorageImpl CreateAuditSqlStorageImplAsSut(IMediator mediator, Action<FakeAuditSqlStorageImpl>? seedData = null)
+  private AuditSqlRepositoryImpl CreateAuditSqlStorageImplAsSut(IMediator mediator, Action<FakeAuditSqlRepositoryImpl>? seedData = null)
   {
-    var dbContextOptions = new DbContextOptions<AuditSqlStorageImpl>();
-    var loggerMocked = new MoqLogger<AuditSqlMemoryStorageImpl>().LoggerMocked;
-    var res = new FakeAuditSqlStorageImpl(dbContextOptions, mediator, loggerMocked);
+    var dbContextOptions = new DbContextOptions<AuditSqlRepositoryImpl>();
+    var loggerMocked = new MoqLogger<AuditSqlMemoryRepositoryImpl>().LoggerMocked;
+    var res = new FakeAuditSqlRepositoryImpl(dbContextOptions, mediator, loggerMocked);
     seedData?.Invoke(res);
     return res;
   }
@@ -272,12 +272,12 @@ public class AuditSqlStorageImplCacheTests
       .ReturnsAsync(() => result);
   }
 
-  private void EntityAsserts(AuditSqlStorageImpl auditSqlStorageImplAsSut, EntityEventItem entityEventItem)
+  private void EntityAsserts(AuditSqlRepositoryImpl auditSqlRepositoryImplAsSut, EntityEventItem entityEventItem)
   {
-    auditSqlStorageImplAsSut.AuditTables.Count().Should().Be(1);
-    auditSqlStorageImplAsSut.Audits.Count().Should().Be(1);
-    auditSqlStorageImplAsSut.AuditUsers.Count().Should().Be(1);
-    auditSqlStorageImplAsSut.AuditColumns.Count().Should().Be(entityEventItem.ChangedColumns.Count);
+    auditSqlRepositoryImplAsSut.AuditTables.Count().Should().Be(1);
+    auditSqlRepositoryImplAsSut.Audits.Count().Should().Be(1);
+    auditSqlRepositoryImplAsSut.AuditUsers.Count().Should().Be(1);
+    auditSqlRepositoryImplAsSut.AuditColumns.Count().Should().Be(entityEventItem.ChangedColumns.Count);
   }
 
   private void TableCacheCallsAssert(IEnumerable<string> cacheQueryCalls, IEnumerable<string> cacheSaveCalls)
@@ -294,7 +294,7 @@ public class AuditSqlStorageImplCacheTests
 
   private void ColumnCacheCallsAssert(IEnumerable<string> cacheQueryCalls, IEnumerable<string> cacheSaveCalls, int idTable)
   {
-    var columnCacheKey = AuditSqlStorageImpl.AuditColumnCacheKey(idTable);
+    var columnCacheKey = AuditSqlRepositoryImpl.AuditColumnCacheKey(idTable);
     cacheQueryCalls.Where(e => e == columnCacheKey.ToString()).ToList().Should().HaveCount(1);
     cacheSaveCalls.Where(e => e == columnCacheKey.ToString()).ToList().Should().HaveCount(1);
   }

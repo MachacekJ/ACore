@@ -1,9 +1,9 @@
 ﻿using ACore.Server.Storages.Definitions.Models;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.PG;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.PG;
 
 namespace ACore.Tests.Server.Tests.Modules.AuditModule.PG;
 
-public class Audit() : AuditModuleTestsBase(StorageTypeEnum.Postgres)
+public class AuditModulePGStorageTestBase() : AuditModuleTestsBase(StorageTypeEnum.Postgres)
 {
   protected string GetTableName(string entityName)
   {

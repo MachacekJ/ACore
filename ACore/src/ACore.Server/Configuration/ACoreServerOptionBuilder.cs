@@ -43,7 +43,7 @@ public class ACoreServerOptionBuilder
     return this;
   }
 
-  public ACoreServerOptionBuilder AddICAMModule(Action<SecurityModuleOptionsBuilder>? action)
+  public ACoreServerOptionBuilder AddSecurityModule(Action<SecurityModuleOptionsBuilder>? action)
   {
     action?.Invoke(_securityModuleOptionsBuilder);
     _securityModuleOptionsBuilder.Activate();

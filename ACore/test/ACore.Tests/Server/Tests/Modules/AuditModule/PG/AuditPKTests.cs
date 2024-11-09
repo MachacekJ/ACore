@@ -9,7 +9,7 @@ namespace ACore.Tests.Server.Tests.Modules.AuditModule.PG;
 /// ObjectId for mongoDb is tested in integration tests. 
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class AuditPKTests : Audit
+public class AuditModulePGStorageTestBasePKTests : AuditModulePGStorageTestBase
 {
   [Fact]
   public async Task IntPKTest()

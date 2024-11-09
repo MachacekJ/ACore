@@ -2,7 +2,7 @@
 using ACore.Server.Storages.CQRS.Handlers;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories;
 using MediatR;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS;
@@ -12,11 +12,11 @@ public abstract class TestModuleRequestHandler<TRequest, TResponse>(IStorageReso
   where TResponse : Result
 {
   private readonly IStorageResolver _storageResolver = storageResolver;
-  protected ITestStorageModule ReadTestContext() => _storageResolver.ReadFromStorage<ITestStorageModule>();
+  protected ITestRepositoryModule ReadTestContext() => _storageResolver.ReadFromStorage<ITestRepositoryModule>();
 
-  protected Task<Result> StorageEntityParallelAction(Func<ITestStorageModule, StorageEntityExecutorItem> executor, string hashSalt = "")
+  protected Task<Result> StorageEntityParallelAction(Func<ITestRepositoryModule, StorageEntityExecutorItem> executor, string hashSalt = "")
     => base.StorageEntityParallelAction(executor, hashSalt);
   
-  protected Task<Result> StorageParallelAction(Func<ITestStorageModule, StorageExecutorItem> executor)
+  protected Task<Result> StorageParallelAction(Func<ITestRepositoryModule, StorageExecutorItem> executor)
     => base.StorageParallelAction(executor);
 }

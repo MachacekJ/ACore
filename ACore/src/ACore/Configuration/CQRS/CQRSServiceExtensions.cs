@@ -13,7 +13,7 @@ public static class CQRSExtensions
     services.AddMediatR((c) =>
     {
       c.RegisterServicesFromAssemblyContaining(typeof(CQRSExtensions));
-      c.AllNotificationWithoutException();
+      c.ParallelNotification();
     });
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehavior<,>));

@@ -1,9 +1,9 @@
 ﻿using ACore.Models.Result;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL;
 using MongoDB.Bson;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Save;
@@ -16,12 +16,12 @@ internal class TestValueTypeSaveHashHandler<TPK>(IStorageResolver storageResolve
     {
       switch (storage)
       {
-        case TestModuleMongoStorageImpl:
-          var enMongo = Storages.Mongo.Models.TestValueTypeEntity.Create(request.Data);
-          return new StorageEntityExecutorItem(enMongo, storage, storage.SaveTestEntity<Storages.Mongo.Models.TestValueTypeEntity, ObjectId>(enMongo));
-        case TestModuleSqlStorageImpl:
-          var en = TestValueTypeEntity.Create(request.Data);
-          return new StorageEntityExecutorItem(en, storage, storage.SaveTestEntity<TestValueTypeEntity, int>(en));
+        case TestModuleMongoRepositoryImpl:
+          var enMongo = TestValueTypeEntity.Create(request.Data);
+          return new StorageEntityExecutorItem(enMongo, storage, storage.SaveTestEntity<TestValueTypeEntity, ObjectId>(enMongo));
+        case TestModuleSqlRepositoryImpl:
+          var en = Repositories.SQL.Models.TestValueTypeEntity.Create(request.Data);
+          return new StorageEntityExecutorItem(en, storage, storage.SaveTestEntity<Repositories.SQL.Models.TestValueTypeEntity, int>(en));
         default:
           throw new Exception($"Storage for '{storage.GetType()}' is not supported.");
       }

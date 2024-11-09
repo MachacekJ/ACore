@@ -1,8 +1,8 @@
 ﻿using ACore.Models.Result;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKGuid.Save;
 
@@ -15,7 +15,7 @@ internal class TestPKGuidSaveHandler(IStorageResolver storageResolver)
     {
       switch (storage)
       {
-        case TestModuleSqlStorageImpl:
+        case TestModuleSqlRepositoryImpl:
           var en = TestPKGuidEntity.Create(request.Data);
           return new StorageEntityExecutorItem<TestPKGuidEntity>(en, storage, storage.SaveTestEntity<TestPKGuidEntity, Guid>(en));
         default:

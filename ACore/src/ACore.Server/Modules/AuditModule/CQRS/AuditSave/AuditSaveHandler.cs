@@ -1,5 +1,5 @@
 ﻿using ACore.Models.Result;
-using ACore.Server.Modules.AuditModule.Storage;
+using ACore.Server.Modules.AuditModule.Repositories;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
 
@@ -9,7 +9,7 @@ public class AuditSaveHandler(IStorageResolver storageResolver) : AuditModuleReq
 {
   public override async Task<Result> Handle(AuditSaveCommand request, CancellationToken cancellationToken)
   {
-    return await StorageParallelAction<IAuditStorageModule>((storage) 
+    return await StorageParallelAction<IAuditRepository>((storage) 
       => new StorageExecutorItem(storage.SaveAuditAsync(request.EntityEventItem)));
   }
 }

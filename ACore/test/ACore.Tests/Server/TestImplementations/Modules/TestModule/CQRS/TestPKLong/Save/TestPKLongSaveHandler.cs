@@ -1,8 +1,8 @@
 ﻿using ACore.Models.Result;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKLong.Save;
 
@@ -14,7 +14,7 @@ internal class TestPKLongSaveHandler(IStorageResolver storageResolver) : TestMod
     {
       switch (storage)
       {
-        case TestModuleSqlStorageImpl:
+        case TestModuleSqlRepositoryImpl:
           var en = TestPKLongEntity.Create(request.Data);
           return new StorageEntityExecutorItem<TestPKLongEntity>(en, storage, storage.SaveTestEntity<TestPKLongEntity, long>(en));
         default:

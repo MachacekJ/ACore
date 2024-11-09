@@ -14,10 +14,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<RootNamespace>ACore.Server</RootNamespace>
 	</PropertyGroup>
-
-<!--	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">-->
-<!--	  <DefineConstants>TRACE; UnitTest</DefineConstants>-->
-<!--	</PropertyGroup>-->
+	
 	<ItemGroup>
 		<InternalsVisibleTo Include="ACore.UnitTests" />
 		<InternalsVisibleTo Include="ACore.Tests" />

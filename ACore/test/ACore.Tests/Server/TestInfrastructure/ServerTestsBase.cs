@@ -12,7 +12,7 @@ public abstract class ServerTestsBase : TestsBase
   protected virtual void SetupACoreServer(ACoreServerOptionBuilder builder)
   {
     builder.ACore(a =>
-      a.AddMemoryCacheModule(memoryCacheOptionsBuilder => memoryCacheOptionsBuilder.AddCacheCategories(CacheMainCategories.Entity))
+      a.AddMemoryCacheModule(memoryCacheOptionsBuilder => memoryCacheOptionsBuilder.AddCacheCategories(CacheCategories.Entity))
         .AddSaltForHash("fakesalt"));
   }
 

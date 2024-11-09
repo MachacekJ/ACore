@@ -1,5 +1,5 @@
 using ACore.Extensions;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 using Mapster;
 using MongoDB.Bson;
 
@@ -19,7 +19,7 @@ public class TestNoAuditData<TPK>(string name)
     return new KeyValuePair<string, TestNoAuditData<T>>(noAuditEntity.GetSumHash(saltSumHash), testPKGuidData);
   }
 
-  internal static KeyValuePair<string, TestNoAuditData<T>> Create<T>(Storages.Mongo.Models.TestNoAuditEntity noAuditEntity, string saltSumHash)
+  internal static KeyValuePair<string, TestNoAuditData<T>> Create<T>(Repositories.Mongo.Models.TestNoAuditEntity noAuditEntity, string saltSumHash)
   {
     var testPKGuidData = noAuditEntity.Adapt<TestNoAuditData<T>>();
     return new KeyValuePair<string, TestNoAuditData<T>>(noAuditEntity.GetSumHash(saltSumHash), testPKGuidData);
@@ -31,7 +31,7 @@ public static class TestNoAuditData
   {
     TypeAdapterConfig<TestNoAuditEntity, TestNoAuditData<int>>.NewConfig()
       .ConstructUsing(src => new TestNoAuditData<int>(src.Name));
-    TypeAdapterConfig<Storages.Mongo.Models.TestNoAuditEntity, TestNoAuditData<ObjectId>>.NewConfig()
+    TypeAdapterConfig<Repositories.Mongo.Models.TestNoAuditEntity, TestNoAuditData<ObjectId>>.NewConfig()
       .ConstructUsing(src => new TestNoAuditData<ObjectId>(src.Name));
   }
 }

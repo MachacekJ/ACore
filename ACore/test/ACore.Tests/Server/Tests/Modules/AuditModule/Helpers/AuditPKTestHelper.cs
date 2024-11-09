@@ -13,11 +13,11 @@ using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKLong.
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Get;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Models;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Save;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 using FluentAssertions;
 using MediatR;
 using MongoDB.Bson;
-using TestAuditEntity = ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo.Models.TestAuditEntity;
+using TestAuditEntity = ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo.Models.TestAuditEntity;
 
 namespace ACore.Tests.Server.Tests.Modules.AuditModule.Helpers;
 
@@ -28,7 +28,7 @@ public static class AuditPKTestHelper
   private const string TestPKStringEntityName = nameof(TestPKStringEntity);
   private const string TestPKLongEntityName = nameof(TestPKLongEntity);
   private const string TestPKMongoEntityName = nameof(TestAuditEntity);
-  private const string TestAuditEntityName = nameof(TestImplementations.Modules.TestModule.Storages.SQL.Models.TestAuditEntity);
+  private const string TestAuditEntityName = nameof(TestImplementations.Modules.TestModule.Repositories.SQL.Models.TestAuditEntity);
 
   public static async Task IntPK(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
   {

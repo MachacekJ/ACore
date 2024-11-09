@@ -83,7 +83,7 @@ public class ConcurrencySumHashTests : AuditTestsBase
       item.Id = result.SinglePrimaryKey<int>();
 
       var result2 = await Mediator.Send(new TestNoAuditSaveCommand<int>(item, hash)) as EntityResult;
-      result2?.SingleDatabaseOperationResult().DatabaseOperationType.Should().Be(DatabaseOperationTypeEnum.UnModified);
+      result2?.SingleDatabaseOperationResult().RepositoryOperationType.Should().Be(RepositoryOperationTypeEnum.UnModified);
       var hash2 = result2?.SingleDatabaseOperationResult().SumHash;
       hash2.Should().Be(hash);
       

@@ -10,7 +10,7 @@ namespace ACore.Tests.Server.Tests.Modules.AuditModule.Mongo;
 /// <summary>
 /// Test audit items when entity class contains audit attributes.
 /// </summary>
-public class AuditTests : AuditTestsBase
+public class AuditModulePGStorageTestBaseTests : AuditTestsBase
 {
   [Fact]
   public async Task NoAuditTest()

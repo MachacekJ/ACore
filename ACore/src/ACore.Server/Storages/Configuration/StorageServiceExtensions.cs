@@ -36,36 +36,36 @@ public static class StorageServiceExtensions
 
   public static async Task ConfigureMongoStorage<TIStorage, TImplementation>(this IServiceProvider provider, StorageOptions storageOptions)
     where TImplementation : DbContext
-    where TIStorage : IStorage
+    where TIStorage : IRepository
   {
     var storageResolver = GetStorageResolver(provider);
     if (storageOptions.MongoDb != null)
     {
-      var mongoImpl = provider.GetService<TImplementation>() as IStorage ?? throw new ArgumentNullException($"Missing implementation of {typeof(TImplementation).Name}.");
+      var mongoImpl = provider.GetService<TImplementation>() as IRepository ?? throw new ArgumentNullException($"Missing implementation of {typeof(TImplementation).Name}.");
       await storageResolver.ConfigureStorage<TIStorage>(new StorageImplementation(mongoImpl));
     }
   }
 
   public static async Task ConfigurePGStorage<TIStorage, TImplementation>(this IServiceProvider provider, StorageOptions storageOptions)
     where TImplementation : DbContext
-    where TIStorage : IStorage
+    where TIStorage : IRepository
   {
     var storageResolver = GetStorageResolver(provider);
     if (storageOptions.PGDb != null)
     {
-      var pgImpl = provider.GetService<TImplementation>() as IStorage ?? throw new ArgumentNullException($"Missing implementation of {typeof(TImplementation).Name}.");
+      var pgImpl = provider.GetService<TImplementation>() as IRepository ?? throw new ArgumentNullException($"Missing implementation of {typeof(TImplementation).Name}.");
       await storageResolver.ConfigureStorage<TIStorage>(new StorageImplementation(pgImpl));
     }
   }
 
   public static async Task ConfigureMemoryStorage<TIStorage, TImplementation>(this IServiceProvider provider, StorageOptions storageOptions)
     where TImplementation : DbContext
-    where TIStorage : IStorage
+    where TIStorage : IRepository
   {
     var storageResolver = GetStorageResolver(provider);
     if (storageOptions.UseMemoryStorage)
     {
-      var memoryImpl = provider.GetService<TImplementation>() as IStorage ?? throw new ArgumentNullException($"Missing implementation of {typeof(TImplementation).Name}.");
+      var memoryImpl = provider.GetService<TImplementation>() as IRepository ?? throw new ArgumentNullException($"Missing implementation of {typeof(TImplementation).Name}.");
       await storageResolver.ConfigureStorage<TIStorage>(new StorageImplementation(memoryImpl));
     }
   }

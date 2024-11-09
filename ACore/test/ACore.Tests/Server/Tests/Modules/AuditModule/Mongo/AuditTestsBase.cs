@@ -1,5 +1,5 @@
 ﻿using ACore.Server.Storages.Definitions.Models;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo;
 using Microsoft.EntityFrameworkCore;
 
 namespace ACore.Tests.Server.Tests.Modules.AuditModule.Mongo;

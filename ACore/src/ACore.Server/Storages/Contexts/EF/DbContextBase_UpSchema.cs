@@ -1,6 +1,6 @@
 using ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbGet;
 using ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbSave;
-using ACore.Server.Modules.SettingsDbModule.Storage;
+using ACore.Server.Modules.SettingsDbModule.Repositories;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.Models;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +53,7 @@ public abstract partial class DbContextBase
       }
     }
 
-    if (this is ISettingsDbModuleStorage aa)
+    if (this is ISettingsDbModuleRepository aa)
     {
       await aa.Setting_SaveAsync(StorageVersionKey, updatedToVersion.ToString(), true);
       return;
@@ -91,24 +91,4 @@ public abstract partial class DbContextBase
 
     return updatedToVersion;
   }
-
-  // private async Task<bool> DbIsEmpty()
-  // {
-  //    
-  //   var res = true;
-  //   
-  //   try
-  //   {
-  //     var isSettingTable = await mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionBaseSettingKey));
-  //     res = isSettingTable is { IsSuccess: true, ResultValue: null };
-  //   }
-  //   catch
-  //   {
-  //     // Log contains errors from EF.
-  //     // 2024-10-12 07:46:42.368 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'ACore.Server.Modules.SettingsDbModule.Storage.SQL.PG.SettingsDbModuleSqlPGStorageImpl'.
-  //     Logger.LogInformation("Setting table has not been found.");
-  //   }
-  //
-  //   return res;
-  // }
 }

@@ -7,7 +7,7 @@ namespace ACore.Tests.Server.Tests.Modules.AuditModule.PG;
 /// <summary>
 /// Test for different C# types and their persistence.
 /// </summary>
-public class AuditAllDataTypesTests : Audit
+public class AuditModulePGStorageTestBaseAllDataTypesTests : AuditModulePGStorageTestBase
 {
   [Fact]
   public async Task AllDataTypesTest()

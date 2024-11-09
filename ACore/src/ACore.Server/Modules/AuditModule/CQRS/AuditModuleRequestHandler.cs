@@ -1,5 +1,5 @@
 ﻿using ACore.Models.Result;
-using ACore.Server.Modules.AuditModule.Storage;
+using ACore.Server.Modules.AuditModule.Repositories;
 using ACore.Server.Storages.CQRS.Handlers;
 using ACore.Server.Storages.Services.StorageResolvers;
 using MediatR;
@@ -11,5 +11,5 @@ public abstract class AuditModuleRequestHandler<TRequest, TResponse>(IStorageRes
   where TResponse : Result
 {
   private readonly IStorageResolver _storageResolver = storageResolver;
-  protected IAuditStorageModule ReadAuditContext() => _storageResolver.ReadFromStorage<IAuditStorageModule>();
+  protected IAuditRepository ReadAuditContext() => _storageResolver.ReadFromStorage<IAuditRepository>();
 }

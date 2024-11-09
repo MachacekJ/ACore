@@ -41,7 +41,7 @@ public static class ACoreServerServiceExtensions
     services.AddMediatR(c =>
     {
       c.RegisterServicesFromAssemblyContaining(typeof(ACoreServerServiceExtensions));
-      c.AllNotificationWithoutException();
+      c.ParallelNotification();
     });
     services.AddValidatorsFromAssembly(typeof(ACoreServerServiceExtensions).Assembly, includeInternalTypes: true);
 
@@ -72,7 +72,7 @@ public static class ACoreServerServiceExtensions
     containerBuilder.RegisterGeneric(typeof(AppOptionHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(AuditGetHandler<>)).AsImplementedInterfaces();
   }
-  
+
   private static void ValidateDependencyInConfiguration(ACoreServerOptions aCoreServerOptions)
   {
     ValidateSettingsDbOptions(aCoreServerOptions);
@@ -86,7 +86,7 @@ public static class ACoreServerServiceExtensions
 
     if (!aCoreServerOptions.SecurityModuleOptions.IsActive)
       throw new Exception($"Module {nameof(ACore.Server.Modules.SecurityModule)} must be activated.");
-    
+
     if (aCoreServerOptions.SettingsDbModuleOptions.IsActive == false)
       throw new Exception($"Module {nameof(ACore.Server.Modules.SettingsDbModule)} must be activated.");
 

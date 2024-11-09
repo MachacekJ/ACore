@@ -1,4 +1,4 @@
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 using Mapster;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Models;
@@ -38,10 +38,10 @@ public class TestValueTypeData<T> //: HashData
     return res;
   }
 
-  internal static TestValueTypeData<TPK> Create<TPK>(Storages.Mongo.Models.TestValueTypeEntity entity)
+  internal static TestValueTypeData<TPK> Create<TPK>(Repositories.Mongo.Models.TestValueTypeEntity entity)
   {
 #pragma warning disable CS8603 // Possible null reference return.
-    var config = TypeAdapterConfig<Storages.Mongo.Models.TestValueTypeEntity, TestValueTypeData<TPK>>.NewConfig()
+    var config = TypeAdapterConfig<Repositories.Mongo.Models.TestValueTypeEntity, TestValueTypeData<TPK>>.NewConfig()
       .Ignore(d => d.TimeSpan2).Config;
 #pragma warning restore CS8603 // Possible null reference return.
     

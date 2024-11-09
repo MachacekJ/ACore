@@ -1,5 +1,5 @@
 using ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbGet;
-using ACore.Server.Modules.SettingsDbModule.Storage;
+using ACore.Server.Modules.SettingsDbModule.Repositories;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Definitions.Models;
@@ -19,7 +19,7 @@ public class MemoryEFStorageDefinition : EFStorageDefinition
 
   public override async Task<bool> DatabaseHasInitUpdate<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger)
   {
-    var isSettingTable = await mediator.Send(new SettingsDbGetQuery(StorageTypeEnum.MemoryEF, $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageTypeEnum.MemoryEF)}_{nameof(ISettingsDbModuleStorage)}"));
+    var isSettingTable = await mediator.Send(new SettingsDbGetQuery(StorageTypeEnum.MemoryEF, $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageTypeEnum.MemoryEF)}_{nameof(ISettingsDbModuleRepository)}"));
     return isSettingTable is { IsSuccess: true, ResultValue: null };
   }
   

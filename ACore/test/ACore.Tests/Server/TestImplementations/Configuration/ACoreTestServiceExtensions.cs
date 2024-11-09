@@ -31,7 +31,7 @@ public static class ACoreTestServiceExtensions
     services.AddMediatR((c) =>
     {
       c.RegisterServicesFromAssemblyContaining(typeof(ACoreTestServiceExtensions));
-      c.AllNotificationWithoutException();
+      c.ParallelNotification();
     });
     services.AddValidatorsFromAssembly(typeof(ACoreTestServiceExtensions).Assembly, includeInternalTypes: true);
 

@@ -2,10 +2,10 @@
 
 namespace ACore.Server.Storages.Services.StorageResolvers;
 
-public class StorageImplementation(IStorage implementation, StorageModeEnum mode = StorageModeEnum.ReadWrite)
+public class StorageImplementation(IRepository implementation, StorageModeEnum mode = StorageModeEnum.ReadWrite)
 {
   public StorageModeEnum Mode => mode;
-  public IStorage Implementation => implementation;
+  public IRepository Implementation => implementation;
 }
 
 public class DefaultStorageResolver : IStorageResolver
@@ -13,7 +13,7 @@ public class DefaultStorageResolver : IStorageResolver
   private readonly Dictionary<string, List<StorageImplementation>> _implementations = [];
 
   public async Task ConfigureStorage<TStorage>(StorageImplementation implementation)
-    where TStorage : IStorage
+    where TStorage : IRepository
   {
     var name = typeof(TStorage).Name;
     if (implementation == null)
@@ -49,15 +49,15 @@ public class DefaultStorageResolver : IStorageResolver
     }
   }
 
-  public T ReadFromStorage<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage
+  public T ReadFromStorage<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IRepository
     => AllStorages<T>(StorageModeEnum.Read, storageType).First();
 
-  public IEnumerable<T> WriteToStorages<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage
+  public IEnumerable<T> WriteToStorages<T>(StorageTypeEnum storageType = StorageTypeEnum.All) where T : IRepository
   {
     return AllStorages<T>(StorageModeEnum.Write, storageType);
   }
 
-  private List<T> AllStorages<T>(StorageModeEnum mode, StorageTypeEnum storageType = StorageTypeEnum.All) where T : IStorage
+  private List<T> AllStorages<T>(StorageModeEnum mode, StorageTypeEnum storageType = StorageTypeEnum.All) where T : IRepository
   {
     if (!_implementations.TryGetValue(typeof(T).Name, out var storageImplementations))
       throw new Exception($"Storage module '{typeof(T).Name}' has no registered implementation.");
@@ -65,7 +65,7 @@ public class DefaultStorageResolver : IStorageResolver
     var storageImplementationByMode = storageImplementations.Where(e => e.Mode.HasFlag(mode)).Select(storageModule => storageModule.Implementation).OfType<T>().ToList();
 
     if (storageType != StorageTypeEnum.All)
-      storageImplementationByMode = storageImplementationByMode.Where(a => a.StorageDefinition.Type == storageType).ToList();
+      storageImplementationByMode = storageImplementationByMode.Where(a => a.RepositoryInfo.StorageDefinition.Type == storageType).ToList();
 
     if (storageImplementationByMode.Count > 0)
       return storageImplementationByMode;

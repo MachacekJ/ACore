@@ -1,9 +1,9 @@
 using ACore.Server.Configuration;
 using ACore.Server.Modules.SettingsDbModule.CQRS;
-using ACore.Server.Modules.SettingsDbModule.Storage;
-using ACore.Server.Modules.SettingsDbModule.Storage.Mongo;
-using ACore.Server.Modules.SettingsDbModule.Storage.SQL.Memory;
-using ACore.Server.Modules.SettingsDbModule.Storage.SQL.PG;
+using ACore.Server.Modules.SettingsDbModule.Repositories;
+using ACore.Server.Modules.SettingsDbModule.Repositories.Mongo;
+using ACore.Server.Modules.SettingsDbModule.Repositories.SQL.Memory;
+using ACore.Server.Modules.SettingsDbModule.Repositories.SQL.PG;
 using ACore.Server.Storages.Configuration;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,9 +21,9 @@ internal static class SettingsDbModuleServiceExtensions
     if (options.Storages == null)
       throw new ArgumentException($"{nameof(options.Storages)} is null.");
     
-    services.AddDbMongoStorage<SettingsDbModuleMongoStorageImpl>(options.Storages);
-    services.AddDbPGStorage<SettingsDbModuleSqlPGStorageImpl>(options.Storages);
-    services.AddDbMemoryStorage<SettingsDbModuleSqlMemoryStorageImplTestsSqlMemoryStorageImpl>(options.Storages, nameof(ISettingsDbModuleStorage));
+    services.AddDbMongoStorage<SettingsDbModuleMongoRepositoryImpl>(options.Storages);
+    services.AddDbPGStorage<SettingsDbModuleSqlPGRepositoryImpl>(options.Storages);
+    services.AddDbMemoryStorage<SettingsDbModuleSqlMemoryRepositoryImplTestsSqlMemoryRepositoryImpl>(options.Storages, nameof(ISettingsDbModuleRepository));
   }
 
   public static async Task UseSettingServiceModule(this IServiceProvider provider)
@@ -39,8 +39,8 @@ internal static class SettingsDbModuleServiceExtensions
     if (storageOptions == null)
       throw new ArgumentException($"{nameof(opt.SettingsDbModuleOptions)} is null. You can also use {nameof(opt.DefaultStorages)}.");
 
-    await provider.ConfigureMongoStorage<ISettingsDbModuleStorage, SettingsDbModuleMongoStorageImpl>(storageOptions);
-    await provider.ConfigurePGStorage<ISettingsDbModuleStorage, SettingsDbModuleSqlPGStorageImpl>(storageOptions);
-    await provider.ConfigureMemoryStorage<ISettingsDbModuleStorage, SettingsDbModuleSqlMemoryStorageImplTestsSqlMemoryStorageImpl>(storageOptions);
+    await provider.ConfigureMongoStorage<ISettingsDbModuleRepository, SettingsDbModuleMongoRepositoryImpl>(storageOptions);
+    await provider.ConfigurePGStorage<ISettingsDbModuleRepository, SettingsDbModuleSqlPGRepositoryImpl>(storageOptions);
+    await provider.ConfigureMemoryStorage<ISettingsDbModuleRepository, SettingsDbModuleSqlMemoryRepositoryImplTestsSqlMemoryRepositoryImpl>(storageOptions);
   }
 }

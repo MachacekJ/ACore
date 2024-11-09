@@ -1,4 +1,4 @@
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 using Mapster;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKLong.Models;

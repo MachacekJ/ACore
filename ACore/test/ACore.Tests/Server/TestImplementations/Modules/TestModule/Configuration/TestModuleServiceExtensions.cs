@@ -9,10 +9,10 @@ using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestNoAudit.Save;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Get;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Save;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Memory;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.PG;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Memory;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.PG;
 using Autofac;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,9 +31,9 @@ public static class TestModuleServiceExtensions
     if (options.Storages == null)
       throw new ArgumentException($"{nameof(options.Storages)} is null.");
     
-    services.AddDbMongoStorage<TestModuleMongoStorageImpl>(options.Storages);
-    services.AddDbPGStorage<TestModulePGStorageImpl>(options.Storages);
-    services.AddDbMemoryStorage<TestModuleMemoryStorageImpl>(options.Storages, nameof(ITestStorageModule));
+    services.AddDbMongoStorage<TestModuleMongoRepositoryImpl>(options.Storages);
+    services.AddDbPGStorage<TestModulePGRepositoryImpl>(options.Storages);
+    services.AddDbMemoryStorage<TestModuleMemoryRepositoryImpl>(options.Storages, nameof(ITestRepositoryModule));
     
     TestNoAuditData.MapConfig();
   }
@@ -63,8 +63,8 @@ public static class TestModuleServiceExtensions
       throw new ArgumentException($"{nameof(opt.TestModuleOptions)} is null. You can also use {nameof(opt.ACoreServerOptions.DefaultStorages)}.");
 
 
-    await provider.ConfigureMongoStorage<ITestStorageModule, TestModuleMongoStorageImpl>(storageOptions);
-    await provider.ConfigurePGStorage<ITestStorageModule, TestModulePGStorageImpl>(storageOptions);
-    await provider.ConfigureMemoryStorage<ITestStorageModule, TestModuleMemoryStorageImpl>(storageOptions);
+    await provider.ConfigureMongoStorage<ITestRepositoryModule, TestModuleMongoRepositoryImpl>(storageOptions);
+    await provider.ConfigurePGStorage<ITestRepositoryModule, TestModulePGRepositoryImpl>(storageOptions);
+    await provider.ConfigureMemoryStorage<ITestRepositoryModule, TestModuleMemoryRepositoryImpl>(storageOptions);
   }
 }

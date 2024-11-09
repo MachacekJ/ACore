@@ -40,7 +40,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     sut.Fakes.Count().Should().Be(1);
     AssertOneNotification(allNotifications);
 
-    res.DatabaseOperationType.Should().Be(DatabaseOperationTypeEnum.Added);
+    res.RepositoryOperationType.Should().Be(RepositoryOperationTypeEnum.Added);
     res.SumHash.Should().Be(fakeEntityInit.GetSumHash(HashFake));
   }
 
@@ -76,7 +76,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     AssertOneNotification(allNotifications);
     res.IsSuccess.Should().BeTrue();
     res.SumHash.Should().NotBe(fakeEntityInit.GetSumHash(HashFake));
-    res.DatabaseOperationType.Should().Be(DatabaseOperationTypeEnum.Modified);
+    res.RepositoryOperationType.Should().Be(RepositoryOperationTypeEnum.Modified);
   }
 
   [Fact]
@@ -101,7 +101,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     sut.Fakes.Count().Should().Be(0);
     AssertOneNotification(allNotifications);
     res.IsSuccess.Should().BeTrue();
-    res.DatabaseOperationType.Should().Be(DatabaseOperationTypeEnum.Deleted);
+    res.RepositoryOperationType.Should().Be(RepositoryOperationTypeEnum.Deleted);
     res.SumHash.Should().BeNull();
   }
 
@@ -134,7 +134,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     allNotifications.Should().BeEmpty();
     res.IsSuccess.Should().BeTrue();
     res.SumHash.Should().Be(fakeEntityInit.GetSumHash(HashFake));
-    res.DatabaseOperationType.Should().Be(DatabaseOperationTypeEnum.UnModified);
+    res.RepositoryOperationType.Should().Be(RepositoryOperationTypeEnum.UnModified);
   }
 
   [Fact]
@@ -166,7 +166,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     allNotifications.Should().BeEmpty();
     res.IsSuccess.Should().BeFalse();
     res.SumHash.Should().BeNull();
-    res.DatabaseOperationType.Should().Be(DatabaseOperationTypeEnum.Unknown);
+    res.RepositoryOperationType.Should().Be(RepositoryOperationTypeEnum.Unknown);
     res.ResultErrorItem.Code.Should().Be("concurrency");
   }
 

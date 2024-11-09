@@ -10,6 +10,7 @@ using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.CQRS.Notifications;
 using ACore.Server.Storages.Definitions;
 using ACore.Server.Storages.Definitions.EF;
+using ACore.Server.Storages.Models;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -19,21 +20,21 @@ using Guid = System.Guid;
 
 namespace ACore.Server.Storages.Contexts.EF;
 
-public abstract partial class DbContextBase(DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger) : DbContext(options), IStorage
+public abstract partial class DbContextBase(DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger) : DbContext(options), IRepository
 {
   private readonly DbContextOptions _options = options;
   protected readonly ILogger<DbContextBase> Logger = logger ?? throw new ArgumentException($"{nameof(logger)} is null.");
   private readonly Dictionary<string, object> _registeredDbSets = [];
 
+  protected abstract string ModuleName { get; }
   protected abstract DbScriptBase UpdateScripts { get; }
-
-  public StorageDefinition StorageDefinition => EFStorageDefinition;
-
   protected abstract EFStorageDefinition EFStorageDefinition { get; }
 
-  protected abstract string ModuleName { get; }
+  public StorageDefinition StorageDefinition => EFStorageDefinition;
+  public RepositoryInfo RepositoryInfo => new(ModuleName, StorageDefinition);
 
-  protected internal async Task<DatabaseOperationResult> Save<TEntity, TPK>(TEntity newData, string? hashToCheck = null)
+  
+  protected internal async Task<RepositoryOperationResult> Save<TEntity, TPK>(TEntity newData, string? hashToCheck = null)
     where TEntity : PKEntity<TPK>
   {
     ArgumentNullException.ThrowIfNull(newData);
@@ -64,7 +65,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     {
       var existsEntityNullable = await GetEntityById<TEntity, TPK>(id);
       if (existsEntityNullable == null)
-        return DatabaseOperationResult.ErrorEntityNotExists(typeof(TEntity).Name, id.ToString() ?? string.Empty);
+        return RepositoryOperationResult.ErrorEntityNotExists(typeof(TEntity).Name, id.ToString() ?? string.Empty);
       
       existsEntity = existsEntityNullable;
       
@@ -76,11 +77,11 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
         
         //Check consistency of entity.
         if (hashToCheck != existsEntity.GetSumHash(saltForHash))
-          return DatabaseOperationResult.ErrorConcurrency(typeof(TEntity).Name, id.ToString() ?? string.Empty);
+          return RepositoryOperationResult.ErrorConcurrency(typeof(TEntity).Name, id.ToString() ?? string.Empty);
         
         // Item has not been modified, save doesn't required.
         if (newData.GetSumHash(saltForHash) == hashToCheck)
-          return DatabaseOperationResult.Success(DatabaseOperationTypeEnum.UnModified, hashToCheck);
+          return RepositoryOperationResult.Success(RepositoryOperationTypeEnum.UnModified, hashToCheck);
       }
 
       databaseOperationEventHelper.UpdateEntityAction(existsEntity);
@@ -110,8 +111,8 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     else
       await SaveInternal();
 
-    return DatabaseOperationResult.Success(
-      isNew ? DatabaseOperationTypeEnum.Added : DatabaseOperationTypeEnum.Modified, 
+    return RepositoryOperationResult.Success(
+      isNew ? RepositoryOperationTypeEnum.Added : RepositoryOperationTypeEnum.Modified, 
       hashIsRequired ? existsEntity.GetSumHash(saltForHash): null);
 
     async Task SaveInternal()
@@ -124,7 +125,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     }
   }
 
-  protected internal async Task<DatabaseOperationResult> Delete<TEntity, TPK>(TPK id)
+  protected internal async Task<RepositoryOperationResult> Delete<TEntity, TPK>(TPK id)
     where TEntity : PKEntity<TPK>
   {
     var entityToDelete = await GetEntityById<TEntity, TPK>(id) ?? throw new Exception($"{typeof(TEntity).Name}:{id} doesn't exist.");
@@ -142,7 +143,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     if (saveInfoHelper.EntityEventOperationItem != null)
       await mediator.Publish(new EntityEventNotification(saveInfoHelper.EntityEventOperationItem));
 
-    return DatabaseOperationResult.Success(DatabaseOperationTypeEnum.Deleted);
+    return RepositoryOperationResult.Success(RepositoryOperationTypeEnum.Deleted);
   }
 
   protected void RegisterDbSet<T>(DbSet<T>? dbSet) where T : class
@@ -156,28 +157,11 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
   private static string GetEntityTypeName<T>()
     => typeof(T).FullName ?? throw new Exception($"{nameof(Type.FullName)} cannot be retrieved.");
 
-
-  protected static void SetDatabaseNames<T>(Dictionary<string, EFDbNames> objectNameMapping, ModelBuilder modelBuilder) where T : class
-  {
-    if (objectNameMapping.TryGetValue(typeof(T).Name, out var auditColumnEntityObjectNames))
-    {
-      modelBuilder.Entity<T>().ToTable(auditColumnEntityObjectNames.TableName);
-      foreach (var expression in auditColumnEntityObjectNames.GetColumns<T>())
-      {
-        modelBuilder.Entity<T>().Property(expression.Key).HasColumnName(expression.Value);
-      }
-    }
-    else
-    {
-      throw new Exception($"Missing database name definition for entity: {typeof(T).Name}");
-    }
-  }
-
   protected DbSet<T> GetDbSet<T>() where T : class
   {
     var entityName = GetEntityTypeName<T>();
-    if (_registeredDbSets.TryGetValue(entityName, out var aa))
-      return aa as DbSet<T> ?? throw new Exception($"DbSet '{entityName}' is not mutable type.");
+    if (_registeredDbSets.TryGetValue(entityName, out var dbSet))
+      return dbSet as DbSet<T> ?? throw new Exception($"DbSet '{entityName}' is not mutable type.");
 
     throw new Exception($"No registered {nameof(DbSet<T>)} has not been found. Please call the function {nameof(RegisterDbSet)} in ctor.");
   }
@@ -186,7 +170,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
 
 #pragma warning disable CS8605 // Unboxing a possibly null value.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-  private async Task<TEntity?> GetEntityById<TEntity, TPK>(TPK id)
+  protected async Task<TEntity?> GetEntityById<TEntity, TPK>(TPK id)
     where TEntity : PKEntity<TPK>
   {
     var remap = GetDbSet<TEntity>();

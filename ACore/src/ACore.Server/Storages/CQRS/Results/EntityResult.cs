@@ -5,27 +5,28 @@ using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.CQRS.Results.Models;
+using ACore.Server.Storages.Models;
 
 namespace ACore.Server.Storages.CQRS.Results;
 
 public class EntityResult : Result
 {
-  public ReadOnlyDictionary<IStorage, EntityResultData> ReturnedValues { get; }
+  public ReadOnlyDictionary<RepositoryInfo, EntityResultData> ReturnedValues { get; }
 
-  private EntityResult(IDictionary<IStorage, EntityResultData> pkValues) : base(true, ResultErrorItem.None)
+  private EntityResult(IDictionary<RepositoryInfo, EntityResultData> pkValues) : base(true, ResultErrorItem.None)
     => ReturnedValues = pkValues.AsReadOnly();
 
   public static EntityResult SuccessWithEntityData(IEnumerable<StorageEntityExecutorItem> data)
   {
     return SuccessWithValues(data.ToDictionary(
-      k => k.Storage,
+      k => k.Repository.RepositoryInfo,
       v => new EntityResultData(
         v.Entity.PropertyValue(nameof(PKEntity<int>.Id)) ?? throw new Exception($"{nameof(PKEntity<int>.Id)} is null."),
         v.Task.Result
       )));
   }
 
-  private static EntityResult SuccessWithValues(Dictionary<IStorage, EntityResultData> pkValues) => new(pkValues);
+  public static EntityResult SuccessWithValues(Dictionary<RepositoryInfo, EntityResultData> pkValues) => new(pkValues);
 
   /// <summary>
   /// Return the first PK value. Value must exist.
@@ -33,7 +34,7 @@ public class EntityResult : Result
   public T SinglePrimaryKey<T>()
     => (T)SingleResult().PK;
   
-  public DatabaseOperationResult SingleDatabaseOperationResult()
+  public RepositoryOperationResult SingleDatabaseOperationResult()
   => SingleResult().OperationResult;
   
   private EntityResultData SingleResult()

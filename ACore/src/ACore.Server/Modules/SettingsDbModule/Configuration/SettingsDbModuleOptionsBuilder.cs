@@ -1,5 +1,5 @@
 using ACore.Server.Configuration.Modules;
-using ACore.Server.Modules.SettingsDbModule.Storage;
+using ACore.Server.Modules.SettingsDbModule.Repositories;
 using ACore.Server.Storages.Configuration;
 
 namespace ACore.Server.Modules.SettingsDbModule.Configuration;
@@ -14,7 +14,7 @@ public class SettingsDbModuleOptionsBuilder : StorageModuleOptionBuilder
   {
     return new SettingsDbModuleOptions(IsActive)
     {
-      Storages = BuildStorage(defaultStorages, nameof(ISettingsDbModuleStorage)),
+      Storages = BuildStorage(defaultStorages, nameof(ISettingsDbModuleRepository)),
     };
   }
 }

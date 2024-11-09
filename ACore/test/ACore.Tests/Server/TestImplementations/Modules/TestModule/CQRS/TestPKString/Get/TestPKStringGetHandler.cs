@@ -1,7 +1,7 @@
 ﻿using ACore.Models.Result;
 using ACore.Server.Storages.Services.StorageResolvers;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Models;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Get;

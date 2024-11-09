@@ -20,7 +20,7 @@ public abstract class DbVersionScriptsBase
     /// Call after <see cref="AllScripts" /> executed.
     /// Init data loading etc.
     /// </summary>
-    public virtual void AfterScriptRunCode<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger) where T : IStorage
+    public virtual void AfterScriptRunCode<T>(T dbContext, DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger) where T : IRepository
     {
       
     }

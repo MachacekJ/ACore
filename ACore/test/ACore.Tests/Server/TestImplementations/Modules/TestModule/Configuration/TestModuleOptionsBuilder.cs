@@ -1,5 +1,5 @@
 using ACore.Server.Configuration.Modules;
-using ACore.Server.Modules.SettingsDbModule.Storage;
+using ACore.Server.Modules.SettingsDbModule.Repositories;
 using ACore.Server.Storages.Configuration;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.Configuration;
@@ -13,7 +13,7 @@ public class TestModuleOptionsBuilder: StorageModuleOptionBuilder
   {
     return new TestModuleOptions(IsActive)
     {
-      Storages = BuildStorage(defaultStorages, nameof(ISettingsDbModuleStorage))
+      Storages = BuildStorage(defaultStorages, nameof(ISettingsDbModuleRepository))
     };
   }
 }

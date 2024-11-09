@@ -1,8 +1,8 @@
 ﻿using ACore.Models.Result;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.SQL.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Save;
 
@@ -14,7 +14,7 @@ internal class TestPKStringSaveHandler(IStorageResolver storageResolver) : TestM
     {
       switch (storage)
       {
-        case TestModuleSqlStorageImpl:
+        case TestModuleSqlRepositoryImpl:
           var en = TestPKStringEntity.Create(request.Data);
           return new StorageEntityExecutorItem<TestPKStringEntity>(en, storage, storage.SaveTestEntity<TestPKStringEntity, string>(en));
         default:

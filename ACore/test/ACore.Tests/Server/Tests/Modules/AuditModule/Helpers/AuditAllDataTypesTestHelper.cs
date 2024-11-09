@@ -4,7 +4,7 @@ using ACore.Server.Modules.AuditModule.Models;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Get;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Models;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestValueType.Save;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo.Models;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo.Models;
 using FluentAssertions;
 using MediatR;
 using Serilog.Sinks.InMemory;

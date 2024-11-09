@@ -18,7 +18,7 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
   public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
   protected async Task<Result> StorageEntityParallelAction<TStorage>(Func<TStorage, StorageEntityExecutorItem> executor, string sumHashSalt = "")
-    where TStorage : IStorage
+    where TStorage : IRepository
   {
     var allTask = storageResolver.WriteToStorages<TStorage>()
       .Select(executor).ToList();
@@ -30,7 +30,7 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
   }
   
   protected async Task<Result> StorageParallelAction<TStorage>(Func<TStorage, StorageExecutorItem> executor)
-    where TStorage : IStorage
+    where TStorage : IRepository
   {
     var allTask = storageResolver.WriteToStorages<TStorage>()
       .Select(executor).ToList();
@@ -42,7 +42,7 @@ public abstract class StorageRequestHandler<TRequest, TResponse>(IStorageResolve
   
   private static async Task WaitForAllParallelTasks(IEnumerable<StorageExecutorItem> allTask)
   {
-    Task<DatabaseOperationResult[]>? taskSum = null;
+    Task<RepositoryOperationResult[]>? taskSum = null;
     try
     {
       taskSum = Task.WhenAll(allTask.Select(e => e.Task));

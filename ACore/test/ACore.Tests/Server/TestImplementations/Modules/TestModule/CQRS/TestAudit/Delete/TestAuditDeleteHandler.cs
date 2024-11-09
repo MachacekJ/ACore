@@ -1,9 +1,9 @@
 ﻿using ACore.Models.Result;
 using ACore.Server.Storages.CQRS.Handlers.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo;
+using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo;
 using MongoDB.Bson;
-using TestAuditEntity = ACore.Tests.Server.TestImplementations.Modules.TestModule.Storages.Mongo.Models.TestAuditEntity;
+using TestAuditEntity = ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo.Models.TestAuditEntity;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Delete;
 
@@ -17,8 +17,8 @@ public class TestAuditDeleteHandler<T>(IStorageResolver storageResolver)
     return await StorageParallelAction((storage)
       => storage switch
       {
-        TestModuleMongoStorageImpl => new StorageExecutorItem(storage.DeleteTestEntity<TestAuditEntity, ObjectId>((ObjectId)Convert.ChangeType(request.Id, typeof(ObjectId)))),
-        _ => new StorageExecutorItem(storage.DeleteTestEntity<Storages.SQL.Models.TestAuditEntity, int>((int)Convert.ChangeType(request.Id, typeof(int))))
+        TestModuleMongoRepositoryImpl => new StorageExecutorItem(storage.DeleteTestEntity<TestAuditEntity, ObjectId>((ObjectId)Convert.ChangeType(request.Id, typeof(ObjectId)))),
+        _ => new StorageExecutorItem(storage.DeleteTestEntity<Repositories.SQL.Models.TestAuditEntity, int>((int)Convert.ChangeType(request.Id, typeof(int))))
       });
   }
 }

@@ -2,4 +2,4 @@
 
 namespace ACore.Server.Storages.CQRS.Results.Models;
 
-public record EntityResultData(object PK, DatabaseOperationResult OperationResult);
+public record EntityResultData(object PK, RepositoryOperationResult OperationResult);
