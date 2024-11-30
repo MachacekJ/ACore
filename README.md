@@ -11,6 +11,10 @@ Key architecture design pattern - [Mediator](https://refactoring.guru/design-pat
 
 ![StartupSchema.jpg](Doc/UML/StartupSchema.jpg)
 
+## Unit/Integration Tests
+![CodeCoverage.png](Doc/CodeCoverage.png)
+
+
 ## Modules
 ![ACoreModules.jpg](Doc/UML/ACoreModules.jpg)
 

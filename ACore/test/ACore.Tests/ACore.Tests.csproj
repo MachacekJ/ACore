@@ -50,6 +50,9 @@
 		<None Remove="Server\Modules\LocalizationModule\**" />
 		<None Remove="Logs\**" />
 		<None Remove="Server\Tests\Modules\LocalizationModule\**" />
+		<None Update="appsettings.Test.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
