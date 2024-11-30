@@ -1,0 +1,48 @@
+https://plantuml.com/deployment-diagram
+
+@startuml
+!include ..\\theme1.skin
+action action
+actor actor
+actor/ "actor/"
+agent agent
+artifact artifact
+boundary boundary
+card card
+circle circle
+cloud cloud
+collections collections
+component component
+control control
+database database
+entity entity
+file file
+folder folder
+frame frame
+hexagon hexagon
+interface interface
+label label
+node node
+package package
+person person
+process process
+queue queue
+rectangle rectangle
+stack stack
+storage storage
+usecase usecase
+usecase/ "usecase/"
+
+
+database database2 [
+This is a <b>database
+----
+You can use separator
+====
+of different kind
+....
+and style
+]
+
+
+@enduml

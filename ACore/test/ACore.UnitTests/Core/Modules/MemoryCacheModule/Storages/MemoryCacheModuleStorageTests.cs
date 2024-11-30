@@ -1,7 +1,7 @@
 ﻿using ACore.Configuration;
 using ACore.Models.Cache;
 using ACore.Modules.MemoryCacheModule.Configuration;
-using ACore.Modules.MemoryCacheModule.Storages;
+using ACore.Modules.MemoryCacheModule.Repositories;
 using ACore.UnitTests.Core.Modules.MemoryCacheModule.FakeClasses;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
@@ -217,7 +217,7 @@ public class MemoryCacheModuleStorageTests
     }
   }
   
-  private IMemoryCacheModuleStorage MemoryCacheModuleModuleStorageAsSut(ISystemClock? systemClock = null)
+  private IMemoryCacheModuleRepository MemoryCacheModuleModuleStorageAsSut(ISystemClock? systemClock = null)
   {
     var memoryCacheOptions = Options.Create(new MemoryCacheOptions()
     {
@@ -231,6 +231,6 @@ public class MemoryCacheModuleStorageTests
       }
     });
     var mc = new MemoryCache(memoryCacheOptions);
-    return new MemoryCacheModuleModuleStorage(mc, aCoreOptions);
+    return new MemoryCacheModuleRepository(mc, aCoreOptions);
   }
 }

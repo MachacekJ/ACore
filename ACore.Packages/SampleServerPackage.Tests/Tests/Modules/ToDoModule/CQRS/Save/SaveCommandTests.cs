@@ -1,4 +1,5 @@
-﻿using SampleServerPackage.ToDoModulePG.CQRS.Models;
+﻿using System.Reflection;
+using SampleServerPackage.ToDoModulePG.CQRS.Models;
 using SampleServerPackage.ToDoModulePG.CQRS.Save;
 
 namespace SampleServerPackage.Tests.Tests.Modules.ToDoModule.CQRS.Save;
@@ -9,15 +10,18 @@ public class SaveCommandTests : CQRSTests
   [Fact]
   public async Task EmptyTest()
   {
-    // Arrange
-    var h = CreateToDoSaveHandlerAsSut();
-    var re = new ToDoSaveCommand(new ToDoListData() { });
-    
-    // Act
-    await h.Handle(re, CancellationToken.None);
-    
-    // Assert2
-    
+    var method = MethodBase.GetCurrentMethod();
+    await RunTestAsync(method, async () =>
+    {
+      // Arrange
+      var h = CreateToDoSaveHandlerAsSut();
+      var re = new ToDoSaveCommand(new ToDoListData());
+
+      // Act
+      await h.Handle(re, CancellationToken.None);
+
+      // Assert
+    });
   }
 
   private ToDoSaveHandler CreateToDoSaveHandlerAsSut()

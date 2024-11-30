@@ -1,5 +1,5 @@
 ﻿using ACore.Modules.MemoryCacheModule.CQRS;
-using ACore.Modules.MemoryCacheModule.Storages;
+using ACore.Modules.MemoryCacheModule.Repositories;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +15,6 @@ public static class MemoryCacheModuleServiceExtension
       services.AddMemoryCache();
     
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MemoryCacheModulePipelineBehavior<,>));
-    services.AddSingleton<IMemoryCacheModuleStorage, MemoryCacheModuleModuleStorage>();
+    services.AddSingleton<IMemoryCacheModuleRepository, MemoryCacheModuleRepository>();
   }
 }

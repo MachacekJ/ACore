@@ -1,4 +1,5 @@
 using ACore.Configuration;
+using ACore.Modules.Base.Configuration;
 using ACore.Server.Modules.AuditModule.Configuration;
 using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
@@ -10,10 +11,12 @@ public class ACoreServerOptionBuilder
 {
   private readonly ACoreOptionsBuilder _aCoreOptionsBuilder = ACoreOptionsBuilder.Empty();
   private readonly SettingsDbModuleOptionsBuilder _settingsDbModuleOptionsBuilder = SettingsDbModuleOptionsBuilder.Empty();
-  private  readonly AuditModuleOptionsBuilder _auditModuleOptionsBuilder = AuditModuleOptionsBuilder.Empty();
-  private  readonly SecurityModuleOptionsBuilder _securityModuleOptionsBuilder = SecurityModuleOptionsBuilder.Empty();
+  private readonly AuditModuleOptionsBuilder _auditModuleOptionsBuilder = AuditModuleOptionsBuilder.Empty();
+  private readonly SecurityModuleOptionsBuilder _securityModuleOptionsBuilder = SecurityModuleOptionsBuilder.Empty();
+
+
   public StorageOptionBuilder? DefaultStorageOptionBuilder;
-  
+
   private ACoreServerOptionBuilder()
   {
   }
@@ -49,6 +52,12 @@ public class ACoreServerOptionBuilder
     _securityModuleOptionsBuilder.Activate();
     return this;
   }
+
+  // public ACoreServerOptionBuilder AddModule<T>(Action<T>? action = null) where T : ModuleOptionsBuilder
+  // {
+  //   var _builder = 
+  //   action?.Invoke();
+  // }
 
   public ACoreServerOptionBuilder ACore(Action<ACoreOptionsBuilder>? action = null)
   {

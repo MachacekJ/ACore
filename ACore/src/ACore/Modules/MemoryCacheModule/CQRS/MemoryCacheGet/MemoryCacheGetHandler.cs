@@ -1,12 +1,12 @@
 ﻿using ACore.Models.Cache;
 using ACore.Models.Result;
-using ACore.Modules.MemoryCacheModule.Storages;
+using ACore.Modules.MemoryCacheModule.Repositories;
 
 namespace ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
 
-public class MemoryMemoryCacheGetHandler(IMemoryCacheModuleStorage cacheModule) : MemoryCacheModuleRequestHandler<MemoryCacheModuleGetQuery, Result<CacheValue?>>
+public class MemoryMemoryCacheGetHandler(IMemoryCacheModuleRepository cacheModule) : MemoryCacheModuleRequestHandler<MemoryCacheModuleGetQuery, Result<CacheValue?>>
 {
-    private readonly IMemoryCacheModuleStorage _cacheModule = cacheModule ?? throw new ArgumentException($"{nameof(cacheModule)} is null.");
+    private readonly IMemoryCacheModuleRepository _cacheModule = cacheModule ?? throw new ArgumentException($"{nameof(cacheModule)} is null.");
 
     public override Task<Result<CacheValue?>> Handle(MemoryCacheModuleGetQuery request, CancellationToken cancellationToken)
     {

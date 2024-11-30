@@ -1,5 +1,7 @@
-﻿using ACore.Server.Storages.Definitions.Models;
+﻿using ACore.Server.Configuration;
+using ACore.Server.Storages.Definitions.Models;
 using ACore.Tests.Server.TestInfrastructure;
+using ACore.Tests.Server.TestInfrastructure.Storages.EF;
 using Microsoft.Extensions.DependencyInjection;
 using SampleServerPackage.Configuration;
 
@@ -10,12 +12,23 @@ public class ToDoModuleTestsBase(IEnumerable<StorageTypeEnum> storages) : Storag
   protected override void RegisterServices(ServiceCollection services)
   {
     base.RegisterServices(services);
-    services.AddSampleServerModule(a => a.AddToDoModule());
+    
+    // services.AddSampleServerPackage(a =>
+    // {
+    //   a.AddToDoModule();
+    // });
+  }
+
+  protected override void SetupACoreServer(ACoreServerOptionBuilder builder)
+  {
+    base.SetupACoreServer(builder);
+    //builder.AddModule()
   }
 
   protected override async Task GetServices(IServiceProvider sp)
   {
     await base.GetServices(sp);
-    await sp.UseSampleServerModule();
+    // await sp.UseACoreServer();
+    // await sp.UseACoreSampleServerPackage();
   }
 }

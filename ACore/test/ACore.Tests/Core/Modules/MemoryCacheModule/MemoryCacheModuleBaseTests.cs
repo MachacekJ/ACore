@@ -1,5 +1,5 @@
 ﻿using ACore.Configuration;
-using ACore.Modules.MemoryCacheModule.Storages;
+using ACore.Modules.MemoryCacheModule.Repositories;
 using ACore.Server.Configuration;
 using ACore.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +8,7 @@ namespace ACore.Tests.Core.Modules.MemoryCacheModule
 {
   public class MemoryCacheModuleBaseTests(bool onlyCacheTest = false) : TestsBase
   {
-    protected IMemoryCacheModuleStorage? MemoryCacheStorage { get; private set; }
+    protected IMemoryCacheModuleRepository? MemoryCacheStorage { get; private set; }
 
     protected override void RegisterServices(ServiceCollection sc)
     {
@@ -27,7 +27,7 @@ namespace ACore.Tests.Core.Modules.MemoryCacheModule
     {
       await base.GetServices(sp);
       await sp.UseACoreServer();
-      MemoryCacheStorage = sp.GetService<IMemoryCacheModuleStorage>() ?? throw new ArgumentException($"{nameof(IMemoryCacheModuleStorage)} is null.");
+      MemoryCacheStorage = sp.GetService<IMemoryCacheModuleRepository>() ?? throw new ArgumentException($"{nameof(IMemoryCacheModuleRepository)} is null.");
     }
   }
 }

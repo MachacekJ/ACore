@@ -1,4 +1,5 @@
 using ACore.Configuration;
+using ACore.Modules.Base.Configuration;
 using ACore.Server.Modules.AuditModule.Configuration;
 using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
@@ -17,4 +18,6 @@ public class ACoreServerOptions
   public AuditModuleOptions AuditModuleOptions { get; init; } = new();
 
   public SecurityModuleOptions SecurityModuleOptions { get; init; } = new();
+  
+  public List<ModuleOptions> ExternalModulesOptions { get; init; } = new();
 }

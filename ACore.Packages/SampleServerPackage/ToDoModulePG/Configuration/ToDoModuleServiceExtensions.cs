@@ -1,4 +1,5 @@
-﻿using ACore.Server.Storages.Configuration;
+﻿using ACore.Server.Configuration;
+using ACore.Server.Storages.Configuration;
 using Autofac;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,6 @@ public static class ToDoModuleServiceExtensions
 {
   public static void AddToDoModule(this IServiceCollection services, ToDoModuleOptions options)
   {
-   // services.AddMediatR(c => { c.RegisterServicesFromAssemblyContaining(typeof(ITestStorageModule)); });
     services.TryAddTransient(typeof(IPipelineBehavior<,>), typeof(ToDoModulePipelineBehavior<,>));
     
     if (options.Storages == null)
@@ -31,8 +31,8 @@ public static class ToDoModuleServiceExtensions
 
   public static async Task UseToDoModule(this IServiceProvider provider)
   {
-    var opt = provider.GetService<IOptions<SampleServerOptions>>()?.Value
-              ?? throw new ArgumentException($"{nameof(SampleServerOptions)} is not configured.");
+    var opt = provider.GetService<IOptions<ACoreServerOptions>>()?.Value
+              ?? throw new ArgumentException($"{nameof(ACoreServerOptions)} is not configured.");
 
     StorageOptions? storageOptions = null;
     if (opt.DefaultStorages != null)

@@ -1,0 +1,12 @@
+@startuml
+rectangle Arrows
+rectangle Up
+rectangle Down
+rectangle Right
+rectangle Left
+
+Arrows -u-> Up 
+Arrows -d-> Down
+Arrows -l-> Left
+Arrows -r-> Right
+@enduml

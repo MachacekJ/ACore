@@ -43,9 +43,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="appsettings.Test.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 		<None Remove="ServerT\DbT\TestDBContext\Scripts\MSSQL\**" />
 		<None Remove="ServerT\DbT\DbContexts\AuditStructureT\**" />
 		<None Remove="ServerT\DbT\TestStorageModule\Scripts\MSSQL\**" />
