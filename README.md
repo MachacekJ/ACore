@@ -12,6 +12,7 @@ Key architecture design pattern - [Mediator](https://refactoring.guru/design-pat
 ![StartupSchema.jpg](Doc/UML/StartupSchema.jpg)
 
 ## Unit/Integration Tests
+It needs Docker -> [docker-compose.yaml](ACore/test/ACore.Tests/docker/ACore/docker-compose.yaml)
 ![CodeCoverage.png](Doc/CodeCoverage.png)
 
 
