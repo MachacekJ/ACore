@@ -2,9 +2,9 @@
 POC for .NET 8 - Clean architecture and not ready for production !!! This is a "private" project and some parts/ideas of the code may be ported to productions in other projects.
 Inspired by [Milan Jovanović](https://www.youtube.com/@MilanJovanovicTech)
 
-Key architecture desing pattern - [Mediator](https://refactoring.guru/design-patterns/mediator)
+Key architecture design pattern - [Mediator](https://refactoring.guru/design-patterns/mediator)
 
-## General conception
+## General concept
 ![GeneralIdea.jpg](Doc/UML/GeneralIdea.jpg)
 
 ![MediatorFlow.jpg](Doc/UML/MediatorFlow.jpg)
