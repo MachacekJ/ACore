@@ -1,24 +1,15 @@
-using ACore.Server.Configuration.Modules;
-using ACore.Server.Modules.AuditModule.Repositories;
-using ACore.Server.Storages.Configuration;
+using ACore.Server.Repository.Configuration;
 
 namespace ACore.Server.Modules.AuditModule.Configuration;
 
-public class AuditModuleOptionsBuilder : StorageModuleOptionBuilder
+public class AuditModuleOptionsBuilder : ServerRepositoryOptionBuilder
 {
   public static AuditModuleOptionsBuilder Empty() => new();
-  
-  public AuditModuleOptionsBuilder Storages(Action<StorageOptionBuilder> action)
+  public AuditModuleOptions Build(ServerRepositoryOptionBuilder defaultRepositories)
   {
-    StoragesBase(action);
-    return this;
-  }
-
-  public AuditModuleOptions Build(StorageOptionBuilder? defaultStorages)
-  {
-    return new AuditModuleOptions(IsActive)
-    {
-      Storages = BuildStorage(defaultStorages, nameof(IAuditRepository)),
-    };
+    var defaultServerRepositoryOptions = defaultRepositories.Build();
+    var res = new AuditModuleOptions(defaultServerRepositoryOptions);
+    SetBase(res);
+    return res;
   }
 }

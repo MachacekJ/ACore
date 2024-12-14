@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using ACore.CQRS.Pipelines.Helpers;
-using ACore.CQRS.Results;
 using ACore.Extensions;
-using ACore.Models.Result;
+using ACore.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

@@ -1,4 +1,4 @@
-using ACore.Models.Result;
+using ACore.Results;
 using ACore.Server.Modules.SecurityModule.Models;
 
 namespace ACore.Server.Modules.SecurityModule.CQRS.SecurityGetCurrentUser;

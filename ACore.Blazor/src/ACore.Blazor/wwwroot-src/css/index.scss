@@ -8,5 +8,6 @@
 @import "../../Components/Layouts/DashboardDrawer.razor.scss";
 @import "../../Components/SideBar/LeftSideBar/LeftMenuContent.razor.scss";
 
-@import "../../Components/Header/Login/UserInfo.razor.scss";
-@import "../../Components/Header/CultureChooser.razor.scss";
+@import "../../Components/AppBar/Login/UserInfo.razor.scss";
+@import "../../Components/AppBar/CultureChooser.razor.scss";
+

@@ -1,4 +1,4 @@
-﻿using ACore.Server.Storages.Models.EntityEvent;
+﻿using ACore.Server.Repository.Models.EntityEvent;
 using MongoDB.Bson;
 
 namespace ACore.Server.Modules.AuditModule.Models;

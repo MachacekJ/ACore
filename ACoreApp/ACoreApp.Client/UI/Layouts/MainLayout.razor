@@ -1,0 +1,55 @@
+﻿@layout TelerikLayout
+@using ACore.Blazor.Components.Layouts
+@using ACore.Blazor.Components.AppBar.Login
+@using ACore.Blazor.Modules.LocalizationModule.Components
+@using ACoreApp.Client.UI.Components.AppMenu
+@inherits LayoutComponentBase
+
+@if (!RendererInfo.IsInteractive)
+{
+    <span>Loading ...</span>
+}
+else
+{
+    if (!_isInitialized)
+    {
+        <span>Init ...</span>
+        return;
+    }
+
+    <DashboardDrawer>
+        <Body>
+        @Body
+        </Body>
+        <AppBar>
+
+            @if (appManager.AppSettings.IsDebug)
+            {
+                <AppBarSection>
+                    @RendererInfo.Name
+                </AppBarSection>
+            }
+
+            <AppBarSpacer/>
+
+            <AppBarSection>
+                <Register></Register>
+            </AppBarSection>
+
+            <AppBarSeparator/>
+
+            <AppBarSection>
+                <LogIn></LogIn>
+            </AppBarSection>
+
+            <AppBarSection>
+                <LinkTest></LinkTest>
+            </AppBarSection>
+
+            <AppBarSection>
+                <CultureChooser/>
+            </AppBarSection>
+
+        </AppBar>
+    </DashboardDrawer>
+}

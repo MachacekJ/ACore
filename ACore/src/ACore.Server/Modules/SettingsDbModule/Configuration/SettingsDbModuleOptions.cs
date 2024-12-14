@@ -1,5 +1,5 @@
-using ACore.Server.Configuration.Modules;
+using ACore.Server.Repository.Configuration;
 
 namespace ACore.Server.Modules.SettingsDbModule.Configuration;
 
-public class SettingsDbModuleOptions(bool isActive = false) : StorageModuleOptions(nameof(SettingsDbModule), isActive);
+public class SettingsDbModuleOptions(ServerRepositoryOptions serverRepositories) : ServerRepositoryOptions(serverRepositories, nameof(SettingsDbModule));

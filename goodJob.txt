@@ -9,3 +9,6 @@ https://pandao.github.io/editor.md/en.html
 
 
 https://www.milanjovanovic.tech/blog/how-to-use-ef-core-interceptors?utm_source=newsletter&utm_medium=email&utm_campaign=tnw110
+
+
+https://www.mongodb.com/developer/languages/csharp/query-with-odata-mongodb-efcore-provider-dotnet/

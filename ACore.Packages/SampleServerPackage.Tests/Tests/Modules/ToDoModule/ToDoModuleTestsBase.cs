@@ -19,11 +19,11 @@ public class ToDoModuleTestsBase(IEnumerable<StorageTypeEnum> storages) : Storag
     // });
   }
 
-  protected override void SetupACoreServer(ACoreServerOptionBuilder builder)
-  {
-    base.SetupACoreServer(builder);
-    //builder.AddModule()
-  }
+  // protected override void SetupACoreServer(ACoreServerOptionsBuilder builder)
+  // {
+  //   base.SetupACoreServer(builder);
+  //   //builder.AddModule()
+  // }
 
   protected override async Task GetServices(IServiceProvider sp)
   {

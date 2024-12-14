@@ -1,16 +1,9 @@
-﻿using ACore.Models.Result;
-using ACore.Server.Storages.Definitions.Models;
+﻿using ACore.Results;
 
 namespace ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbGet;
 
-public class SettingsDbGetQuery(StorageTypeEnum storageType, string key, bool isRequired = false) : SettingsDbModuleRequest<Result<string?>>
+public class SettingsDbGetQuery(string key, bool isRequired = false) : SettingsDbModuleRequest<Result<string?>>
 {
-  public StorageTypeEnum StorageType { get; } = storageType;
-
   public string Key { get; } = key;
   public bool IsRequired { get; } = isRequired;
-
-  public SettingsDbGetQuery(string key, bool isRequired = false) : this(StorageTypeEnum.All, key, isRequired)
-  {
-  }
 }

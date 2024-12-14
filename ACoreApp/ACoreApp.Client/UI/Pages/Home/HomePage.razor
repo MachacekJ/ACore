@@ -1,0 +1,27 @@
+﻿@attribute [Route(HomePageConfig.Url)]
+
+@using System.Globalization
+@using ACoreApp.Client.Configuration.Localization.Contexts.Memory
+@using ACoreApp.Client.Configuration.Localization.Contexts.ResX
+@inherits ACore.Blazor.ACorePageBase;
+@* @inject IStringLocalizer<ResXMain> Localizer *@
+@inject IStringLocalizer<ResXContext> Localizer
+@inject IStringLocalizer<ResXContext2> Localizer2
+@inject IStringLocalizer<ResXMenu> LocalizerMenu
+
+<h1>Hello, world! @Localizer[nameof(ResXContext.Test)] </h1>
+<h1>Hello, world! @Localizer2[nameof(ResXContext2.Test)] </h1>
+<h1>Hello, world! @Localizer2[nameof(ResXMenu.About)] </h1>
+
+Welcome to your new app.
+
+<span>@RendererInfo.Name</span>
+
+<ul>
+    
+    <li><b>CurrentCulture</b>: @CultureInfo.CurrentCulture</li>
+    <li><b>CurrentUICulture</b>: @CultureInfo.CurrentUICulture</li>
+</ul>
+
+<button @onclick="GoToAboutPage">Go to about paga</button>
+<button @onclick="GetTestData">Test Data</button>

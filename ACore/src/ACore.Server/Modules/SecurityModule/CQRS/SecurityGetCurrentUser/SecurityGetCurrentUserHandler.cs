@@ -1,4 +1,4 @@
-using ACore.Models.Result;
+using ACore.Results;
 using ACore.Server.Configuration;
 using ACore.Server.Modules.SecurityModule.Models;
 using Microsoft.Extensions.Options;

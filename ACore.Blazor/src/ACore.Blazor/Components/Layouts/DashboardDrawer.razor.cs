@@ -1,91 +1,119 @@
-﻿using ACore.Blazor.Services.App;
+﻿using ACore.Blazor.Abstractions;
 using ACore.Blazor.Services.App.Models;
-using ACore.Blazor.Services.Page.Interfaces;
-using ACore.Blazor.Services.Page.Models;
 using Microsoft.AspNetCore.Components;
 using Telerik.Blazor.Components;
 
 namespace ACore.Blazor.Components.Layouts;
 
-public partial class DashboardDrawer : JMComponentBase, IDisposable
+public partial class DashboardDrawer : ACoreComponentBase
 {
-    private string _pageTitle = string.Empty;
-    private IEnumerable<BreadcrumbItem> _items = new List<BreadcrumbItem>();
-    private bool _expanded = true;
-    private TelerikDrawer<int> _menuDrawer = null!;
-    private TelerikDrawer<int> _menuDrawer2 = null!;
-    private DrawerMode _mode = DrawerMode.Push;
-    private List<int> _fakeData = new() { 0 };
-    private List<int> _fakeData2 = new() { 0 };
-    //[Parameter] public RenderFragment? TopBar { get; set; }
+  private TelerikDrawer<int>? _leftMenuDrawer;
+  private TelerikDrawer<int>? _rightMenuDrawer;
+  
+  private DrawerMode _mode = DrawerMode.Push;
 
-    [Parameter] public RenderFragment? Body { get; set; }
 
-    [Inject] public IAppStartConfiguration AppSettings { get; set; } = null!;
+  private string _currentPageId = string.Empty;
+  private bool _leftMenuExpanded = true;
 
-    [Inject] public IPageManager PageManager { get; set; } = null!;
+  private Type? _rightMenuType;
 
-    public void Dispose()
+  private List<int> _leftDrawerData = [0];
+  private List<int> _rightDrawerData = [0];
+
+
+  [Parameter] public RenderFragment? Body { get; set; }
+  [Parameter] public RenderFragment? AppBar { get; set; }
+
+  private bool RightMenuExpanded => _rightMenuType != null;
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    //AppManager.Page.OnPageChange += PageChange;
+    AppManager.RightMenu.ShowRightMenuNotifier += ShowRightMenuNotifier;
+    AppManager.RightMenu.HideRightMenuNotifier += HideRightMenuNotifier;
+  }
+
+  public override void Dispose()
+  {
+    base.Dispose();
+    //AppManager.Page.OnPageChange -= PageChange;
+    AppManager.RightMenu.ShowRightMenuNotifier -= ShowRightMenuNotifier;
+    AppManager.RightMenu.HideRightMenuNotifier -= HideRightMenuNotifier;
+  }
+
+  protected override async Task OnInitializedAsync()
+  {
+    await PageChange(AppManager.Page.Current);
+  }
+
+  private async Task PageChange(IPageConfig pageConfig)
+  {
+    if (_currentPageId == pageConfig.PageId)
+      return;
+
+    _currentPageId = pageConfig.PageId;
+
+    if (_leftMenuDrawer != null && AppManager.ResponsiveType == ResponsiveTypeEnum.Mobile)
+      await _leftMenuDrawer.CollapseAsync();
+
+    //StateHasChanged();
+  }
+
+  private async Task ToggleMenuDrawer()
+  {
+    if (_leftMenuDrawer != null)
     {
-        AppState.OnPageChangeAsync -= AppStateOnPageChangeAsync;
+      if (_leftMenuDrawer.Expanded)
+        await _leftMenuDrawer.CollapseAsync();
+      else
+        await _leftMenuDrawer.ExpandAsync();
     }
+  }
 
-    protected override void OnInitialized()
+  private void LeftMenuExpandedChangedHandler(bool expanded)
+  {
+    _leftMenuExpanded = expanded;
+  }
+
+  private async Task MediaQueryChange(bool isSmall)
+  {
+    AppManager.SetResponsiveType(isSmall ? ResponsiveTypeEnum.Mobile : ResponsiveTypeEnum.Desktop);
+    if (AppManager.ResponsiveType == ResponsiveTypeEnum.Mobile)
     {
-        AppState.OnPageChangeAsync += AppStateOnPageChangeAsync;
-        AppState.OnShowRightMenuAsync += ShowRightMenuAsync;
-        _pageTitle = AppState.PageData.Title;
+      _mode = DrawerMode.Overlay;
+      if (_leftMenuDrawer != null)
+        await _leftMenuDrawer.CollapseAsync();
     }
-
-    protected override async Task OnInitializedAsync()
+    else
     {
-        _items = await PageManager.GetBreadcrumbsForPageAsync(AppState.PageData);
-        await base.OnInitializedAsync();
+      _mode = DrawerMode.Push;
+      if (_leftMenuDrawer != null)
+        await _leftMenuDrawer.ExpandAsync();
     }
+  }
 
-    private async Task AppStateOnPageChangeAsync(IPageData pageData)
-    {
-        if (_pageTitle == pageData.PageId)
-            return;
+  #region RightMenu
 
-        _pageTitle = pageData.PageId;
-        _items = await PageManager.GetBreadcrumbsForPageAsync(pageData);
-        if (AppState.ResponsiveType == ResponsiveTypeEnum.Mobile)
-            await _menuDrawer.CollapseAsync();
+  private async Task ShowRightMenuNotifier(Type rightMenuType)
+  {
+    _rightMenuType = rightMenuType;
+    if (_rightMenuDrawer != null)
+      await _rightMenuDrawer.ExpandAsync();
+  }
 
-        StateHasChanged();
-    }
+  private async Task HideRightMenuNotifier()
+  {
+    if (_rightMenuDrawer != null)
+      await _rightMenuDrawer.CollapseAsync();
+  }
 
-    private async Task ToggleMenuDrawer()
-    {
-        if (_menuDrawer.Expanded)
-            await _menuDrawer.CollapseAsync();
-        else
-            await _menuDrawer.ExpandAsync();
-    }
+  private void RightMenuExpandedChangedHandler(bool expanded)
+  {
+    if (!expanded)
+      _rightMenuType = null;
+  }
 
-    private void ExpandedChangedHandler(bool expanded)
-    {
-        _expanded = expanded;
-    }
-
-    private async Task MediaQueryChange(bool isSmall)
-    {
-        AppState.SetResponsiveType(isSmall ? ResponsiveTypeEnum.Mobile : ResponsiveTypeEnum.Desktop);
-        if (AppState.ResponsiveType == ResponsiveTypeEnum.Mobile)
-        {
-            _mode = DrawerMode.Overlay;
-            await _menuDrawer.CollapseAsync();
-        }
-        else
-        {
-            _mode = DrawerMode.Push;
-            await _menuDrawer.ExpandAsync();
-        }
-    }
-
-    private async Task ShowRightMenuAsync(RightMenuTypeEnum rightMenuType)
-    {
-        await _menuDrawer2.ExpandAsync();
-    }
+  #endregion
 }

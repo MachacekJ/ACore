@@ -1,5 +1,5 @@
-﻿using ACore.Models.Result;
-using ACore.Server.Storages.Models.EntityEvent;
+﻿using ACore.Results;
+using ACore.Server.Repository.Models.EntityEvent;
 
 namespace ACore.Server.Modules.AuditModule.CQRS.AuditSave;
 

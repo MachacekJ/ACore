@@ -1,5 +1,5 @@
 using ACore.CQRS.Pipelines.Helpers;
-using ACore.Models.Result;
+using ACore.Results;
 using ACore.Server.Configuration;
 using MediatR;
 using Microsoft.Extensions.Options;

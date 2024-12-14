@@ -1,23 +1,26 @@
-﻿using ACore.Server.Configuration;
+﻿using ACore.Repository.Definitions.Models;
 using ACore.Server.Modules.SettingsDbModule.Repositories;
-using ACore.Server.Storages.Definitions.Models;
+using ACore.Tests.Server.FakeApp.Configuration;
 using ACore.Tests.Server.TestInfrastructure;
+using Microsoft.AspNetCore.Builder;
 
 namespace ACore.Tests.Server.Tests.Modules.SettingsDbModule;
 
-public class SettingsDbModuleTestsBase() : StorageTestsBase([StorageTypeEnum.MemoryEF])
+public class SettingsDbModuleTestsBase() : FakeAppTestsBase([RepositoryTypeEnum.MemoryEF])
 {
   protected ISettingsDbModuleRepository? MemorySettingStorageModule;
 
-  protected override void SetupACoreServer(ACoreServerOptionBuilder builder)
+  protected override void SetupBuilder(FakeAppOptionsBuilder builder)
   {
-    base.SetupACoreServer(builder);
-    builder.DefaultStorage(storageOptionBuilder => storageOptionBuilder.AddMemoryDb());
+    builder.AddDefaultRepositories(storageOptionBuilder => storageOptionBuilder.AddMemoryDb());
+    builder.AddSettingModule();
+    base.SetupBuilder(builder);
   }
-  
-  protected override async Task GetServices(IServiceProvider sp)
+
+  protected override async Task<IServiceProvider> UseServices(IApplicationBuilder appBuilder)
   {
-    await base.GetServices(sp);
-    MemorySettingStorageModule = StorageResolver?.ReadFromStorage<ISettingsDbModuleRepository>(StorageTypeEnum.MemoryEF) ?? throw new ArgumentNullException($"{nameof(ISettingsDbModuleRepository)} is not implemented.");
+    var sp = await base.UseServices(appBuilder);
+    MemorySettingStorageModule = StorageResolver?.ReadRepositoryContext<ISettingsDbModuleRepository>(RepositoryTypeEnum.MemoryEF) ?? throw new ArgumentNullException($"{nameof(ISettingsDbModuleRepository)} is not implemented.");    
+    return await Task.FromResult(sp);
   }
 }

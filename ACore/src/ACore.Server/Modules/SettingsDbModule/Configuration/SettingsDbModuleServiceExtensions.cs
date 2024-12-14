@@ -1,10 +1,9 @@
-using ACore.Server.Configuration;
 using ACore.Server.Modules.SettingsDbModule.CQRS;
 using ACore.Server.Modules.SettingsDbModule.Repositories;
+using ACore.Server.Modules.SettingsDbModule.Repositories.EF.Memory;
+using ACore.Server.Modules.SettingsDbModule.Repositories.EF.PG;
 using ACore.Server.Modules.SettingsDbModule.Repositories.Mongo;
-using ACore.Server.Modules.SettingsDbModule.Repositories.SQL.Memory;
-using ACore.Server.Modules.SettingsDbModule.Repositories.SQL.PG;
-using ACore.Server.Storages.Configuration;
+using ACore.Server.Repository.Configuration;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,31 +15,23 @@ internal static class SettingsDbModuleServiceExtensions
 {
   public static void AddSettingsDbModule(this IServiceCollection services, SettingsDbModuleOptions options)
   {
+    var myOptionsInstance = Options.Create(options);
+    services.TryAddSingleton(myOptionsInstance);
+
     services.TryAddTransient(typeof(IPipelineBehavior<,>), typeof(SettingsDbModulePipelineBehavior<,>));
-    
-    if (options.Storages == null)
-      throw new ArgumentException($"{nameof(options.Storages)} is null.");
-    
-    services.AddDbMongoStorage<SettingsDbModuleMongoRepositoryImpl>(options.Storages);
-    services.AddDbPGStorage<SettingsDbModuleSqlPGRepositoryImpl>(options.Storages);
-    services.AddDbMemoryStorage<SettingsDbModuleSqlMemoryRepositoryImplTestsSqlMemoryRepositoryImpl>(options.Storages, nameof(ISettingsDbModuleRepository));
+
+    services.AddDbMongoRepository<SettingsDbModuleMongoRepositoryImpl>(options);
+    services.AddDbPGRepository<SettingsEfModuleSqlPGRepositoryImpl>(options);
+    services.AddDbMemoryRepository<SettingsEfModuleRepositoryImpl>(options, nameof(ISettingsDbModuleRepository));
   }
 
-  public static async Task UseSettingServiceModule(this IServiceProvider provider)
+  public static async Task UseSettingsDbModule(this IServiceProvider provider)
   {
-    var opt = provider.GetService<IOptions<ACoreServerOptions>>()?.Value
+    var opt = provider.GetService<IOptions<SettingsDbModuleOptions>>()?.Value
               ?? throw new ArgumentException($"{nameof(SettingsDbModuleOptions)} is not configured.");
 
-    StorageOptions? storageOptions = null;
-    if (opt.DefaultStorages != null)
-      storageOptions = opt.DefaultStorages;
-    if (opt.SettingsDbModuleOptions.Storages != null)
-      storageOptions = opt.SettingsDbModuleOptions.Storages;
-    if (storageOptions == null)
-      throw new ArgumentException($"{nameof(opt.SettingsDbModuleOptions)} is null. You can also use {nameof(opt.DefaultStorages)}.");
-
-    await provider.ConfigureMongoStorage<ISettingsDbModuleRepository, SettingsDbModuleMongoRepositoryImpl>(storageOptions);
-    await provider.ConfigurePGStorage<ISettingsDbModuleRepository, SettingsDbModuleSqlPGRepositoryImpl>(storageOptions);
-    await provider.ConfigureMemoryStorage<ISettingsDbModuleRepository, SettingsDbModuleSqlMemoryRepositoryImplTestsSqlMemoryRepositoryImpl>(storageOptions);
+    await provider.ConfigureMongoRepository<ISettingsDbModuleRepository, SettingsDbModuleMongoRepositoryImpl>(opt);
+    await provider.ConfigurePGRepository<ISettingsDbModuleRepository, SettingsEfModuleSqlPGRepositoryImpl>(opt);
+    await provider.ConfigureMemoryRepository<ISettingsDbModuleRepository, SettingsEfModuleRepositoryImpl>(opt);
   }
 }

@@ -4,5 +4,5 @@ namespace ACore.Configuration.Cache;
 
 public class CacheOptions
 {
-  public List<CacheCategory> Categories { get; init; } = [];
+  public List<CacheCategory> Categories { get; set; } = [];
 }

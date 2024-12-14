@@ -1,5 +1,5 @@
-using ACore.Server.Configuration.Modules;
+using ACore.Server.Repository.Configuration;
 
 namespace ACore.Server.Modules.AuditModule.Configuration;
 
-public class AuditModuleOptions(bool isActive = false) : StorageModuleOptions(nameof(AuditModule), isActive);
+public class AuditModuleOptions(ServerRepositoryOptions serverRepositories) : ServerRepositoryOptions(serverRepositories, nameof(AuditModule));

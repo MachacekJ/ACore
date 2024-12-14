@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<Title>JM Core</Title>
 		<Authors>Jiri Machacek</Authors>
 		<Nullable>enable</Nullable>
@@ -28,6 +28,15 @@
 		<EmbeddedResource Remove="Models\Account\**" />
 		<Compile Remove="Localizer\**" />
 		<EmbeddedResource Remove="Localizer\**" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheGet\**" />
+		<EmbeddedResource Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheGet\**" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheRemove\**" />
+		<EmbeddedResource Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheRemove\**" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheSave\**" />
+		<EmbeddedResource Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheSave\**" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheModulePipelineBehavior.cs" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheModuleRequest.cs" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheModuleRequestHandler.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,15 +45,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FluentValidation" Version="11.10.0" />
-		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
+		<PackageReference Include="Autofac" Version="8.2.1" />
+		<PackageReference Include="FluentValidation" Version="11.11.0" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
 		<PackageReference Include="Mapster" Version="7.4.0" />
-		<PackageReference Include="MediatR" Version="12.4.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+		<PackageReference Include="MediatR" Version="12.5.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -83,6 +93,9 @@
 
 	<ItemGroup>
 	  <None Remove="Localizer\**" />
+	  <None Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheGet\**" />
+	  <None Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheRemove\**" />
+	  <None Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheSave\**" />
 	</ItemGroup>
 
 	<ItemGroup>

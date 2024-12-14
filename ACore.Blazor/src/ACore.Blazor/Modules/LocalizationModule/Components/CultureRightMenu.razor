@@ -1,0 +1,12 @@
+﻿@using ACore.Blazor.Components
+@inherits ACore.Blazor.Components.SideBar.RightSideBar.Base.RightMenuBaseComponent
+
+<Testable TestId=@(nameof(CultureRightMenu))>
+    <TelerikPanelBar Data="@_rootItems" OnItemClick="LanguageChange">
+        <PanelBarBindings>
+            <PanelBarBinding ItemsField="Items"></PanelBarBinding>
+        </PanelBarBindings>
+    </TelerikPanelBar>
+
+
+</Testable>

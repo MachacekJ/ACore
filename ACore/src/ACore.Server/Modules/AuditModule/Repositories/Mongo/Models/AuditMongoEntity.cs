@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ACore.Server.Storages.Models.EntityEvent;
-using MongoDB.Bson;
+﻿using ACore.Server.Repository.Attributes;
+using ACore.Server.Repository.Contexts.Mongo.Models.PK;
+using ACore.Server.Repository.Models.EntityEvent;
 using MongoDB.Bson.Serialization.Attributes;
 
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
@@ -9,27 +9,21 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ACore.Server.Modules.AuditModule.Repositories.Mongo.Models;
 
-internal class AuditMongoEntity
+[MongoCollectionName("audits")]
+internal class AuditMongoEntity : PKMongoEntity
 {
-  [Key]
-  [BsonElement("_id")]
-  public ObjectId Id { get; set; }
-
   [BsonElement("oid")]
   public string ObjectId { get; set; }
   
-  [BsonElement("v")]
-  public int Version { get; set; }
-  
   [BsonElement("c")]
   public List<AuditMongoValueEntity>? Columns { get; set; }
-  
+
   [BsonElement("t")]
   public DateTime Created { get; set; }
-  
+
   [BsonElement("s")]
   public EntityEventEnum EntityState { get; set; }
-  
+
   [BsonElement("u")]
   public AuditMongoUserEntity User { get; set; }
 }

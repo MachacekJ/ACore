@@ -1,14 +1,13 @@
 using ACore.CQRS.Pipelines.Helpers;
-using ACore.Models.Result;
+using ACore.Results;
 using ACore.Server.Configuration;
-using ACore.Server.Modules.SettingsDbModule.CQRS;
 using MediatR;
 using Microsoft.Extensions.Options;
 
 namespace ACore.Server.Modules.AuditModule.CQRS;
 
 public class AuditModulePipelineBehavior<TRequest, TResponse>(IOptions<ACoreServerOptions> serverOptions) : IPipelineBehavior<TRequest, TResponse>
-   where TRequest : SettingsDbModuleRequest<TResponse>
+   where TRequest : AuditModuleRequest<TResponse>
    where TResponse : Result
 {
   public async Task<TResponse> Handle(

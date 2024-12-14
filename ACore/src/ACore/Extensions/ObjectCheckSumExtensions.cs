@@ -32,7 +32,7 @@ public static class ObjectCheckSumExtensions
     foreach (var propertyInfo in jsonTypeInfo.Properties)
     {
       if (propertyInfo.AttributeProvider != null
-          && propertyInfo.AttributeProvider.IsDefined(typeof(NotIncludeToSumHashAttribute), true))
+          && propertyInfo.AttributeProvider.IsDefined(typeof(ExcludeFromSumHashAttribute), true))
         toRemove.Add(propertyInfo);
     }
     

@@ -1,11 +1,11 @@
 ﻿using ACore.Server.Modules.AuditModule.Models;
-using ACore.Server.Storages;
-using ACore.Server.Storages.Contexts.EF.Models;
-using ACore.Server.Storages.Models.EntityEvent;
+using ACore.Server.Repository;
+using ACore.Server.Repository.Models.EntityEvent;
+using ACore.Server.Repository.Results;
 
 namespace ACore.Server.Modules.AuditModule.Repositories;
 
-public interface IAuditRepository : IRepository
+public interface IAuditRepository : IDbRepository
 {
   Task<RepositoryOperationResult> SaveAuditAsync(EntityEventItem entityEventItem);
 

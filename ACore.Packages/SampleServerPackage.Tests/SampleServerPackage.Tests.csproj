@@ -17,11 +17,7 @@
     <ItemGroup>
         <Using Include="Xunit"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Tests\Modules\ToDoModule\Storages\" />
-    </ItemGroup>
-
+    
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
       <PackageReference Include="coverlet.collector" Version="6.0.2">

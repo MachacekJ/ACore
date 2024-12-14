@@ -2,14 +2,16 @@ using Autofac;
 using ACore.Configuration;
 using ACore.Configuration.CQRS;
 using ACore.CQRS.Extensions;
-using ACore.Server.Configuration.CQRS.OptionsGet;
 using ACore.Server.Modules.AuditModule.Configuration;
-using ACore.Server.Modules.AuditModule.CQRS.AuditGet;
+using ACore.Server.Modules.LocalizationModule.Configuration;
 using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
-using ACore.Server.Storages.Configuration;
-using ACore.Server.Storages.Services.StorageResolvers;
+using ACore.Server.Repository.Services.RepositoryResolvers;
+using ACore.Server.Services;
+using ACore.Server.Services.Security;
+using ACore.Server.Services.ServerCache.Configuration;
 using FluentValidation;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -18,9 +20,9 @@ namespace ACore.Server.Configuration;
 
 public static class ACoreServerServiceExtensions
 {
-  public static void AddACoreServer(this IServiceCollection services, Action<ACoreServerOptionBuilder>? optionsBuilder = null)
+  public static void AddACoreServer(this IServiceCollection services, Action<ACoreServerOptionsBuilder>? optionsBuilder = null)
   {
-    var aCoreServerOptionBuilder = ACoreServerOptionBuilder.Empty();
+    var aCoreServerOptionBuilder = ACoreServerOptionsBuilder.Empty();
     optionsBuilder?.Invoke(aCoreServerOptionBuilder);
     var aCoreServerOptions = aCoreServerOptionBuilder.Build();
     AddACoreServer(services, aCoreServerOptions);
@@ -30,13 +32,13 @@ public static class ACoreServerServiceExtensions
   {
     ValidateDependencyInConfiguration(aCoreServerOptions);
 
-    services.AddACore(aCoreServerOptions.ACoreOptions);
+    services.AddACore();
 
     var myOptionsInstance = Options.Create(aCoreServerOptions);
     services.AddSingleton(myOptionsInstance);
 
     // Adding CQRS only from ACore assembly.
-    services.AddCQRS();
+    services.AddACoreMediatr();
     // Adding CQRS from ACore.Server assembly.
     services.AddMediatR(c =>
     {
@@ -45,32 +47,46 @@ public static class ACoreServerServiceExtensions
     });
     services.AddValidatorsFromAssembly(typeof(ACoreServerServiceExtensions).Assembly, includeInternalTypes: true);
 
-    services.TryAddSingleton<IStorageResolver>(new DefaultStorageResolver());
+    services.AddServerCache(aCoreServerOptions.ServerCache);
+    services.TryAddScoped<ISecurity, EmptySecurity>();
+    services.AddScoped<IACoreServerCurrentScope, ACoreServerCurrentScope>();
+    services.TryAddSingleton<IRepositoryResolver>(new DefaultRepositoryResolver());
 
-    if (aCoreServerOptions.SettingsDbModuleOptions.IsActive)
+    services.AddACoreServerModules(aCoreServerOptions);
+  }
+
+  public static async Task UseACoreServer(this IApplicationBuilder applicationBuilder)
+  {
+    var provider = applicationBuilder.ApplicationServices;
+    var opt = provider.GetService<IOptions<ACoreServerOptions>>()?.Value ?? throw new Exception($"{nameof(ACoreServerOptions)} is not registered.");
+
+    if (opt.SettingsDbModuleOptions is { IsActive: true })
+      await provider.UseSettingsDbModule();
+    if (opt.AuditModuleOptions is { IsActive: true })
+      await provider.UseAuditModule();
+
+    if (opt.LocalizationServerModuleOptions is { IsActive: true })
+      await applicationBuilder.UseLocalizationServerModule();
+  }
+
+  public static void ContainerACoreServer(this ContainerBuilder containerBuilder)
+  {
+    containerBuilder.ContainerAuditModule();
+  }
+
+  private static void AddACoreServerModules(this IServiceCollection services, ACoreServerOptions aCoreServerOptions)
+  {
+    if (aCoreServerOptions.SettingsDbModuleOptions is { IsActive: true })
       services.AddSettingsDbModule(aCoreServerOptions.SettingsDbModuleOptions);
 
-    if (aCoreServerOptions.AuditModuleOptions.IsActive)
+    if (aCoreServerOptions.AuditModuleOptions is { IsActive: true })
       services.AddAuditModule(aCoreServerOptions.AuditModuleOptions);
 
-    if (aCoreServerOptions.SecurityModuleOptions.IsActive)
+    if (aCoreServerOptions.SecurityModuleOptions is { IsActive: true })
       services.AddSecurityModule(aCoreServerOptions.SecurityModuleOptions);
-  }
 
-  public static async Task UseACoreServer(this IServiceProvider provider)
-  {
-    var opt = provider.GetService<IOptions<ACoreServerOptions>>()?.Value ?? throw new Exception($"{nameof(ACoreOptions)} is not registered.");
-
-    if (opt.SettingsDbModuleOptions.IsActive)
-      await provider.UseSettingServiceModule();
-    if (opt.AuditModuleOptions.IsActive)
-      await provider.UseAuditServiceModule();
-  }
-
-  public static void ConfigureAutofacACoreServer(this ContainerBuilder containerBuilder)
-  {
-    containerBuilder.RegisterGeneric(typeof(AppOptionHandler<>)).AsImplementedInterfaces();
-    containerBuilder.RegisterGeneric(typeof(AuditGetHandler<>)).AsImplementedInterfaces();
+    if (aCoreServerOptions.LocalizationServerModuleOptions is { IsActive: true })
+      services.AddLocalizationServerModule(aCoreServerOptions.LocalizationServerModuleOptions);
   }
 
   private static void ValidateDependencyInConfiguration(ACoreServerOptions aCoreServerOptions)
@@ -81,22 +97,16 @@ public static class ACoreServerServiceExtensions
 
   private static void ValidateAuditModuleOptions(ACoreServerOptions aCoreServerOptions)
   {
-    if (!aCoreServerOptions.AuditModuleOptions.IsActive)
+    if (aCoreServerOptions.AuditModuleOptions is not { IsActive: true })
       return;
 
-    if (!aCoreServerOptions.SecurityModuleOptions.IsActive)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.SecurityModule)} must be activated.");
-
-    if (aCoreServerOptions.SettingsDbModuleOptions.IsActive == false)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.SettingsDbModule)} must be activated.");
-
-    if (aCoreServerOptions.AuditModuleOptions.Storages == null && aCoreServerOptions.DefaultStorages == null)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.AuditModule)} must have {nameof(StorageOptions)}.");
+    if (!(aCoreServerOptions.SecurityModuleOptions is { IsActive: true }))
+      throw new Exception($"Module {nameof(Modules.SecurityModule)} must be activated.");
   }
 
   private static void ValidateSettingsDbOptions(ACoreServerOptions aCoreServerOptions)
   {
-    if (aCoreServerOptions.SettingsDbModuleOptions.Storages == null && aCoreServerOptions.DefaultStorages == null)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.SettingsDbModule)} must have {nameof(StorageOptions)}.");
+    if (aCoreServerOptions.SettingsDbModuleOptions is { IsActive: false })
+      throw new Exception($"Module {nameof(Modules.SettingsDbModule)} must be activated.");
   }
 }

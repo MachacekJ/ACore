@@ -1,17 +1,20 @@
-﻿using ACore.Models.Result;
+﻿using ACore.Results;
+using ACore.Server.Modules.SettingsDbModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Repositories;
-using ACore.Server.Storages.Services.StorageResolvers;
+using ACore.Server.Repository.Services.RepositoryResolvers;
+using Microsoft.Extensions.Options;
 
 namespace ACore.Server.Modules.SettingsDbModule.CQRS.SettingsDbGet;
 
-public class SettingsDbGetHandler(IStorageResolver storageResolver) : SettingsDbModuleRequestHandler<SettingsDbGetQuery, Result<string?>>(storageResolver)
+public class SettingsDbGetHandler(IRepositoryResolver repositoryResolver,IOptions<SettingsDbModuleOptions> settingsDbModuleOptions)
+  : SettingsDbModuleRequestHandler<SettingsDbGetQuery, Result<string?>>(repositoryResolver, settingsDbModuleOptions.Value)
 {
-  private readonly IStorageResolver _storageResolver = storageResolver;
+  private readonly IRepositoryResolver _repositoryResolver = repositoryResolver;
 
   public override async Task<Result<string?>> Handle(SettingsDbGetQuery request, CancellationToken cancellationToken)
   {
-    var storageImplementation = _storageResolver.ReadFromStorage<ISettingsDbModuleRepository>(request.StorageType);
-    var res= await storageImplementation.Setting_GetAsync(request.Key, request.IsRequired);
+    var repositoryImplementation = _repositoryResolver.ReadRepositoryContext<ISettingsDbModuleRepository>();
+    var res= await repositoryImplementation.Setting_GetAsync(request.Key, request.IsRequired);
     return Result.Success(res);
   }
 }

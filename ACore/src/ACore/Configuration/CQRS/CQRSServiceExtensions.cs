@@ -8,7 +8,7 @@ namespace ACore.Configuration.CQRS;
 
 public static class CQRSExtensions
 {
-  public static void AddCQRS(this IServiceCollection services)
+  public static void AddACoreMediatr(this IServiceCollection services)
   {
     services.AddMediatR((c) =>
     {
@@ -18,6 +18,5 @@ public static class CQRSExtensions
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehavior<,>));
     services.AddValidatorsFromAssembly(typeof(CQRSExtensions).Assembly, includeInternalTypes: true);
-
   }
 }

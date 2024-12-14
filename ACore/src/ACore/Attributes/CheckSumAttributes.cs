@@ -4,4 +4,4 @@ namespace ACore.Attributes;
 public sealed class SumHashAttribute : Attribute;
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public sealed class NotIncludeToSumHashAttribute : Attribute;
+public sealed class ExcludeFromSumHashAttribute : Attribute;

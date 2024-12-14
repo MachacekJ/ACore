@@ -1,12 +1,15 @@
 using ACore.CQRS.Pipelines.Models;
-using ACore.CQRS.Results;
-using ACore.CQRS.Results.Models;
-using ACore.Models.Result;
+using ACore.Results;
+using ACore.Results.Models;
 using FluentValidation;
 using MediatR;
 
 namespace ACore.CQRS.Pipelines;
 
+
+/// <summary>
+/// TODO: ValidateAsync https://www.youtube.com/watch?v=Iql4yjHYRiA
+/// </summary>
 public class FluentValidationPipelineBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
   where TRequest : IRequest<TResponse>
   where TResponse : Result

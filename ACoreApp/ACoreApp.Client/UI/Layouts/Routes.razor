@@ -1,0 +1,14 @@
+﻿<Router OnNavigateAsync="@OnNavigateAsync" AppAssembly="@typeof(Program).Assembly">
+    @* AdditionalAssemblies="new[] {typeof(ACoreApp.Client._Imports).Assembly }"> *@
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)"/>
+    </Found>
+    <NotFound>
+        @* <LayoutView Layout="@typeof(MainLayout)"> *@
+        @*     $1$ <PageNotFound></PageNotFound> #1# *@
+        @* *@
+        @* </LayoutView> *@
+
+        sdfdsfa
+    </NotFound>
+</Router>

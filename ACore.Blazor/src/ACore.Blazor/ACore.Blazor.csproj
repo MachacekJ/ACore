@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>12</LangVersion>
@@ -26,12 +26,17 @@
 		<ProjectReference Include="..\..\..\ACore\src\ACore\ACore.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.4" />
 		<PackageReference Include="Telerik.UI.for.Blazor.Trial">
 			<Version>5.0.1</Version>
 		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Configuration\Page\" />
+	  <Folder Include="Services\HttpClients\Clients\" />
 	</ItemGroup>
 	
 </Project>

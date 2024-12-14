@@ -1,4 +1,4 @@
-using ACore.Models.Result;
+using ACore.Results;
 using MediatR;
 
 namespace ACore.Server.Modules.SettingsDbModule.CQRS;

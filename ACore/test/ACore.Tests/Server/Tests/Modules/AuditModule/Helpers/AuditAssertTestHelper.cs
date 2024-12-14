@@ -1,7 +1,6 @@
-using ACore.CQRS.Results;
 using ACore.Extensions;
-using ACore.Models.Result;
-using ACore.Server.Storages.CQRS.Results;
+using ACore.Results;
+using ACore.Server.Repository.Results;
 using FluentAssertions;
 
 namespace ACore.Tests.Server.Tests.Modules.AuditModule.Helpers;
@@ -20,8 +19,8 @@ public static class AuditAssertTestHelper
     if (result.GetType().IsGenericType && result.GetType().GetGenericTypeDefinition() == typeof(ExceptionResult<>))
       throw result.PropertyValue(nameof(ExceptionResult<int>.Exception)) as Exception ?? throw new Exception();
 
-    result.Should().BeOfType<EntityResult>();
-    var dbSaveResult = (EntityResult)result;
+    result.Should().BeOfType<RepositoryResult>();
+    var dbSaveResult = (RepositoryResult)result;
     dbSaveResult.IsSuccess.Should().BeTrue();
     dbSaveResult.Should().NotBeNull();
     dbSaveResult.ReturnedValues.Should().HaveCount(1);

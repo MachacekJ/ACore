@@ -1,30 +1,39 @@
-﻿using ACore.Server.Modules.AuditModule.Models;
+﻿using ACore.Server.Modules.AuditModule.Configuration;
+using ACore.Server.Modules.AuditModule.Models;
 using ACore.Server.Modules.AuditModule.Repositories.Helpers;
 using ACore.Server.Modules.AuditModule.Repositories.Mongo.Models;
-using ACore.Server.Storages.Contexts.EF;
-using ACore.Server.Storages.Contexts.EF.Models;
-using ACore.Server.Storages.Contexts.EF.Models.PK;
-using ACore.Server.Storages.Contexts.EF.Scripts;
-using ACore.Server.Storages.Definitions.EF;
-using ACore.Server.Storages.Models.EntityEvent;
+using ACore.Server.Repository.Attributes.Extensions;
+using ACore.Server.Repository.Contexts.Mongo;
+using ACore.Server.Repository.Contexts.Mongo.Models;
+using ACore.Server.Repository.Contexts.Mongo.Models.PK;
+using ACore.Server.Repository.Models.EntityEvent;
+using ACore.Server.Repository.Results;
+using ACore.Server.Repository.Results.Models;
+using ACore.Server.Services;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
-using MongoDB.EntityFrameworkCore.Extensions;
+using MongoDB.Driver;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace ACore.Server.Modules.AuditModule.Repositories.Mongo;
 
-internal class AuditMongoRepositoryImpl(DbContextOptions<AuditMongoRepositoryImpl> options, IMediator mediator, ILogger<AuditMongoRepositoryImpl> logger)
-  : DbContextBase(options, mediator, logger), IAuditRepository
+internal class AuditMongoRepositoryImpl : MongoContextBase, IAuditRepository
 {
-  protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();
-  protected override EFStorageDefinition EFStorageDefinition => new MongoStorageDefinition();
+  protected override IEnumerable<MongoVersionScriptsBase> AllUpdateVersions => Scripts.MongoScriptRegistrations.AllVersions;
   protected override string ModuleName => nameof(IAuditRepository);
 
-  public DbSet<AuditMongoEntity> Audits { get; set; }
+  private readonly IACoreServerCurrentScope _serverCurrentScope;
+  private readonly IMongoCollection<AuditMongoEntity> _auditDbCollection;
+
+  public AuditMongoRepositoryImpl(IACoreServerCurrentScope serverCurrentScope, IOptions<AuditModuleOptions> options, IMediator mediator, ILogger<AuditMongoRepositoryImpl> logger)
+    : base(serverCurrentScope, options.Value.MongoDb ?? throw new ArgumentNullException(nameof(options.Value.MongoDb)), mediator, logger)
+  {
+    _serverCurrentScope = serverCurrentScope;
+    _auditDbCollection = MongoDatabase.GetCollection<AuditMongoEntity>(typeof(AuditMongoEntity).GetCollectionName());
+  }
 
   public async Task<RepositoryOperationResult> SaveAuditAsync(EntityEventItem entityEventItem)
   {
@@ -33,7 +42,7 @@ internal class AuditMongoRepositoryImpl(DbContextOptions<AuditMongoRepositoryImp
 
     var auditEntity = new AuditMongoEntity
     {
-      Id = PKMongoEntity.NewId,
+      Id = PKMongoEntity.EmptyId,
       ObjectId = GetObjectId(entityEventItem.TableName, new ObjectId(entityEventItem.PkValueString)),
       Version = entityEventItem.Version,
       User = new AuditMongoUserEntity
@@ -54,9 +63,8 @@ internal class AuditMongoRepositoryImpl(DbContextOptions<AuditMongoRepositoryImp
       }).ToList()
     };
 
-    await Audits.AddAsync(auditEntity);
-    await SaveChangesAsync();
-    return RepositoryOperationResult.Success(RepositoryOperationTypeEnum.Added);
+    var res = await Save(_auditDbCollection, auditEntity);
+    return res;
   }
 
   public async Task<AuditInfoItem[]> AuditItemsAsync<TPK>(string collectionName, TPK pkValue, string? schemaName = null)
@@ -64,7 +72,9 @@ internal class AuditMongoRepositoryImpl(DbContextOptions<AuditMongoRepositoryImp
     if (pkValue == null)
       throw new Exception("Primary key is null");
 
-    var valuesTable = await Audits.Where(e => e.ObjectId == GetObjectId(collectionName, new ObjectId(pkValue.ToString()))).ToArrayAsync();
+    using var cursor = await _auditDbCollection.FindAsync(e => e.ObjectId == GetObjectId(collectionName, new ObjectId(pkValue.ToString())));
+    var valuesTable = await cursor.ToListAsync();
+
     var ll = new List<AuditInfoItem>();
     foreach (var auditMongoEntity in valuesTable)
     {
@@ -92,12 +102,5 @@ internal class AuditMongoRepositoryImpl(DbContextOptions<AuditMongoRepositoryImp
     return ll.ToArray();
   }
 
-
   private static string GetObjectId(string collection, ObjectId pk) => $"{collection}.{pk}";
-
-  protected override void OnModelCreating(ModelBuilder modelBuilder)
-  {
-    base.OnModelCreating(modelBuilder);
-    modelBuilder.Entity<AuditMongoEntity>().ToCollection(DefaultNames.AuditCollectionName);
-  }
 }

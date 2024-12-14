@@ -1,14 +1,13 @@
 ﻿using ACore.CQRS.Pipelines;
 using ACore.CQRS.Pipelines.Models;
-using ACore.CQRS.Results;
-using ACore.CQRS.Results.Models;
-using ACore.Models.Result;
+using ACore.Results;
+using ACore.Results.Models;
 using ACore.UnitTests.Core.Base.CQRS.Pipelines.FakeClasses;
 using ACore.UnitTests.TestImplementations;
 using FluentAssertions;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
-using ValidationResult = ACore.CQRS.Results.ValidationResult;
+using ValidationResult = ACore.Results.ValidationResult;
 
 namespace ACore.UnitTests.Core.Base.CQRS.Pipelines;
 
@@ -26,7 +25,7 @@ public class LoggingPipelineBehaviorTests
     var req = new FakeRequest();
 
     // Act
-    var response = await sut.Handle(req, async () =>
+    var response = await sut.Handle(req, async (ct) =>
     {
       await Task.CompletedTask;
       return Result.Success();
@@ -45,7 +44,7 @@ public class LoggingPipelineBehaviorTests
     var req = new FakeRequest();
 
     // Act
-    var response = await sut.Handle(req, async () =>
+    var response = await sut.Handle(req, async (ct) =>
     {
       await Task.CompletedTask;
       return ValidationResult.WithErrors(ValidationTypeEnum.ValidationInput, [new FluentValidationErrorItem(new ValidationFailure("fakeProp", FakeErrorMessage))]); // new ResultErrorItem(FakeErrorCode, FakeErrorMessage));
@@ -64,7 +63,7 @@ public class LoggingPipelineBehaviorTests
     var req = new FakeRequest();
 
     // Act
-    var response = await sut.Handle(req, async () =>
+    var response = await sut.Handle(req, async (ct) =>
     {
       await Task.CompletedTask;
       throw new Exception(FakeErrorMessage);
@@ -86,7 +85,7 @@ public class LoggingPipelineBehaviorTests
     var req = new FakeRequest();
 
     // Act
-    var response = await sut.Handle(req, async () =>
+    var response = await sut.Handle(req, async (ct) =>
     {
       await Task.CompletedTask;
       return Result.Failure(new ResultErrorItem(FakeErrorCode, FakeErrorMessage));

@@ -1,8 +1,7 @@
-﻿namespace ACore.Blazor.Services.App.Models
+﻿namespace ACore.Blazor.Services.App.Models;
+
+public enum PageStateEnum
 {
-    public enum PageStateEnum
-    {
-        Initialize,
-        Rendered
-    }
+  Initialize,
+  Rendered
 }

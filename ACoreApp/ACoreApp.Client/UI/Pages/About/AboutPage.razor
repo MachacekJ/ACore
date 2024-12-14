@@ -1,0 +1,8 @@
+﻿@attribute [Route(AboutPageConfig.Url)]
+@inherits ACore.Blazor.ACorePageBase;
+@inject IStringLocalizer<AboutPageResX> Localizer
+<h3>@Localizer[nameof(AboutPageResX.Text)]</h3>
+
+@code {
+
+}

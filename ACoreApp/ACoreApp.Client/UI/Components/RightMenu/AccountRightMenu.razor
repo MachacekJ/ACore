@@ -1,0 +1,12 @@
+﻿@inherits ACore.Blazor.Components.SideBar.RightSideBar.Base.RightMenuBaseComponent
+<h3>AccountInfo</h3>
+<a href="@AppManager.AppSettings.HomePage.PageUrl" @onclick="@Click">click me</a>
+
+@code {
+
+    private void Click()
+    {
+        AppManager.Page.ChangePage(AppManager.AppSettings.HomePage);
+        AppManager.RightMenu.HideRightMenu();
+    }
+}

@@ -7,6 +7,8 @@ public class SecurityModuleOptionsBuilder: ModuleOptionsBuilder
   public static SecurityModuleOptionsBuilder Empty() => new();
   public SecurityModuleOptions Build()
   {
-    return new SecurityModuleOptions(IsActive);
+    var res = new SecurityModuleOptions();
+    SetBase(res);
+    return res;
   }
 }

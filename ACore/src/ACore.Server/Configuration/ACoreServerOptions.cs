@@ -1,23 +1,26 @@
-using ACore.Configuration;
-using ACore.Modules.Base.Configuration;
 using ACore.Server.Modules.AuditModule.Configuration;
+using ACore.Server.Modules.LocalizationModule.Configuration;
 using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
-using ACore.Server.Storages.Configuration;
+using ACore.Server.Repository.Configuration;
+using ACore.Server.Services.ServerCache.Configuration;
+using ACore.Services.Cache.Configuration;
 
 namespace ACore.Server.Configuration;
 
 public class ACoreServerOptions
 {
-  public ACoreOptions ACoreOptions { get; init; } = new ();
-  
-  public StorageOptions? DefaultStorages { get; init; }
-  
-  public SettingsDbModuleOptions SettingsDbModuleOptions { get; init; } = new();
+  public string SaltForHash { get; set; } = string.Empty;
+  public ACoreCacheOptions ACoreCacheOptions { get; set; } = new();
 
-  public AuditModuleOptions AuditModuleOptions { get; init; } = new();
+  public ServerRepositoryOptions? DefaultRepositories { get; set; }
 
-  public SecurityModuleOptions SecurityModuleOptions { get; init; } = new();
-  
-  public List<ModuleOptions> ExternalModulesOptions { get; init; } = new();
+  public ServerCacheOptions? ServerCache { get; set; }
+
+  public SettingsDbModuleOptions? SettingsDbModuleOptions { get; set; }
+
+  public AuditModuleOptions? AuditModuleOptions { get; set; }
+
+  public SecurityModuleOptions? SecurityModuleOptions { get; set; }
+  public LocalizationServerModuleOptions? LocalizationServerModuleOptions { get; set; }
 }

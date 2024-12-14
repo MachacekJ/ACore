@@ -1,4 +1,5 @@
-﻿@inherits JMComponentBase
+﻿@using ACore.Blazor.Components
+@inherits ACoreComponentBase
 <Testable TestId="@(nameof(RightMenuContent))">
-    <CultureItems></CultureItems>
+  @_menuComponent  
 </Testable>

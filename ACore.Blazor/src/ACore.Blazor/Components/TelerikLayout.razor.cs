@@ -1,4 +1,5 @@
 ﻿using ACore.Blazor.Services.App;
+using ACore.Blazor.Services.App.Manager;
 using ACore.Blazor.Services.App.Models;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -10,10 +11,10 @@ namespace ACore.Blazor.Components;
 public partial class TelerikLayout : LayoutComponentBase
 {
     [Inject]
-    private IAppStartConfiguration AppSettings { get; set; } = null!;
+    private IAppSettings AppSettings { get; set; } = null!;
 
     [Inject]
-    private IAppState AppState { get; set; } = null!;
+    private IAppManager AppManager { get; set; } = null!;
 
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
@@ -24,11 +25,11 @@ public partial class TelerikLayout : LayoutComponentBase
     [Inject]
     public IMediator Mediator { get; set; } = null!;
 
-    private string PageTitle => AppSettings.AppName;
+    private string AppTitle => AppSettings.AppName;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        AppState.SetPageState(PageStateEnum.Rendered);
+        AppManager.Page.SetPageState(PageStateEnum.Rendered);
     }
 }
 

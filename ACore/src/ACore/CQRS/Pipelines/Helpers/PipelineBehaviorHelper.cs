@@ -1,17 +1,22 @@
-using ACore.CQRS.Results;
-using ACore.Models.Result;
 using ACore.Modules.Base.Configuration;
+using ACore.Results;
 
 namespace ACore.CQRS.Pipelines.Helpers;
 
 public class PipelineBehaviorHelper<TResponse>
   where TResponse : Result
 {
-  public bool CheckIfModuleIsActive(IModuleOptions moduleOptions, string whereIsModuleRegistered, out TResponse? result)
+  public bool CheckIfModuleIsActive(IModuleOptions? moduleOptions, string whereIsModuleRegistered, out TResponse? result)
   {
     result = null;
 
-    if (moduleOptions.IsActive)
+    if (moduleOptions == null)
+    {
+      result = CreateErrorExceptionResult<TResponse>(new Exception($"Module '{moduleOptions.ModuleName}' is not active. Add this module to {whereIsModuleRegistered}."));
+      return false;
+    }
+
+    if (moduleOptions is { IsActive: true })
       return true;
 
     result = CreateErrorExceptionResult<TResponse>(new Exception($"Module '{moduleOptions.ModuleName}' is not active. Add this module to {whereIsModuleRegistered}."));

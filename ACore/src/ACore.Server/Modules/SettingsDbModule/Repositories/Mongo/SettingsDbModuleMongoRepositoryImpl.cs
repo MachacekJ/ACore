@@ -1,38 +1,34 @@
 ﻿using ACore.Models.Cache;
-using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
-using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheRemove;
-using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
+using ACore.Server.Modules.SettingsDbModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Repositories.Mongo.Models;
-using ACore.Server.Storages;
-using ACore.Server.Storages.Contexts.EF;
-using ACore.Server.Storages.Contexts.EF.Models;
-using ACore.Server.Storages.Contexts.EF.Scripts;
-using ACore.Server.Storages.Definitions.EF;
+using ACore.Server.Repository;
+using ACore.Server.Repository.Attributes.Extensions;
+using ACore.Server.Repository.Contexts.Mongo;
+using ACore.Server.Repository.Contexts.Mongo.Models;
+using ACore.Server.Repository.Results;
+using ACore.Server.Services;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
-using MongoDB.EntityFrameworkCore.Extensions;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 
 namespace ACore.Server.Modules.SettingsDbModule.Repositories.Mongo;
 
-internal class SettingsDbModuleMongoRepositoryImpl : DbContextBase, ISettingsDbModuleRepository
+internal class SettingsDbModuleMongoRepositoryImpl : MongoContextBase, ISettingsDbModuleRepository
 {
-  private readonly IMediator _mediator;
-
-  public SettingsDbModuleMongoRepositoryImpl(DbContextOptions<SettingsDbModuleMongoRepositoryImpl> options, IMediator mediator, ILogger<SettingsDbModuleMongoRepositoryImpl> logger) : base(options, mediator, logger)
-  {
-    _mediator = mediator;
-    RegisterDbSet(Settings);
-  }
-
   private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheCategories.Entity, nameof(SettingsPKMongoEntity));
-
-  protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();
-  protected override EFStorageDefinition EFStorageDefinition => new MongoStorageDefinition();
   protected override string ModuleName => nameof(ISettingsDbModuleRepository);
+  protected override IEnumerable<MongoVersionScriptsBase> AllUpdateVersions => Scripts.EFScriptRegistrations.AllVersions;
 
-  public DbSet<SettingsPKMongoEntity> Settings { get; set; }
+  private readonly IACoreServerCurrentScope _serverCurrentScope;
+  private readonly IMongoCollection<SettingsPKMongoEntity> _settingsDbCollection;
+
+  public SettingsDbModuleMongoRepositoryImpl(IACoreServerCurrentScope serverCurrentScope, IOptions<SettingsDbModuleOptions> options, IMediator mediator, ILogger<SettingsDbModuleMongoRepositoryImpl> logger)
+    : base(serverCurrentScope, options.Value.MongoDb ?? throw new ArgumentNullException(nameof(options.Value.MongoDb)), mediator, logger)
+  {
+    _serverCurrentScope = serverCurrentScope;
+    _settingsDbCollection = MongoDatabase.GetCollection<SettingsPKMongoEntity>(typeof(SettingsPKMongoEntity).GetCollectionName());
+  }
 
   #region Settings
 
@@ -42,67 +38,55 @@ internal class SettingsDbModuleMongoRepositoryImpl : DbContextBase, ISettingsDbM
 
   public async Task<RepositoryOperationResult> Setting_SaveAsync(string key, string value, bool isSystem = false)
   {
-    var setting = await Settings.FirstOrDefaultAsync(i => i.Key == key);
-    if (setting == null)
+    var findSetting = await GetSettingFromDbByKey(key);
+    var setting = findSetting ?? new SettingsPKMongoEntity
     {
-      setting = new SettingsPKMongoEntity
-      {
-        Key = key
-      };
-      Settings.Add(setting);
-    }
+      Key = key,
+      Value = value,
+    };
 
     setting.Value = value;
     setting.IsSystem = isSystem;
 
-    var res = await Save<SettingsPKMongoEntity, ObjectId>(setting);
-
-    await _mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
+    var res = await Save(_settingsDbCollection, setting);
+    await _serverCurrentScope.ServerCache.Remove(CacheKeyTableSetting);
     return res;
+  }
+
+  private async Task<SettingsPKMongoEntity?> GetSettingFromDbByKey(string key)
+  {
+    using var cursor = await _settingsDbCollection.FindAsync(x => x.Key == key);
+    var setting = await cursor.FirstOrDefaultAsync();
+    return setting;
   }
 
   private async Task<SettingsPKMongoEntity?> GetSettingsAsync(string key, bool exceptedValue = true)
   {
     List<SettingsPKMongoEntity>? allSettings;
 
-    var allSettingsCacheResult = await _mediator.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
+    var allSettingsCacheResult = await _serverCurrentScope.ServerCache.Get<List<SettingsPKMongoEntity>>(CacheKeyTableSetting); //await _app.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
 
-    if (allSettingsCacheResult is { IsSuccess: true, ResultValue: not null })
+    if (allSettingsCacheResult != null)
     {
-      if (allSettingsCacheResult.ResultValue.ObjectValue == null)
-      {
-        var ex = new Exception("The key '" + key + "' is not represented in settings table.");
-        Logger.LogError("GetSettingsValue->" + key, ex);
-        throw ex;
-      }
-
-      allSettings = allSettingsCacheResult.ResultValue.ObjectValue as List<SettingsPKMongoEntity>;
+      allSettings = allSettingsCacheResult;
     }
     else
     {
-      allSettings = await Settings.ToListAsync();
-      await _mediator.Send(new MemoryCacheModuleSaveCommand(CacheKeyTableSetting, allSettings));
+      var filter = Builders<SettingsPKMongoEntity>.Filter.Empty;
+      using var cursor = await _settingsDbCollection.FindAsync(filter);
+      allSettings = await cursor.ToListAsync();
+      await _serverCurrentScope.ServerCache.Set(CacheKeyTableSetting, allSettings);
     }
 
     if (allSettings == null)
-      throw new ArgumentException($"{nameof(Settings)} entity table is null.");
+      throw new ArgumentException($"{nameof(SettingsPKMongoEntity)} entity table is null.");
 
     var vv = allSettings.FirstOrDefault(a => a.Key == key);
     if (vv == null && exceptedValue)
-      throw new Exception($"Value for setting {nameof(key)} is not set. Check {nameof(Settings)} table.");
+      throw new Exception($"Value for setting {nameof(key)} is not set. Check {nameof(SettingsPKMongoEntity)} table.");
 
     return vv;
   }
 
   #endregion
-
-
-  protected override void OnModelCreating(ModelBuilder modelBuilder)
-  {
-    base.OnModelCreating(modelBuilder);
-    modelBuilder.Entity<SettingsPKMongoEntity>().ToCollection(CollectionNames.ObjectNameMapping[nameof(SettingsPKMongoEntity)].TableName);
-    SetDatabaseNames<SettingsPKMongoEntity>(modelBuilder);
-  }
-
-  private static void SetDatabaseNames<T>(ModelBuilder modelBuilder) where T : class => SetDatabaseNames<T>(CollectionNames.ObjectNameMapping, modelBuilder);
 }

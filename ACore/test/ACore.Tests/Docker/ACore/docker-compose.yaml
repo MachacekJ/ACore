@@ -1,9 +1,9 @@
-version: '3.8'
-
 x-postgres-common:
   &postgres-common
   image: postgres:16-alpine
   user: postgres
+  networks:
+    - "mynetwork"
   restart: no
   healthcheck:
     test: 'pg_isready -U user --dbname=postgres'
@@ -12,10 +12,71 @@ x-postgres-common:
     retries: 5
 
 services:
+  mongo-1:
+    container_name: 'mongo-1-container'
+    entrypoint: >
+      /bin/bash -c '
+      openssl rand -base64 756 > /data/keyfile.key &&
+      chmod 400 /data/keyfile.key &&
+      chown mongodb:mongodb /data/keyfile.key &&
+      /usr/local/bin/docker-entrypoint.sh mongod --replSet rs0 --keyFile /data/keyfile.key --bind_ip_all'
+    image: 'mongo:latest'
+    ports:
+      - 127.0.10.1:27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=sa
+      - MONGO_INITDB_ROOT_PASSWORD=Password123
+      - MONGO_INITDB_DATABASE=myDatabase
+    volumes:
+      - 'mongo1data:/data/db'
+      - 'mongo1config:/data/configdb'
+      - 'sharedconfig:/data'
+    healthcheck:
+      test: mongosh
+        -u $${MONGO_INITDB_ROOT_USERNAME}
+        -p $${MONGO_INITDB_ROOT_PASSWORD}
+        --eval "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo-1:27017',priority:1},{_id:1,host:'mongo-2:27017',priority:0.5},{_id:2,host:'mongo-3:27017',priority:0.5}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+    networks:
+      - "mynetwork"
+    restart: unless-stopped
+
+  mongo-2:
+    container_name: "mongo-2-container"
+    image: 'mongo:latest'
+    ports:
+      - 127.0.10.2:27017:27017
+    volumes:
+      - 'mongo2data:/data/db'
+      - 'mongo2config:/data/configdb'
+      - 'sharedconfig:/data'
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--keyFile", "/data/keyfile.key"]
+    networks:
+      - "mynetwork"
+    restart: unless-stopped
+
+  mongo-3:
+    container_name: 'mongo-3-container'
+    image: 'mongo:latest'
+    ports:
+      - 127.0.10.3:27017:27017
+    volumes:
+      - 'mongo3data:/data/db'
+      - 'mongo3config:/data/configdb'
+      - 'sharedconfig:/data'
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--keyFile", "/data/keyfile.key"]
+    networks:
+      - "mynetwork"
+    restart: unless-stopped
+
   postgres_primary:
     <<: *postgres-common
     ports:
-      - 5432:5432
+      - 127.0.11.1:5432:5432
     environment:
       POSTGRES_USER: user
       POSTGRES_DB: postgres
@@ -36,7 +97,7 @@ services:
   postgres_replica:
     <<: *postgres-common
     ports:
-      - 5433:5432
+      - 127.0.11.2:5432:5432
     environment:
       PGUSER: replicator
       PGPASSWORD: replicator_password
@@ -62,27 +123,52 @@ services:
     container_name: pgadmin4
     restart: no
     ports:
-      - 5555:5555
+      - 127.0.11.100:5555:5555
     environment:
       PGADMIN_DEFAULT_EMAIL: user@user.com
       PGADMIN_DEFAULT_PASSWORD: password1234.
       PGADMIN_LISTEN_PORT: 5555
     volumes:
       - acore_pgadmin:/var/lib/pgadmin
-
-  mongo:
-      image: mongo:latest
-      restart: "no"
-      ports:
-        - "27017:27017"
-      environment:
-        MONGO_INITDB_ROOT_USERNAME: root
-        MONGO_INITDB_ROOT_PASSWORD: mongodb
-      volumes:
-        - acore-mongodata:/data/db
+    networks:
+      - "mynetwork"
+  
+  redis:
+    image: redis:latest
+    restart: no
+    ports:
+      - '127.0.12.1:6379:6379'
+    environment:
+      REDIS_PASSWORD: password
+    volumes:
+      - acore-rediscache:/data
+    networks:
+      - "mynetwork"
+      
+  redis-insight:
+    image: redis/redisinsight:latest
+    restart: no
+    ports:
+      - "127.0.12.1:5540:5540"
+    volumes:
+      - acore-redisinsight:/data
+    networks:
+      - "mynetwork"
 
 volumes:
+  mongo1data:
+  mongo1config:
+  mongo2data:
+  mongo2config:
+  mongo3data:
+  mongo3config:
+  sharedconfig:
   acore_pgdata:
   acore_pgadmin:
-  acore-mongodata:
   acore_pgdata_replica:
+  acore-rediscache:
+  acore-redisinsight:
+    
+networks:
+  mynetwork:
+    driver: bridge

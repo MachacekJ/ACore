@@ -1,0 +1,6 @@
+﻿@using ACore.Blazor.Components
+@inherits ACoreComponentBase
+<Testable TestId=@(nameof(CultureChooser))>
+    <TelerikButton FillMode="flat" Icon="@_value.Icon" @onclick="ShowContextMenu">
+    </TelerikButton>
+</Testable>

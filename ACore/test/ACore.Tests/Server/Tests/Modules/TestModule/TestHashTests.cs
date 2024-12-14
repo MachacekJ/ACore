@@ -1,6 +1,6 @@
 // using System.Reflection;
-// using ACore.Server.Storages.CQRS;
-// using ACore.Tests.Server.Storages;
+// using ACore.Server.Repositories.CQRS;
+// using ACore.Tests.Server.Repositories;
 // using ACore.Tests.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Get;
 // using ACore.Tests.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Models;
 // using ACore.Tests.TestImplementations.Server.Modules.TestModule.CQRS.TestValueType.Save;

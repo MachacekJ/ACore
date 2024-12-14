@@ -2,25 +2,26 @@
 
 internal static class AuditAttributeExtensions
 {
-  internal static AuditableAttribute? IsAuditable(this Type entityEntry)
+  internal static AuditableAttribute? GetAuditableAttr(this Type entityEntry)
   {
     var enableAuditAttribute = Attribute.GetCustomAttribute(entityEntry, typeof(AuditableAttribute));
-    
+
     if (enableAuditAttribute is AuditableAttribute auditableAttribute)
       return auditableAttribute;
 
     return null;
   }
 
-  internal static AuditableAttribute? IsAuditable(this Type entityType, string propName)
+  internal static bool IsPropertyAuditable(this Type entityType, string propName)
   {
-    var auditableAttribute = entityType.IsAuditable();
+    var auditableAttribute = entityType.GetAuditableAttr();
     if (auditableAttribute == null)
-      return null;
-    
-    var propertyInfo = entityType.GetProperty(propName);
-    var disableAuditAttribute = propertyInfo != null && Attribute.IsDefined(propertyInfo, typeof(NotAuditableAttribute));
+      return false;
 
-    return disableAuditAttribute ? null : auditableAttribute;
+    var propertyInfo = entityType.GetProperty(propName);
+    if (propertyInfo == null)
+      throw new Exception($"Unknown property '{propName}' on type '{entityType.Name}'");
+
+    return !Attribute.IsDefined(propertyInfo, typeof(NotAuditableAttribute));
   }
 }

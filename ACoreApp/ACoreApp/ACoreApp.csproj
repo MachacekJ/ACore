@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ACore\src\ACore.Server\ACore.Server.csproj" />
+    <ProjectReference Include="..\ACoreApp.Client\ACoreApp.Client.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modules\CustomerModule\API\" />
+    <Folder Include="Modules\InvoiceModule\CQRS\Invoices\" />
+    <Folder Include="wwwroot\ilang\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Modules\InvoiceModule\Localizations\InvoiceStatus.loc.json">
+      <DependentUpon>InvoiceStatus.loc.cs</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+</Project>

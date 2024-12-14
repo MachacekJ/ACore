@@ -1,14 +1,13 @@
-﻿@inherits JMComponentBase
-@using Telerik.SvgIcons
+﻿@inherits ACoreComponentBase
+
 @using ACore.Blazor.Components.SideBar.LeftSideBar
 @using ACore.Blazor.Components.SideBar.RightSideBar
-@using ACore.Blazor.Components.Header.Login
-@using ACore.Blazor.Components.Header
-
-<TelerikDrawer @ref="_menuDrawer" Expanded="_expanded"
-               ExpandedChanged="ExpandedChangedHandler"
+@using Telerik.SvgIcons
+@using ACore.Blazor.Modules.LoadingModule.Components
+<TelerikDrawer @ref="_leftMenuDrawer" Expanded="@_leftMenuExpanded"
+               ExpandedChanged="LeftMenuExpandedChangedHandler"
                TItem="int"
-               Data="_fakeData"
+               Data="_leftDrawerData"
                Mode="_mode"
                Position="DrawerPosition.Start"
                MiniMode="false"
@@ -26,32 +25,17 @@
             <AppBarSection>
                 <TelerikButton FillMode="flat" Icon="SvgIcon.Menu" OnClick="ToggleMenuDrawer"/>
             </AppBarSection>
-
-            <AppBarSpacer/>
-
-            <AppBarSection>
-                <Register></Register>
-            </AppBarSection>
-
-            <AppBarSeparator/>
-
-            <AppBarSection>
-                <LogIn></LogIn>
-            </AppBarSection>
-
-            <AppBarSection>
-                <CultureChooser/>
-            </AppBarSection>
-
+            @AppBar
         </TelerikAppBar>
-        <TelerikDrawer @ref="_menuDrawer2" Expanded="false"
+        <TelerikDrawer @ref="_rightMenuDrawer" Expanded="@RightMenuExpanded"
+                       ExpandedChanged="@RightMenuExpandedChangedHandler"
                        MiniMode="false"
                        Position="DrawerPosition.End"
                        TItem="int"
-                       Data="_fakeData2"
+                       Data="_rightDrawerData"
                        Mode="DrawerMode.Overlay">
             <Template>
-                <RightMenuContent></RightMenuContent>
+                <RightMenuContent RightMenuType="@_rightMenuType"></RightMenuContent>
             </Template>
             <DrawerContent>
                 <TelerikGridLayout RowSpacing="6px" ColumnSpacing="10px">
@@ -64,11 +48,13 @@
                     </GridLayoutColumns>
                     <GridLayoutItems>
                         <GridLayoutItem Row="1" Column="1" Class="jm-breadcrumb">
-                            <TelerikBreadcrumb Data="@_items"></TelerikBreadcrumb>
+                            <Breadcrumb></Breadcrumb>
                         </GridLayoutItem>
                         <GridLayoutItem Row="2" Column="1" Class="jm-content">
                             <div class="jm-content-child">
-                                @Body
+                                @* <BodyContent> *@
+                                    @Body
+                                @* </BodyContent> *@
                             </div>
                         </GridLayoutItem>
                     </GridLayoutItems>
@@ -79,3 +65,5 @@
 </TelerikDrawer>
 
 <TelerikMediaQuery Media="(max-width: 768px)" OnChange="MediaQueryChange"></TelerikMediaQuery>
+
+<LoaderContainer></LoaderContainer>

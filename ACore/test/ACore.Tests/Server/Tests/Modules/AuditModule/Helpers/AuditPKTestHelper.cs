@@ -1,164 +1,164 @@
-using ACore.CQRS.Results;
+using ACore.Results;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet.Models;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Get;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Models;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestAudit.Save;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKGuid.Get;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKGuid.Models;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKGuid.Save;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKLong.Get;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKLong.Models;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKLong.Save;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Get;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Models;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.CQRS.TestPKString.Save;
-using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1Audit.Get;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1Audit.Models;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1Audit.Save;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKGuid.Get;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKGuid.Models;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKGuid.Save;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKLong.Get;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKLong.Models;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKLong.Save;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKString.Get;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKString.Models;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.CQRS.Fake1PKString.Save;
+using ACore.Tests.Server.FakeApp.Modules.Fake1Module.Repositories.SQL.Models;
 using FluentAssertions;
 using MediatR;
 using MongoDB.Bson;
-using TestAuditEntity = ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.Mongo.Models.TestAuditEntity;
+using Fake1AuditEntity = ACore.Tests.Server.FakeApp.Modules.Fake1Module.Repositories.Mongo.Models.Fake1AuditEntity;
 
 namespace ACore.Tests.Server.Tests.Modules.AuditModule.Helpers;
 
 public static class AuditPKTestHelper
 {
   private const string TestName = "AuditPK";
-  private const string TestPKGuidEntityName = nameof(TestPKGuidEntity);
-  private const string TestPKStringEntityName = nameof(TestPKStringEntity);
-  private const string TestPKLongEntityName = nameof(TestPKLongEntity);
-  private const string TestPKMongoEntityName = nameof(TestAuditEntity);
-  private const string TestAuditEntityName = nameof(TestImplementations.Modules.TestModule.Repositories.SQL.Models.TestAuditEntity);
-
-  public static async Task IntPK(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
+  private static readonly Type TestPKGuidEntityName = typeof(Fake1PKGuidEntity);
+  private static readonly Type TestPKStringEntityName = typeof(Fake1PKStringEntity);
+  private static readonly Type TestPKLongEntityName = typeof(Fake1PKLongEntity);
+  private static readonly Type TestPKMongoEntityName = typeof(Fake1AuditEntity);
+  private static readonly Type TestAuditEntityName = typeof(FakeApp.Modules.Fake1Module.Repositories.SQL.Models.Fake1AuditEntity);
+  
+  public static async Task IntPK(IMediator mediator, Func<Type, string> getTableName, Func<Type, string, string> getColumnName)
   {
     // Arrange.
-    var item = new TestAuditData<int>
+    var item = new Fake1AuditData<int>
     {
       Name = TestName,
     };
 
     // Act.
-    var result = await mediator.Send(new TestAuditSaveCommand<int>(item));
+    var result = await mediator.Send(new Fake1AuditSaveCommand<int>(item));
 
     // Assert.
-    var allData = (await mediator.Send(new TestAuditGetQuery<int>())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestAuditData<int>, int>(result, allData);
+    var allData = (await mediator.Send(new Fake1AuditGetQuery<int>())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<Fake1AuditData<int>, int>(result, allData);
     
  
     // Assert.
     var resAuditItems = (await mediator.Send(new AuditGetQuery<int>(getTableName(TestAuditEntityName), itemId))).ResultValue;
     ArgumentNullException.ThrowIfNull(resAuditItems);
     var auditItem = resAuditItems.Single();
-    var aid = auditItem.GetColumn(getColumnName(TestAuditEntityName, nameof(TestPKLongEntity.Id)));
+    var aid = auditItem.GetColumn(getColumnName(TestAuditEntityName, nameof(Fake1PKLongEntity.Id)));
     ArgumentNullException.ThrowIfNull(aid);
     aid.NewValue.Should().Be(itemId);
   }
   
-  public static async Task LongPK(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
+  public static async Task LongPK(IMediator mediator, Func<Type, string> getTableName, Func<Type, string, string> getColumnName)
   {
     // Arrange.
-    var item = new TestPKLongData
+    var item = new Fake1PKLongData
     {
       Name = TestName,
     };
 
     // Act.
-    var result = await mediator.Send(new TestPKLongSaveCommand(item));
+    var result = await mediator.Send(new Fake1PKLongSaveCommand(item));
 
     // Assert.
-    var allData = (await mediator.Send(new TestPKLongAuditGetQuery())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestPKLongData, long>(result, allData);
+    var allData = (await mediator.Send(new Fake1PKLongAuditGetQuery())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<Fake1PKLongData, long>(result, allData);
     
  
     // Assert.
     var resAuditItems = (await mediator.Send(new AuditGetQuery<long>(getTableName(TestPKLongEntityName), itemId))).ResultValue;
     ArgumentNullException.ThrowIfNull(resAuditItems);
     var auditItem = resAuditItems.Single();
-    var aid = auditItem.GetColumn(getColumnName(TestPKLongEntityName, nameof(TestPKLongEntity.Id)));
+    var aid = auditItem.GetColumn(getColumnName(TestPKLongEntityName, nameof(Fake1PKLongEntity.Id)));
     ArgumentNullException.ThrowIfNull(aid);
     aid.NewValue.Should().Be(itemId);
   }
   
-  public static async Task GuidPK(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
+  public static async Task GuidPK(IMediator mediator, Func<Type, string> getTableName, Func<Type, string, string> getColumnName)
   {
     // Arrange.
-    var item = new TestPKGuidData
+    var item = new Fake1PKGuidData
     {
       Name = TestName,
     };
 
     // Act.
-    var result = await mediator.Send(new TestPKGuidSaveCommand(item));
+    var result = await mediator.Send(new Fake1PKGuidSaveCommand(item));
 
     // Assert.
-    var allData = (await mediator.Send(new TestPKGuidGetQuery())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestPKGuidData, Guid>(result, allData);
+    var allData = (await mediator.Send(new Fake1PKGuidGetQuery())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<Fake1PKGuidData, Guid>(result, allData);
 
     var resAuditItems = (await mediator.Send(new AuditGetQuery<Guid>(getTableName(TestPKGuidEntityName), itemId))).ResultValue;
     ArgumentNullException.ThrowIfNull(resAuditItems);
     var auditItem = resAuditItems.Single();
-    var aid = auditItem.GetColumn(getColumnName(TestPKGuidEntityName, nameof(TestPKGuidEntity.Id)));
+    var aid = auditItem.GetColumn(getColumnName(TestPKGuidEntityName, nameof(Fake1PKGuidEntity.Id)));
     ArgumentNullException.ThrowIfNull(aid);
     aid.NewValue.Should().Be(itemId);
   }
 
-  public static async Task StringPK(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
+  public static async Task StringPK(IMediator mediator, Func<Type, string> getTableName, Func<Type, string, string> getColumnName)
   {
     // Arrange.
-    var item = new TestPKStringData
+    var item = new Fake1PKStringData
     {
       Name = TestName,
     };
 
     // Act.
-    var result = await mediator.Send(new TestPKStringSaveCommand(item));
+    var result = await mediator.Send(new Fake1PKStringSaveCommand(item));
 
     // Assert.
-    var allData = (await mediator.Send(new TestPKStringGetQuery())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestPKStringData, string>(result, allData);
+    var allData = (await mediator.Send(new Fake1PKStringGetQuery())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<Fake1PKStringData, string>(result, allData);
 
     var resAuditItems = (await mediator.Send(new AuditGetQuery<string>(getTableName(TestPKStringEntityName), itemId))).ResultValue;
     ArgumentNullException.ThrowIfNull(resAuditItems);
     var auditItem = resAuditItems.Single();
-    var aid = auditItem.GetColumn(getColumnName(TestPKStringEntityName, nameof(TestPKStringEntity.Id)));
+    var aid = auditItem.GetColumn(getColumnName(TestPKStringEntityName, nameof(Fake1PKStringEntity.Id)));
     ArgumentNullException.ThrowIfNull(aid);
     aid.NewValue.Should().Be(itemId);
   }
 
   public static async Task ObjectIdPKNotImplemented(IMediator mediator)
   {
-    var item = new TestAuditData<ObjectId>
+    var item = new Fake1AuditData<ObjectId>
     {
       Name = TestName,
     };
 
     // Act.
-    var result = await mediator.Send(new TestAuditSaveCommand<ObjectId>(item));
+    var result = await mediator.Send(new Fake1AuditSaveCommand<ObjectId>(item));
     result.IsFailure.Should().BeTrue();
     result.ResultErrorItem.Code.Should().Be(ExceptionResult.ResultErrorItemInternalServer.Code);
     result.Should().BeOfType(typeof(ExceptionResult));
   }
 
-  public static async Task ObjectIdPK(IMediator mediator, Func<string, string> getTableName, Func<string, string, string> getColumnName)
+  public static async Task ObjectIdPK(IMediator mediator, Func<Type, string> getTableName, Func<Type, string, string> getColumnName)
   {
-    var item = new TestAuditData<ObjectId>
+    var item = new Fake1AuditData<ObjectId>
     {
       Name = TestName,
     };
 
     // Act.
-    var result = await mediator.Send(new TestAuditSaveCommand<ObjectId>(item));
+    var result = await mediator.Send(new Fake1AuditSaveCommand<ObjectId>(item));
 
     // Assert.
-    var allData = (await mediator.Send(new TestAuditGetQuery<ObjectId>())).ResultValue;
-    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<TestAuditData<ObjectId>, ObjectId>(result, allData);
+    var allData = (await mediator.Send(new Fake1AuditGetQuery<ObjectId>())).ResultValue;
+    var itemId = AuditAssertTestHelper.AssertSinglePrimaryKeyWithResult<Fake1AuditData<ObjectId>, ObjectId>(result, allData);
     
     // Assert.
     var resAuditItems = (await mediator.Send(new AuditGetQuery<ObjectId>(getTableName(TestPKMongoEntityName), itemId))).ResultValue;
     ArgumentNullException.ThrowIfNull(resAuditItems);
     var auditItem = resAuditItems.Single();
-    var aid = auditItem.GetColumn(getColumnName(TestPKMongoEntityName, nameof(TestAuditEntity.Id)));
+    var aid = auditItem.GetColumn(getColumnName(TestPKMongoEntityName, nameof(Fake1AuditEntity.Id)));
     ArgumentNullException.ThrowIfNull(aid);
     aid.NewValue.Should().Be(itemId);
   }

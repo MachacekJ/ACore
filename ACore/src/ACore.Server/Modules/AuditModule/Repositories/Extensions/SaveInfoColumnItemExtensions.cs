@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
+using ACore.Server.Modules.AuditModule.Repositories.EF.Models;
 using ACore.Server.Modules.AuditModule.Repositories.Helpers;
-using ACore.Server.Modules.AuditModule.Repositories.SQL.Models;
-using ACore.Server.Storages.Models.EntityEvent;
+using ACore.Server.Repository.Models.EntityEvent;
 
 namespace ACore.Server.Modules.AuditModule.Repositories.Extensions;
 

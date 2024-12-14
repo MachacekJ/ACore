@@ -8,9 +8,9 @@ public class FakeClassA
   public string String1 { get; set; } = string.Empty;
   public int Int1 { get; set; }
 
-  [NotIncludeToSumHash]
+  [ExcludeFromSumHash]
   public string StringExclude { get; set; } = string.Empty;
 
-  [NotIncludeToSumHash]
+  [ExcludeFromSumHash]
   public int IntExclude { get; set; }
 }

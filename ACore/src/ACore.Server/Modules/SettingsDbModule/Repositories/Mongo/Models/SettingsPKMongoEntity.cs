@@ -1,19 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ACore.Server.Modules.AuditModule.Attributes;
-using ACore.Server.Storages.Contexts.EF.Models.PK;
-
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+using ACore.Server.Repository.Attributes;
+using ACore.Server.Repository.Contexts.Mongo.Models.PK;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ACore.Server.Modules.SettingsDbModule.Repositories.Mongo.Models;
 
 [Auditable(1)]
+[MongoCollectionName("settings")]
 public class SettingsPKMongoEntity : PKMongoEntity
 {
+  [BsonElement("key")]
   [MaxLength(1024)]
-  public string Key { get; set; }
+  public required string Key { get; set; }
   
+  [BsonElement("value")]
   [MaxLength(1024)]
-  public string Value { get; set; }
+  public required string Value { get; set; }
   
+  [BsonElement("isSystem")]
   public bool? IsSystem { get; set; }
 }

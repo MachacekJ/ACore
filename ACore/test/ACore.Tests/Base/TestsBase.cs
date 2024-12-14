@@ -8,9 +8,11 @@ using Autofac.Extensions.DependencyInjection;
 using MediatR;
 using MediatR.Extensions.Autofac.DependencyInjection;
 using MediatR.Extensions.Autofac.DependencyInjection.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moq;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.InMemory;
@@ -21,19 +23,16 @@ public abstract class TestsBase
 {
   private IMediator? _mediator;
   private ServiceCollection _services = [];
-  protected IConfigurationRoot? Configuration { get; set; }
 
+  protected IConfigurationRoot? Configuration { get; private set; }
+  protected TestData TestData { get; private set; } = new(MethodBase.GetCurrentMethod() ?? throw new ArgumentException($"Method name is null {nameof(RunTestAsync)}"));
   protected IMediator Mediator
   {
     get => _mediator ?? throw new NullReferenceException();
     private set => _mediator = value;
   }
-
-  protected static TestData TestData { get; set; } = new(MethodBase.GetCurrentMethod() ?? throw new ArgumentException($"Method name is null {nameof(RunTestAsync)}"));
-
-  private ILogger<TestsBase>? Log { get; set; }
   protected InMemorySink LogInMemorySink { get; set; } = new();
-
+  private ILogger<TestsBase>? Log { get; set; }
   private string RootDir { get; set; } = string.Empty;
 
   protected async Task RunTestAsync(MemberInfo? method, Func<Task> testCode)
@@ -47,15 +46,19 @@ public abstract class TestsBase
   protected Task RunTestAsync<T>(MemberInfo method, T param, Func<T, Task> testCode)
     => RunTestAsync(new TestData(method), param, testCode);
 
-  // ReSharper disable once MemberCanBePrivate.Global
+  protected async Task RunTestAsync(TestData testData, Func<Task> testCode)
+  {
+    await RunTestAsync(testData, 0, async (_) => { await testCode(); });
+  }
+
   protected async Task RunTestAsync<T>(TestData testData, T param, Func<T, Task> testCode)
   {
     Thread.CurrentThread.CurrentCulture = new CultureInfo(1033);
     Thread.CurrentThread.CurrentUICulture = new CultureInfo(1033);
 
     TestData = testData;
-    await SettingStartTestAsync(_services);
-    
+    await StartTest(_services);
+
     ArgumentNullException.ThrowIfNull(Log);
     Log.LogInformation("Start test Test {TestName}", TestData.TestName);
 
@@ -70,30 +73,25 @@ public abstract class TestsBase
     }
     finally
     {
-      await FinishedTestAsync();
+      await ClearTestAsync();
     }
 
     Log.LogInformation("End test Test {TestName}", TestData.TestName);
   }
 
-  protected async Task RunTestAsync(TestData testData, Func<Task> testCode)
+  protected virtual string JsonSettingPath()
   {
-    await RunTestAsync(testData, 0, async (_) => { await testCode(); });
+    var dic = Directory.GetCurrentDirectory();
+    dic = dic.Replace("\\bin\\Debug\\net6.0", string.Empty);
+    dic = dic.Replace("\\bin\\Release\\net6.0", string.Empty);
+    dic = dic.Replace("\\bin\\Debug\\net7.0", string.Empty);
+    dic = dic.Replace("\\bin\\Release\\net7.0", string.Empty);
+    dic = dic.Replace("\\bin\\Debug\\net8.0", string.Empty);
+    dic = dic.Replace("\\bin\\Release\\net8.0", string.Empty);
+    return dic;
   }
 
-  protected void RegisterAutofacContainer(ServiceCollection services, ContainerBuilder containerBuilder)
-  {
-    SetContainer(containerBuilder);
-    RegisterServices(services);
-
-    var configuration = MediatRConfigurationBuilder
-      .Create(typeof(TestsBase).Assembly, typeof(CacheKey).Assembly)
-      .WithAllOpenGenericHandlerTypesRegistered()
-      .Build();
-    containerBuilder.RegisterMediatR(configuration);
-  }
-
-  protected virtual void SetContainer(ContainerBuilder containerBuilder)
+  protected virtual void SetAutofacContainer(ContainerBuilder containerBuilder)
   {
   }
 
@@ -121,34 +119,22 @@ public abstract class TestsBase
     services.AddLogging(logBuilder => { logBuilder.AddSerilog(logger: serilog, dispose: true); });
   }
 
-  protected virtual async Task GetServices(IServiceProvider sp)
+  protected virtual async Task<IServiceProvider> UseServices(IApplicationBuilder applicationBuilder)
   {
+    var sp = applicationBuilder.ApplicationServices;
     Log = sp.GetService<ILogger<TestsBase>>() ?? throw new ArgumentException($"{nameof(ILogger<TestsBase>)} is null.");
     Mediator = sp.GetService<IMediator>() ?? throw new ArgumentException($"{nameof(IMediator)} is null.");
-    await Task.CompletedTask;
+    return await Task.FromResult(sp);
   }
 
-  protected virtual async Task FinishedTestAsync()
+  protected virtual async Task ClearTestAsync()
   {
     await Task.CompletedTask;
   }
 
-  protected virtual string JsonSettingPath()
-  {
-    var dic = Directory.GetCurrentDirectory();
-    dic = dic.Replace("\\bin\\Debug\\net6.0", string.Empty);
-    dic = dic.Replace("\\bin\\Release\\net6.0", string.Empty);
-    dic = dic.Replace("\\bin\\Debug\\net7.0", string.Empty);
-    dic = dic.Replace("\\bin\\Release\\net7.0", string.Empty);
-    dic = dic.Replace("\\bin\\Debug\\net8.0", string.Empty);
-    dic = dic.Replace("\\bin\\Release\\net8.0", string.Empty);
-    return dic;
-  }
-  
-  private async Task SettingStartTestAsync(ServiceCollection services)
+  private async Task StartTest(ServiceCollection services)
   {
     _services = [];
-    var serviceCollection = services;
 
     // The Microsoft.Extensions.Logging package provides this one-liner
     // to add logging services.
@@ -156,23 +142,30 @@ public abstract class TestsBase
 
     var containerBuilder = new ContainerBuilder();
 
-    RegisterAutofacContainer(services, containerBuilder);
+    SetAutofacContainer(containerBuilder);
+    RegisterServices(services);
 
+    var configuration = MediatRConfigurationBuilder
+      .Create(typeof(TestsBase).Assembly, typeof(CacheKey).Assembly)
+      .WithAllOpenGenericHandlerTypesRegistered()
+      .Build();
+    containerBuilder.RegisterMediatR(configuration);
 
     // Once you've registered everything in the ServiceCollection, call
     // Populate to bring those registrations into Autofac. This is
     // just like a foreach over the list of things in the collection
     // to add them to Autofac.
-    containerBuilder.Populate(serviceCollection);
+    containerBuilder.Populate(services);
 
     // Creating a new AutofacServiceProvider makes the container
     // available to your app using the Microsoft IServiceProvider
     // interface so you can use those abstractions rather than
     // binding directly to Autofac.
     var container = containerBuilder.Build();
-
-
     var serviceProvider = new AutofacServiceProvider(container);
-    await GetServices(serviceProvider);
+    var appBuilderMock = new Mock<IApplicationBuilder>();
+
+    appBuilderMock.SetupGet(p => p.ApplicationServices).Returns(serviceProvider);
+    await UseServices(appBuilderMock.Object);
   }
 }
