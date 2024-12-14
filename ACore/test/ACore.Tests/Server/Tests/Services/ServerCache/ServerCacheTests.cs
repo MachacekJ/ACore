@@ -19,6 +19,13 @@ public class ServerCacheTests : ServerCacheTestsBase
       var cacheKey = CacheKey.Create(FakeCacheCategory, FakeCacheKey);
       // Act
       await ServerCache.Set(cacheKey, "test");
+      var a = await ServerCache.Get<string>(cacheKey);
+      await ServerCache.Remove(cacheKey);
+      var a2 = await ServerCache.Get<string>(cacheKey);
+      
+      await ServerCache.Set(cacheKey, "test");
+      await ServerCache.RemoveCategory(FakeCacheCategory);
+      var a3 = await ServerCache.Get<string>(cacheKey);
     });
   }
 }

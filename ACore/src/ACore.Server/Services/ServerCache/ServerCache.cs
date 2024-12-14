@@ -14,20 +14,16 @@ public class ServerCache(IACoreCache aCoreCache, IDistributedCache distributedCa
 {
   public CacheCategory[] Categories { get; } = serverCacheOptions.Value.Categories.ToArray();
 
-  public async Task<TItem?> Get<TItem>(CacheKey key)
-  {
-    var b = await distributedCache.GetStringAsync(GetKey(key));
-    return b == null ? default : JsonSerializer.Deserialize<TItem>(b);
-  }
 
   public async Task Set<TItem>(CacheKey key, TItem value)
   {
     await distributedCache.SetStringAsync(GetKey(key), JsonSerializer.Serialize(value));
   }
 
-  public bool TryGetValue<TItem>(CacheKey key, out TItem? value)
+  public async Task<TItem?> Get<TItem>(CacheKey key)
   {
-    throw new NotImplementedException();
+    var b = await distributedCache.GetStringAsync(GetKey(key));
+    return b != null ? JsonSerializer.Deserialize<TItem>(b) : default;
   }
 
   public async Task Remove(CacheKey key)

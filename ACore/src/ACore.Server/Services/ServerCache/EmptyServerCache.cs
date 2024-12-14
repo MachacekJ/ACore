@@ -25,8 +25,8 @@ public class EmptyServerCache : IServerCache
     return Task.CompletedTask;
   }
 
-  public void RemoveCategory(CacheCategory mainCategory, CacheCategory? subCategory = null)
+  public Task RemoveCategory(CacheCategory mainCategory, CacheCategory? subCategory = null)
   {
-
+    return Task.CompletedTask;
   }
 }
