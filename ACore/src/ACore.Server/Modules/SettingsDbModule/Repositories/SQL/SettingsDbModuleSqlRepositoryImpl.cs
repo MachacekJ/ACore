@@ -1,12 +1,9 @@
 ﻿using ACore.Models.Cache;
-using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
-using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheRemove;
-using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.SettingsDbModule.Repositories.SQL.Models;
+using ACore.Server.Services.AppUser;
 using ACore.Server.Storages;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Models;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,10 +12,17 @@ namespace ACore.Server.Modules.SettingsDbModule.Repositories.SQL;
 internal abstract class SettingsDbModuleSqlRepositoryImpl : DbContextBase, ISettingsDbModuleRepository
 {
   private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheCategories.Entity, nameof(SettingsEntity));
-  private readonly IMediator _mediator;
+  private readonly IApp _app;
   protected override string ModuleName => nameof(ISettingsDbModuleRepository);
 
   public DbSet<SettingsEntity> Settings { get; set; }
+
+  protected SettingsDbModuleSqlRepositoryImpl(DbContextOptions options, IApp app, ILogger<SettingsDbModuleSqlRepositoryImpl> logger)
+    : base(options, app, logger)
+  {
+    _app = app;
+    RegisterDbSet(Settings);
+  }
 
   #region Settings
 
@@ -36,9 +40,10 @@ internal abstract class SettingsDbModuleSqlRepositoryImpl : DbContextBase, ISett
     set.Value = value;
     set.IsSystem = isSystem;
 
-    var res =  await Save<SettingsEntity, int>(set);
+    var res = await Save<SettingsEntity, int>(set);
 
-    await _mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
+    _app.ServerCache.Remove(CacheKeyTableSetting);
+    //await _mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
     return res;
   }
 
@@ -46,23 +51,24 @@ internal abstract class SettingsDbModuleSqlRepositoryImpl : DbContextBase, ISett
   {
     List<SettingsEntity>? allSettings;
 
-    var allSettingsCacheResult = await _mediator.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
+    var allSettingsCacheResult = _app.ServerCache.Get< List<SettingsEntity>>(CacheKeyTableSetting);  //await _mediator.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
 
-    if (allSettingsCacheResult is { IsSuccess: true, ResultValue: not null })
+    if (allSettingsCacheResult != null)
     {
-      if (allSettingsCacheResult.ResultValue.ObjectValue == null)
-      {
-        var ex = new Exception("The key '" + key + "' is not represented in settings table.");
-        Logger.LogError("GetSettingsValue->" + key, ex);
-        throw ex;
-      }
+      // if (allSettingsCacheResult.ResultValue.ObjectValue == null)
+      // {
+      //   var ex = new Exception("The key '" + key + "' is not represented in settings table.");
+      //   Logger.LogError("GetSettingsValue->" + key, ex);
+      //   throw ex;
+      // }
 
-      allSettings = allSettingsCacheResult.ResultValue.ObjectValue as List<SettingsEntity>;
+      allSettings = allSettingsCacheResult;// as List<SettingsEntity>;
     }
     else
     {
       allSettings = await Settings.ToListAsync();
-      await _mediator.Send(new MemoryCacheModuleSaveCommand(CacheKeyTableSetting, allSettings));
+      _app.ServerCache.Set(CacheKeyTableSetting, allSettings);
+      //await _mediator.Send(new MemoryCacheModuleSaveCommand(CacheKeyTableSetting, allSettings));
     }
 
     if (allSettings == null)
@@ -76,10 +82,4 @@ internal abstract class SettingsDbModuleSqlRepositoryImpl : DbContextBase, ISett
   }
 
   #endregion
-
-  protected SettingsDbModuleSqlRepositoryImpl(DbContextOptions options, IMediator mediator, ILogger<SettingsDbModuleSqlRepositoryImpl> logger) : base(options, mediator, logger)
-  {
-    _mediator = mediator;
-    RegisterDbSet(Settings);
-  }
 }

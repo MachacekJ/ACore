@@ -1,8 +1,8 @@
 using ACore.Models.Cache;
 
-namespace ACore.Modules.MemoryCacheModule.Repositories;
+namespace ACore.Modules.MemoryCacheModule.Services;
 
-public interface IMemoryCacheModuleRepository
+public interface IMemoryCacheModule
 {
   CacheCategory[] Categories { get; }
   TItem? Get<TItem>(CacheKey key);

@@ -1,4 +1,5 @@
-﻿using ACore.UnitTests.Server.Storages.Contexts.EF.EventNotification.FakeClasses.Auditable;
+﻿using ACore.Server.Services.AppUser;
+using ACore.UnitTests.Server.Storages.Contexts.EF.EventNotification.FakeClasses.Auditable;
 using FluentAssertions;
 using MediatR;
 using Moq;
@@ -13,7 +14,7 @@ public class DbContextBaseAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDEnti
     var allNotifications = new List<INotification>();
 
     // Arrange
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateAuditableDbContextBaseAsSut(mediator);
     var en = new FakeAuditableEntity();
@@ -35,7 +36,7 @@ public class DbContextBaseAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDEnti
     var fakeEntityUpdate = new FakeAuditableEntity();
 
     // Arrange
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateAuditableDbContextBaseAsSut(mediator, impl =>
     {
@@ -66,7 +67,7 @@ public class DbContextBaseAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDEnti
     };
 
     // Arrange
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateAuditableDbContextBaseAsSut(mediator, impl =>
     {

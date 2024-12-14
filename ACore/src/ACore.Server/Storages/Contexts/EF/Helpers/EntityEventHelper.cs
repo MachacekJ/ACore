@@ -1,17 +1,16 @@
 using ACore.Extensions;
 using ACore.Server.Modules.AuditModule.Attributes;
-using ACore.Server.Modules.SecurityModule.CQRS.SecurityGetCurrentUser;
+using ACore.Server.Services.AppUser;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Definitions.EF;
 using ACore.Server.Storages.Models.EntityEvent;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MongoDB.Bson;
 
 namespace ACore.Server.Storages.Contexts.EF.Helpers;
 
-public class EntityEventHelper<TEntity, TPK>(IMediator mediator, IModel model, EFStorageDefinition storageDefinition, TEntity initData)
+public class EntityEventHelper<TEntity, TPK>(IApp iApp, IModel model, EFStorageDefinition storageDefinition, TEntity initData)
   where TEntity : PKEntity<TPK>
 {
   private IEntityType? _dbEntityType;
@@ -104,13 +103,9 @@ public class EntityEventHelper<TEntity, TPK>(IMediator mediator, IModel model, E
     return tableName;
   }
 
-  private async Task<string> GetUserId()
+  private Task<string> GetUserId()
   {
-    var user = await mediator.Send(new SecurityGetCurrentUserQuery());
-    if (user.IsFailure)
-      throw new Exception(user.ResultErrorItem.ToString());
-    ArgumentNullException.ThrowIfNull(user.ResultValue);
-    return user.ResultValue.ToString();
+    return Task.FromResult(iApp.CurrentUser.ToString());
   }
 
   private (string Name, bool IsAuditable) GetColumnName<T>(string propName, IEntityType dbEntityType)

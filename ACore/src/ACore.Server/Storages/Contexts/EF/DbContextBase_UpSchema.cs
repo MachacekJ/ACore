@@ -11,7 +11,8 @@ namespace ACore.Server.Storages.Contexts.EF;
 public abstract partial class DbContextBase
 {
   private bool _isDatabaseInit;
- // private string StorageVersionBaseSettingKey => $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageDefinition.Type)}_{nameof(ISettingsDbModuleStorage)}";
+
+  // private string StorageVersionBaseSettingKey => $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageDefinition.Type)}_{nameof(ISettingsDbModuleStorage)}";
   private string StorageVersionKey => $"StorageVersion_{Enum.GetName(typeof(StorageTypeEnum), StorageDefinition.Type)}_{ModuleName}";
 
   public async Task UpSchema()
@@ -21,10 +22,10 @@ public abstract partial class DbContextBase
     var lastVersion = new Version("0.0.0.0");
 
     // Get the latest implemented version, if any.
-    _isDatabaseInit = await EFStorageDefinition.DatabaseHasInitUpdate(this, _options, mediator, Logger);
+    _isDatabaseInit = await EFStorageDefinition.DatabaseHasInitUpdate(this, _options, app.Mediator, Logger);
     if (!_isDatabaseInit)
     {
-      var ver = await mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionKey));
+      var ver = await app.Mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionKey));
       if (ver is { IsSuccess: true, ResultValue: not null })
         lastVersion = new Version(ver.ResultValue);
     }
@@ -59,7 +60,7 @@ public abstract partial class DbContextBase
       return;
     }
 
-    await mediator.Send(new SettingsDbSaveCommand(StorageDefinition.Type, StorageVersionKey, updatedToVersion.ToString(), true));
+    await app.Mediator.Send(new SettingsDbSaveCommand(StorageDefinition.Type, StorageVersionKey, updatedToVersion.ToString(), true));
   }
 
   private async Task<Version> UpdateSchema(List<DbVersionScriptsBase> allVersions, Version lastVersion)
@@ -85,7 +86,7 @@ public abstract partial class DbContextBase
         }
       }
 
-      version.AfterScriptRunCode(this, _options, mediator, Logger);
+      version.AfterScriptRunCode(this, _options, app.Mediator, Logger);
       updatedToVersion = version.Version;
     }
 

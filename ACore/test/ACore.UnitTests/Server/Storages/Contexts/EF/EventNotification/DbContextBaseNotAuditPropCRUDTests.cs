@@ -1,4 +1,5 @@
-﻿using ACore.UnitTests.Server.Storages.Contexts.EF.EventNotification.FakeClasses.NotAuditProp;
+﻿using ACore.Server.Services.AppUser;
+using ACore.UnitTests.Server.Storages.Contexts.EF.EventNotification.FakeClasses.NotAuditProp;
 using FluentAssertions;
 using MediatR;
 using Moq;
@@ -13,7 +14,7 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
     var allNotifications = new List<INotification>();
 
     // Arrange
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateNotAuditPropDbContextBaseAsSut(mediator);
     var en = new FakeNotAuditPropEntity();
@@ -35,7 +36,7 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
     var fakeEntityUpdate = new FakeNotAuditPropEntity();
 
     // Arrange
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateNotAuditPropDbContextBaseAsSut(mediator, impl =>
     {
@@ -66,7 +67,7 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
     };
 
     // Arrange
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateNotAuditPropDbContextBaseAsSut(mediator, impl =>
     {

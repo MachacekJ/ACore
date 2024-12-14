@@ -1,11 +1,13 @@
 ﻿using ACore.Extensions;
 using ACore.Models.Cache;
 using ACore.Models.Result;
-using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
-using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
+// using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheGet;
+// using ACore.Modules.MemoryCacheModule.CQRS.MemoryCacheSave;
 using ACore.Server.Modules.AuditModule.Repositories.SQL;
 using ACore.Server.Modules.AuditModule.Repositories.SQL.Memory;
 using ACore.Server.Modules.AuditModule.Repositories.SQL.Models;
+using ACore.Server.Services.AppUser;
+using ACore.Server.Services.ServerCache;
 using ACore.Server.Storages.Models.EntityEvent;
 using ACore.UnitTests.Server.Modules.AuditModule.Storage.SQL.FakeClasses;
 using ACore.UnitTests.TestImplementations;
@@ -22,7 +24,7 @@ public class AuditSqlStorageImplCacheTests
   private const string FakeUserName = "fakeUser";
   private static readonly CacheKey TableCacheKey = AuditSqlRepositoryImpl.AuditTableCacheKey(FakeTableName, null, 1);
   private static readonly CacheKey UserCacheKey = AuditSqlRepositoryImpl.AuditUserCacheKey(FakeUserName);
-  
+
   [Fact]
   public async Task NoCacheValuesTest()
   {
@@ -30,8 +32,8 @@ public class AuditSqlStorageImplCacheTests
     var cacheQueryCalls = new List<string>();
     var cacheSaveCalls = new List<string>();
     var saveInfoItem = CreateSaveInfoItem();
-    var mediator = new Mock<IMediator>();
-    SetupMemoryCacheQueryCommand(mediator, cacheQueryCalls);
+    var mediator = new Mock<IApp>();
+    SetupMemoryCacheQueryCommand<string?>(mediator, cacheQueryCalls);
     SetupMemoryCacheSaveCommand(mediator, cacheSaveCalls);
     var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object);
 
@@ -58,10 +60,10 @@ public class AuditSqlStorageImplCacheTests
       Version = saveInfoItem.Version,
       TableName = saveInfoItem.TableName,
     };
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupMemoryCacheSaveCommand(mediator, cacheSaveCalls);
     SetupMemoryCacheQueryCommand(mediator, cacheQueryCalls, mem
-      => Result.Success(mem?.Key.ToString() == TableCacheKey.ToString() ? new CacheValue(auditTableEntity) : new CacheValue(null)));
+      => Result.Success(mem?.ToString() == TableCacheKey.ToString() ? auditTableEntity : null));
     var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object, (db) =>
     {
       db.AuditTables.Add(auditTableEntity);
@@ -90,10 +92,10 @@ public class AuditSqlStorageImplCacheTests
     {
       UserId = saveInfoItem.UserId
     };
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupMemoryCacheSaveCommand(mediator, cacheSaveCalls);
     SetupMemoryCacheQueryCommand(mediator, cacheQueryCalls, mem
-      => Result.Success(mem?.Key.ToString() == UserCacheKey.ToString() ? new CacheValue(auditUserEntity) : new CacheValue(null)));
+      => Result.Success(mem?.ToString() == UserCacheKey.ToString() ? auditUserEntity : null));
 
     var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object, (db) =>
     {
@@ -139,13 +141,13 @@ public class AuditSqlStorageImplCacheTests
         DataType = saveInfoItem.ChangedColumns[1].DataType,
       }
     };
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupMemoryCacheSaveCommand(mediator, cacheSaveCalls);
     SetupMemoryCacheQueryCommand(mediator, cacheQueryCalls, mem
       =>
     {
       var dic = auditColumnEntities.ToDictionary(auditColumnEntity => auditColumnEntity.PropName, auditColumnEntity => auditColumnEntity.Id);
-      return Result.Success(mem?.Key.ToString() == columnCacheKey.ToString() ? new CacheValue(dic) : new CacheValue(null));
+      return Result.Success(mem?.ToString() == columnCacheKey.ToString() ? dic : null);
     });
 
     var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object, (db) =>
@@ -161,11 +163,11 @@ public class AuditSqlStorageImplCacheTests
     EntityAsserts(auditSqlStorageImplAsSut, saveInfoItem);
     TableCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
     UserCacheCallsAssert(cacheQueryCalls, cacheSaveCalls);
-    
+
     cacheQueryCalls.Where(e => e == columnCacheKey.ToString()).ToList().Should().HaveCount(1);
     cacheSaveCalls.Where(e => e == columnCacheKey.ToString()).ToList().Should().HaveCount(0);
   }
-  
+
   [Fact]
   public async Task MissingColumnCacheValuesTest()
   {
@@ -193,13 +195,13 @@ public class AuditSqlStorageImplCacheTests
         DataType = saveInfoItem.ChangedColumns[1].DataType,
       }
     };
-    var mediator = new Mock<IMediator>();
+    var mediator = new Mock<IApp>();
     SetupMemoryCacheSaveCommand(mediator, cacheSaveCalls);
     SetupMemoryCacheQueryCommand(mediator, cacheQueryCalls, mem
       =>
     {
       var dic = auditColumnEntities.ToDictionary(auditColumnEntity => auditColumnEntity.PropName, auditColumnEntity => auditColumnEntity.Id);
-      return Result.Success(mem?.Key.ToString() == columnCacheKey.ToString() ? new CacheValue(dic) : new CacheValue(null));
+      return Result.Success(mem?.ToString() == columnCacheKey.ToString() ? dic : null);
     });
 
     var auditSqlStorageImplAsSut = CreateAuditSqlStorageImplAsSut(mediator.Object, (db) =>
@@ -218,7 +220,7 @@ public class AuditSqlStorageImplCacheTests
     ColumnCacheCallsAssert(cacheQueryCalls, cacheSaveCalls, auditSqlStorageImplAsSut.AuditTables.Single(e => e.TableName == FakeTableName).Id);
   }
 
-  private AuditSqlRepositoryImpl CreateAuditSqlStorageImplAsSut(IMediator mediator, Action<FakeAuditSqlRepositoryImpl>? seedData = null)
+  private AuditSqlRepositoryImpl CreateAuditSqlStorageImplAsSut(IApp mediator, Action<FakeAuditSqlRepositoryImpl>? seedData = null)
   {
     var dbContextOptions = new DbContextOptions<AuditSqlRepositoryImpl>();
     var loggerMocked = new MoqLogger<AuditSqlMemoryRepositoryImpl>().LoggerMocked;
@@ -237,39 +239,61 @@ public class AuditSqlStorageImplCacheTests
       ]
     };
 
-  private void SetupMemoryCacheSaveCommand(Mock<IMediator> mediator, List<string> cacheSaveCalls)
+  private void SetupMemoryCacheSaveCommand(Mock<IApp> mediator, List<string> cacheSaveCalls)
   {
-    var result = Result.Success(new CacheValue(null));
-    mediator
-      .Setup(i => i.Send(It.IsAny<MemoryCacheModuleSaveCommand>(), It.IsAny<CancellationToken>()))
-      .Callback<IRequest<Result>, CancellationToken>((q, _) =>
-      {
-        if (q is MemoryCacheModuleSaveCommand mem)
-          cacheSaveCalls.Add(mem.Key.ToString());
-      })
-      .ReturnsAsync(() => result);
+    //var result = Result.Success(new CacheValue(null));
+    var cache = new Mock<IServerCache>();
+
+    cache.Setup(i => i.Set(It.IsAny<CacheKey>(), It.IsAny<It.IsAnyType>()))
+      .Callback<CacheKey, object>((key, value) => cacheSaveCalls.Add(key.ToString()));
+
+    mediator.Setup(i => i.ServerCache)
+      .Returns(cache.Object);
+    // mediator
+    //   .Setup(i => i.Send(It.IsAny<MemoryCacheModuleSaveCommand>(), It.IsAny<CancellationToken>()))
+    //   .Callback<IRequest<Result>, CancellationToken>((q, _) =>
+    //   {
+    //     if (q is MemoryCacheModuleSaveCommand mem)
+    //       cacheSaveCalls.Add(mem.Key.ToString());
+    //   })
+    //   .ReturnsAsync(() => result);
   }
 
-  private void SetupMemoryCacheQueryCommand(Mock<IMediator> mediator, List<string> cacheQueryCalls, Func<MemoryCacheModuleGetQuery?, Result<CacheValue>>? customResultFunc = null)
+  private void SetupMemoryCacheQueryCommand<T>(Mock<IApp> mediator, List<string> cacheQueryCalls, Func<CacheKey, T>? customResultFunc = null)
   {
-    var result = Result.Success(new CacheValue(null));
-#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
-    mediator
-      .Setup(i => i.Send(It.IsAny<MemoryCacheModuleGetQuery>(), It.IsAny<CancellationToken>()))
-      .Callback<IRequest<Result<CacheValue?>>, CancellationToken>((q, _) =>
-      {
-        MemoryCacheModuleGetQuery? mem2 = null;
-        if (q is MemoryCacheModuleGetQuery mem)
-        {
-          mem2 = mem;
-          cacheQueryCalls.Add(mem.Key.ToString());
-        }
+    var cache = new Mock<IServerCache>();
 
-        if (customResultFunc != null)
-          result = customResultFunc(mem2);
-      })
-#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
-      .ReturnsAsync(() => result);
+    cache.Setup(i => i.Get<T>(It.IsAny<CacheKey>()))
+      .Returns<CacheKey, T>((key, value) =>
+      {
+        cacheQueryCalls.Add(key.ToString());
+        return customResultFunc != null 
+          ? customResultFunc.Invoke(key) 
+          : default;
+      });
+  
+
+    mediator.Setup(i => i.ServerCache)
+      .Returns(cache.Object);
+    
+//     var result = Result.Success(new CacheValue(null));
+// #pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+//     mediator
+//       .Setup(i => i.Send(It.IsAny<MemoryCacheModuleGetQuery>(), It.IsAny<CancellationToken>()))
+//       .Callback<IRequest<Result<CacheValue?>>, CancellationToken>((q, _) =>
+//       {
+//         MemoryCacheModuleGetQuery? mem2 = null;
+//         if (q is MemoryCacheModuleGetQuery mem)
+//         {
+//           mem2 = mem;
+//           cacheQueryCalls.Add(mem.Key.ToString());
+//         }
+//
+//         if (customResultFunc != null)
+//           result = customResultFunc(mem2);
+//       })
+// #pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+//       .ReturnsAsync(() => result);
   }
 
   private void EntityAsserts(AuditSqlRepositoryImpl auditSqlRepositoryImplAsSut, EntityEventItem entityEventItem)

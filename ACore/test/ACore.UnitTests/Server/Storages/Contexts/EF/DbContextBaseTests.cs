@@ -1,6 +1,5 @@
-﻿using ACore.Models.Result;
-using ACore.Server.Modules.SecurityModule.CQRS.SecurityGetCurrentUser;
-using ACore.Server.Modules.SecurityModule.Models;
+﻿using ACore.Server.Modules.SecurityModule.Models;
+using ACore.Server.Services.AppUser;
 using ACore.Server.Storages.CQRS.Notifications;
 using FluentAssertions;
 using MediatR;
@@ -13,19 +12,23 @@ public class DbContextBaseTests
   protected readonly UserData FakeUser = new(UserTypeEnum.Test, "1", "testUser");
 
 
-  protected void SetupLoggedUser(Mock<IMediator> mediator)
+  protected void SetupLoggedUser(Mock<IApp> app)
   {
-    var result = Result.Success(FakeUser);
-    mediator
-      .Setup(i => i.Send(It.IsAny<SecurityGetCurrentUserQuery>(), It.IsAny<CancellationToken>()))
-      .ReturnsAsync(() => result);
+    //var result = Result.Success(FakeUser);
+    app
+      .Setup(i => i.CurrentUser)
+      .Returns(() => FakeUser);
   }
   
-  protected void SetupSaveNotification(Mock<IMediator> mediator, List<INotification>? notifications = null)
+  protected void SetupSaveNotification(Mock<IApp> app, List<INotification>? notifications = null)
   {
+    var mediator = new Mock<IMediator>();
     mediator
       .Setup(i => i.Publish(It.IsAny<EntityEventNotification>(), It.IsAny<CancellationToken>()))
       .Callback<INotification, CancellationToken>((notification, _) => { notifications?.Add(notification); });
+    
+    app.Setup(i=>i.Mediator)
+      .Returns(mediator.Object);
   }
   
   protected static INotification AssertOneNotification(List<INotification> allNotifications)

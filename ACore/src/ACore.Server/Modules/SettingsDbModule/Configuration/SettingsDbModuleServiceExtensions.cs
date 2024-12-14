@@ -23,7 +23,7 @@ internal static class SettingsDbModuleServiceExtensions
     
     services.AddDbMongoStorage<SettingsDbModuleMongoRepositoryImpl>(options.Storages);
     services.AddDbPGStorage<SettingsDbModuleSqlPGRepositoryImpl>(options.Storages);
-    services.AddDbMemoryStorage<SettingsDbModuleSqlMemoryRepositoryImplTestsSqlMemoryRepositoryImpl>(options.Storages, nameof(ISettingsDbModuleRepository));
+    services.AddDbMemoryStorage<SettingsDbModuleRepositoryImpl>(options.Storages, nameof(ISettingsDbModuleRepository));
   }
 
   public static async Task UseSettingServiceModule(this IServiceProvider provider)
@@ -41,6 +41,6 @@ internal static class SettingsDbModuleServiceExtensions
 
     await provider.ConfigureMongoStorage<ISettingsDbModuleRepository, SettingsDbModuleMongoRepositoryImpl>(storageOptions);
     await provider.ConfigurePGStorage<ISettingsDbModuleRepository, SettingsDbModuleSqlPGRepositoryImpl>(storageOptions);
-    await provider.ConfigureMemoryStorage<ISettingsDbModuleRepository, SettingsDbModuleSqlMemoryRepositoryImplTestsSqlMemoryRepositoryImpl>(storageOptions);
+    await provider.ConfigureMemoryStorage<ISettingsDbModuleRepository, SettingsDbModuleRepositoryImpl>(storageOptions);
   }
 }

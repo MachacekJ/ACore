@@ -1,4 +1,5 @@
-﻿using ACore.Server.Storages.Contexts.EF;
+﻿using ACore.Server.Services.AppUser;
+using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
 using MediatR;
@@ -13,7 +14,7 @@ public class FakeNotAuditableDbContextBaseImpl : DbContextBase
 {
   public DbSet<FakeNotAuditableEntity> Fakes { get; set; }
   
-  public FakeNotAuditableDbContextBaseImpl(DbContextOptions<FakeNotAuditableDbContextBaseImpl> options, IMediator mediator, ILogger<FakeNotAuditableDbContextBaseImpl> logger) : base(options, mediator, logger)
+  public FakeNotAuditableDbContextBaseImpl(DbContextOptions<FakeNotAuditableDbContextBaseImpl> options, IApp mediator, ILogger<FakeNotAuditableDbContextBaseImpl> logger) : base(options, mediator, logger)
   {
     RegisterDbSet(Fakes);
   }

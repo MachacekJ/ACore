@@ -1,5 +1,5 @@
 ﻿using ACore.Configuration;
-using ACore.Modules.MemoryCacheModule.Repositories;
+using ACore.Modules.MemoryCacheModule.Services;
 using ACore.Server.Configuration;
 using ACore.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;

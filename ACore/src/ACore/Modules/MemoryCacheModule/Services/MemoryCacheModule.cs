@@ -5,9 +5,9 @@ using ACore.Models.Cache;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace ACore.Modules.MemoryCacheModule.Repositories;
+namespace ACore.Modules.MemoryCacheModule.Services;
 
-internal class MemoryCacheModuleRepository(IMemoryCache memoryCache, IOptions<ACore.Configuration.ACoreOptions> aCoreOptions) : IMemoryCacheModuleRepository
+public class MemoryCacheModule(IMemoryCache memoryCache, IOptions<ACore.Configuration.ACoreOptions> aCoreOptions) : IMemoryCacheModule
 {
   public CacheCategory[] Categories => aCoreOptions.Value.MemoryCacheModuleOptions.Categories.ToArray();
 

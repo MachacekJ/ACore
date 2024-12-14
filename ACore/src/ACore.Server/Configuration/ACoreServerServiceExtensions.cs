@@ -7,6 +7,7 @@ using ACore.Server.Modules.AuditModule.Configuration;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet;
 using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
+using ACore.Server.Services.AppUser;
 using ACore.Server.Storages.Configuration;
 using ACore.Server.Storages.Services.StorageResolvers;
 using FluentValidation;
@@ -55,6 +56,9 @@ public static class ACoreServerServiceExtensions
 
     if (aCoreServerOptions.SecurityModuleOptions.IsActive)
       services.AddSecurityModule(aCoreServerOptions.SecurityModuleOptions);
+
+    services.AddScoped<IApp, App>();
+    
   }
 
   public static async Task UseACoreServer(this IServiceProvider provider)

@@ -1,4 +1,5 @@
 ﻿using ACore.Server.Modules.AuditModule.Repositories.SQL.Models;
+using ACore.Server.Services.AppUser;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
 using MediatR;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ACore.Server.Modules.AuditModule.Repositories.SQL.PG;
 
-internal class AuditPGEFRepositoryImpl(DbContextOptions<AuditPGEFRepositoryImpl> options, IMediator mediator, ILogger<AuditSqlRepositoryImpl> logger) : AuditSqlRepositoryImpl(options, mediator, logger)
+internal class AuditPGEFRepositoryImpl(DbContextOptions<AuditPGEFRepositoryImpl> options, IApp app, ILogger<AuditSqlRepositoryImpl> logger) : AuditSqlRepositoryImpl(options, app, logger)
 {
   protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();
   protected override EFStorageDefinition EFStorageDefinition => new PGStorageDefinition();

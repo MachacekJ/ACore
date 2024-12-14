@@ -2,7 +2,7 @@
 using ACore.Attributes;
 using ACore.Configuration;
 using ACore.Extensions;
-using ACore.Server.Configuration.CQRS.OptionsGet;
+using ACore.Server.Services.AppUser;
 using ACore.Server.Storages.Contexts.EF.Helpers;
 using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
@@ -12,7 +12,6 @@ using ACore.Server.Storages.Definitions;
 using ACore.Server.Storages.Definitions.EF;
 using ACore.Server.Storages.Models;
 using Mapster;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -20,7 +19,7 @@ using Guid = System.Guid;
 
 namespace ACore.Server.Storages.Contexts.EF;
 
-public abstract partial class DbContextBase(DbContextOptions options, IMediator mediator, ILogger<DbContextBase> logger) : DbContext(options), IRepository
+public abstract partial class DbContextBase(DbContextOptions options, IApp app, ILogger<DbContextBase> logger) : DbContext(options), IRepository
 {
   private readonly DbContextOptions _options = options;
   protected readonly ILogger<DbContextBase> Logger = logger ?? throw new ArgumentException($"{nameof(logger)} is null.");
@@ -45,7 +44,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     if (id == null)
       ArgumentNullException.ThrowIfNull(id);
 
-    var databaseOperationEventHelper = new EntityEventHelper<TEntity, TPK>(mediator, Model, EFStorageDefinition, newData);
+    var databaseOperationEventHelper = new EntityEventHelper<TEntity, TPK>(app, Model, EFStorageDefinition, newData);
     await databaseOperationEventHelper.Initialize();
 
     var dbSet = GetDbSet<TEntity>();
@@ -56,7 +55,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     if (hashIsRequired)
     {
       // Gets salt from global app settings.
-      saltForHash = (await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt))).ResultValue ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
+      saltForHash = app.Options.ACoreOptions.SaltForHash;  //(await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt))).ResultValue ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
       if (string.IsNullOrEmpty(saltForHash))
         Logger.LogWarning($"Please configure salt for hash. Check application settings and paste hash string to section '{nameof(ACoreOptions)}.{nameof(ACoreOptions.SaltForHash)}'");
     }
@@ -121,7 +120,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
       if (isNew) databaseOperationEventHelper.AddEntityAction(existsEntity);
 
       if (databaseOperationEventHelper.EntityEventOperationItem != null && !_isDatabaseInit)
-        await mediator.Publish(new EntityEventNotification(databaseOperationEventHelper.EntityEventOperationItem));
+        await app.Mediator.Publish(new EntityEventNotification(databaseOperationEventHelper.EntityEventOperationItem));
     }
   }
 
@@ -132,7 +131,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     if (id == null)
       throw new Exception($"{typeof(TEntity).Name}:{id} doesn't exist.");
 
-    var saveInfoHelper = new EntityEventHelper<TEntity, TPK>(mediator, Model, EFStorageDefinition, entityToDelete);
+    var saveInfoHelper = new EntityEventHelper<TEntity, TPK>(app, Model, EFStorageDefinition, entityToDelete);
     await saveInfoHelper.Initialize();
 
     var dbSet = GetDbSet<TEntity>();
@@ -141,7 +140,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IMediator 
     await SaveChangesAsync();
     saveInfoHelper.DeleteEntityAction();
     if (saveInfoHelper.EntityEventOperationItem != null)
-      await mediator.Publish(new EntityEventNotification(saveInfoHelper.EntityEventOperationItem));
+      await app.Mediator.Publish(new EntityEventNotification(saveInfoHelper.EntityEventOperationItem));
 
     return RepositoryOperationResult.Success(RepositoryOperationTypeEnum.Deleted);
   }

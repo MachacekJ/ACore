@@ -1,4 +1,5 @@
 ﻿using ACore.Extensions;
+using ACore.Server.Services.AppUser;
 using ACore.Server.Storages.CQRS.Notifications;
 using ACore.Server.Storages.Models.EntityEvent;
 using ACore.UnitTests.Server.Storages.Contexts.EF.EventNotification.FakeClasses.Auditable;
@@ -35,7 +36,7 @@ public abstract class DbContextBaseCRUDTests(CRUDEntityTypeEnum entityType) : Db
   };
 
   #region Arrange
-  protected FakeNotAuditPropDbContextBaseImpl CreateNotAuditPropDbContextBaseAsSut(Mock<IMediator> mediator, Action<FakeNotAuditPropDbContextBaseImpl>? seed = null)
+  protected FakeNotAuditPropDbContextBaseImpl CreateNotAuditPropDbContextBaseAsSut(Mock<IApp> mediator, Action<FakeNotAuditPropDbContextBaseImpl>? seed = null)
   {
     SetupLoggedUser(mediator);
     var dbContextOptions = new DbContextOptions<FakeNotAuditPropDbContextBaseImpl>();
@@ -45,7 +46,7 @@ public abstract class DbContextBaseCRUDTests(CRUDEntityTypeEnum entityType) : Db
     return res;
   }
 
-  protected FakeAuditableDbContextBaseImpl CreateAuditableDbContextBaseAsSut(Mock<IMediator> mediator, Action<FakeAuditableDbContextBaseImpl>? seed = null)
+  protected FakeAuditableDbContextBaseImpl CreateAuditableDbContextBaseAsSut(Mock<IApp> mediator, Action<FakeAuditableDbContextBaseImpl>? seed = null)
   {
     SetupLoggedUser(mediator);
     var dbContextOptions = new DbContextOptions<FakeAuditableDbContextBaseImpl>();
@@ -55,7 +56,7 @@ public abstract class DbContextBaseCRUDTests(CRUDEntityTypeEnum entityType) : Db
     return res;
   }
 
-  protected FakeNotAuditableDbContextBaseImpl CreateNotAuditableDbContextBaseAsSut(Mock<IMediator> mediator, Action<FakeNotAuditableDbContextBaseImpl>? seed = null)
+  protected FakeNotAuditableDbContextBaseImpl CreateNotAuditableDbContextBaseAsSut(Mock<IApp> mediator, Action<FakeNotAuditableDbContextBaseImpl>? seed = null)
   {
     SetupLoggedUser(mediator);
     var dbContextOptions = new DbContextOptions<FakeNotAuditableDbContextBaseImpl>();

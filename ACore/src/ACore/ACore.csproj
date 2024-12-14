@@ -28,6 +28,15 @@
 		<EmbeddedResource Remove="Models\Account\**" />
 		<Compile Remove="Localizer\**" />
 		<EmbeddedResource Remove="Localizer\**" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheGet\**" />
+		<EmbeddedResource Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheGet\**" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheRemove\**" />
+		<EmbeddedResource Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheRemove\**" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheSave\**" />
+		<EmbeddedResource Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheSave\**" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheModulePipelineBehavior.cs" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheModuleRequest.cs" />
+		<Compile Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheModuleRequestHandler.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -83,9 +92,13 @@
 
 	<ItemGroup>
 	  <None Remove="Localizer\**" />
+	  <None Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheGet\**" />
+	  <None Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheRemove\**" />
+	  <None Remove="Modules\MemoryCacheModule\CQRS\MemoryCacheSave\**" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Modules\Base\" />
+	  <Folder Include="Modules\MemoryCacheModule\CQRS\" />
 	</ItemGroup>
 </Project>
