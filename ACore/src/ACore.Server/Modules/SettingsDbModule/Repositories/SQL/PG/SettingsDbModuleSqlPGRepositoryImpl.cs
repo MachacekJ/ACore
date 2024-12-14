@@ -1,5 +1,5 @@
 ﻿using ACore.Server.Modules.SettingsDbModule.Repositories.SQL.Models;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +10,8 @@ namespace ACore.Server.Modules.SettingsDbModule.Repositories.SQL.PG;
 
 using ScriptRegistrations = ScriptRegistrations;
 
-internal class SettingsDbModuleSqlPGRepositoryImpl(DbContextOptions<SettingsDbModuleSqlPGRepositoryImpl> options, IApp app, ILogger<SettingsDbModuleSqlPGRepositoryImpl> logger) 
-  : SettingsDbModuleSqlRepositoryImpl(options, app, logger)
+internal class SettingsDbModuleSqlPGRepositoryImpl(DbContextOptions<SettingsDbModuleSqlPGRepositoryImpl> options, IACoreServerApp iaCoreServerApp, ILogger<SettingsDbModuleSqlPGRepositoryImpl> logger) 
+  : SettingsDbModuleSqlRepositoryImpl(options, iaCoreServerApp, logger)
 {
   protected override DbScriptBase UpdateScripts => new ScriptRegistrations();
   protected override EFStorageDefinition EFStorageDefinition => new PGStorageDefinition();

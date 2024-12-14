@@ -7,7 +7,10 @@ using ACore.Server.Modules.AuditModule.Configuration;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet;
 using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
+using ACore.Server.Services.Security;
+using ACore.Server.Services.ServerCache;
+using ACore.Server.Services.ServerCache.Configuration;
 using ACore.Server.Storages.Configuration;
 using ACore.Server.Storages.Services.StorageResolvers;
 using FluentValidation;
@@ -57,8 +60,26 @@ public static class ACoreServerServiceExtensions
     if (aCoreServerOptions.SecurityModuleOptions.IsActive)
       services.AddSecurityModule(aCoreServerOptions.SecurityModuleOptions);
 
-    services.AddScoped<IApp, App>();
     
+    services.AddServerCache(aCoreServerOptions.ServerCache);
+    // if (aCoreServerOptions.ServerCache != null)
+    // {
+    //   services.AddStackExchangeRedisCache(opt =>
+    //   {
+    //     opt.Configuration = aCoreServerOptions.ServerCache.RedisOptions.ConnectionString;
+    //     opt.InstanceName = aCoreServerOptions.ServerCache.RedisOptions.InstanceName;
+    //   });
+    //  
+    // }
+    // else
+    // {
+    //  
+    // }
+
+    services.TryAddScoped<ISecurity, EmptySecurity>();
+
+
+    services.AddScoped<IACoreServerApp, ACoreServerApp>();
   }
 
   public static async Task UseACoreServer(this IServiceProvider provider)

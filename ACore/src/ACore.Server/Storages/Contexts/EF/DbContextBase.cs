@@ -2,7 +2,7 @@
 using ACore.Attributes;
 using ACore.Configuration;
 using ACore.Extensions;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages.Contexts.EF.Helpers;
 using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
@@ -19,7 +19,7 @@ using Guid = System.Guid;
 
 namespace ACore.Server.Storages.Contexts.EF;
 
-public abstract partial class DbContextBase(DbContextOptions options, IApp app, ILogger<DbContextBase> logger) : DbContext(options), IRepository
+public abstract partial class DbContextBase(DbContextOptions options, IACoreServerApp iaCoreServerApp, ILogger<DbContextBase> logger) : DbContext(options), IRepository
 {
   private readonly DbContextOptions _options = options;
   protected readonly ILogger<DbContextBase> Logger = logger ?? throw new ArgumentException($"{nameof(logger)} is null.");
@@ -44,7 +44,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IApp app, 
     if (id == null)
       ArgumentNullException.ThrowIfNull(id);
 
-    var databaseOperationEventHelper = new EntityEventHelper<TEntity, TPK>(app, Model, EFStorageDefinition, newData);
+    var databaseOperationEventHelper = new EntityEventHelper<TEntity, TPK>(iaCoreServerApp, Model, EFStorageDefinition, newData);
     await databaseOperationEventHelper.Initialize();
 
     var dbSet = GetDbSet<TEntity>();
@@ -55,7 +55,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IApp app, 
     if (hashIsRequired)
     {
       // Gets salt from global app settings.
-      saltForHash = app.Options.ACoreOptions.SaltForHash;  //(await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt))).ResultValue ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
+      saltForHash = iaCoreServerApp.Options.ACoreOptions.SaltForHash;  //(await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt))).ResultValue ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
       if (string.IsNullOrEmpty(saltForHash))
         Logger.LogWarning($"Please configure salt for hash. Check application settings and paste hash string to section '{nameof(ACoreOptions)}.{nameof(ACoreOptions.SaltForHash)}'");
     }
@@ -120,7 +120,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IApp app, 
       if (isNew) databaseOperationEventHelper.AddEntityAction(existsEntity);
 
       if (databaseOperationEventHelper.EntityEventOperationItem != null && !_isDatabaseInit)
-        await app.Mediator.Publish(new EntityEventNotification(databaseOperationEventHelper.EntityEventOperationItem));
+        await iaCoreServerApp.Mediator.Publish(new EntityEventNotification(databaseOperationEventHelper.EntityEventOperationItem));
     }
   }
 
@@ -131,7 +131,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IApp app, 
     if (id == null)
       throw new Exception($"{typeof(TEntity).Name}:{id} doesn't exist.");
 
-    var saveInfoHelper = new EntityEventHelper<TEntity, TPK>(app, Model, EFStorageDefinition, entityToDelete);
+    var saveInfoHelper = new EntityEventHelper<TEntity, TPK>(iaCoreServerApp, Model, EFStorageDefinition, entityToDelete);
     await saveInfoHelper.Initialize();
 
     var dbSet = GetDbSet<TEntity>();
@@ -140,7 +140,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IApp app, 
     await SaveChangesAsync();
     saveInfoHelper.DeleteEntityAction();
     if (saveInfoHelper.EntityEventOperationItem != null)
-      await app.Mediator.Publish(new EntityEventNotification(saveInfoHelper.EntityEventOperationItem));
+      await iaCoreServerApp.Mediator.Publish(new EntityEventNotification(saveInfoHelper.EntityEventOperationItem));
 
     return RepositoryOperationResult.Success(RepositoryOperationTypeEnum.Deleted);
   }

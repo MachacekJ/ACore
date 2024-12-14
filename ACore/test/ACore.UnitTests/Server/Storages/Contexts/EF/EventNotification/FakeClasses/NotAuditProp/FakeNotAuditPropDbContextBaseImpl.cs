@@ -1,4 +1,4 @@
-﻿using ACore.Server.Services.AppUser;
+﻿using ACore.Server.Services;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
@@ -14,7 +14,7 @@ public class FakeNotAuditPropDbContextBaseImpl : DbContextBase
 {
   public DbSet<FakeNotAuditPropEntity> Fakes { get; set; }
   
-  public FakeNotAuditPropDbContextBaseImpl(DbContextOptions<FakeNotAuditPropDbContextBaseImpl> options, IApp mediator, ILogger<FakeNotAuditPropDbContextBaseImpl> logger) : base(options, mediator, logger)
+  public FakeNotAuditPropDbContextBaseImpl(DbContextOptions<FakeNotAuditPropDbContextBaseImpl> options, IACoreServerApp mediator, ILogger<FakeNotAuditPropDbContextBaseImpl> logger) : base(options, mediator, logger)
   {
     RegisterDbSet(Fakes);
   }

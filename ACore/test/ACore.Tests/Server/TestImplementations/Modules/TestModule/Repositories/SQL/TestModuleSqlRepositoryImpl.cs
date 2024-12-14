@@ -1,9 +1,9 @@
-﻿using ACore.Server.Storages.Contexts.EF;
+﻿using ACore.Server.Services;
+using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +23,7 @@ internal abstract class TestModuleSqlRepositoryImpl : DbContextBase, ITestReposi
   internal DbSet<TestPKStringEntity> TestPKString { get; set; }
   internal DbSet<TestPKLongEntity> TestPKLong { get; set; }
 
-  protected TestModuleSqlRepositoryImpl(DbContextOptions options, IMediator mediator, ILogger<TestModuleSqlRepositoryImpl> logger) : base(options, mediator, logger)
+  protected TestModuleSqlRepositoryImpl(DbContextOptions options, IACoreServerApp app, ILogger<TestModuleSqlRepositoryImpl> logger) : base(options, app, logger)
   {
     RegisterDbSet(TestNoAudits);
     RegisterDbSet(TestAudits);

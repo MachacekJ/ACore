@@ -22,10 +22,10 @@ public abstract partial class DbContextBase
     var lastVersion = new Version("0.0.0.0");
 
     // Get the latest implemented version, if any.
-    _isDatabaseInit = await EFStorageDefinition.DatabaseHasInitUpdate(this, _options, app.Mediator, Logger);
+    _isDatabaseInit = await EFStorageDefinition.DatabaseHasInitUpdate(this, _options, iaCoreServerApp.Mediator, Logger);
     if (!_isDatabaseInit)
     {
-      var ver = await app.Mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionKey));
+      var ver = await iaCoreServerApp.Mediator.Send(new SettingsDbGetQuery(StorageDefinition.Type, StorageVersionKey));
       if (ver is { IsSuccess: true, ResultValue: not null })
         lastVersion = new Version(ver.ResultValue);
     }
@@ -60,7 +60,7 @@ public abstract partial class DbContextBase
       return;
     }
 
-    await app.Mediator.Send(new SettingsDbSaveCommand(StorageDefinition.Type, StorageVersionKey, updatedToVersion.ToString(), true));
+    await iaCoreServerApp.Mediator.Send(new SettingsDbSaveCommand(StorageDefinition.Type, StorageVersionKey, updatedToVersion.ToString(), true));
   }
 
   private async Task<Version> UpdateSchema(List<DbVersionScriptsBase> allVersions, Version lastVersion)
@@ -86,7 +86,7 @@ public abstract partial class DbContextBase
         }
       }
 
-      version.AfterScriptRunCode(this, _options, app.Mediator, Logger);
+      version.AfterScriptRunCode(this, _options, iaCoreServerApp.Mediator, Logger);
       updatedToVersion = version.Version;
     }
 

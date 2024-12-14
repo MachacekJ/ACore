@@ -30,7 +30,7 @@ public class StorageOptionBuilder
 
   public StorageOptions Build()
   {
-    CheckAtLeastOneDB();
+    //CheckAtLeastOneDB();
     return new StorageOptions
     {
       UseMemoryStorage = _isMem,

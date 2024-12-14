@@ -4,7 +4,7 @@ using ACore.Server.Modules.AuditModule.Models;
 using ACore.Server.Modules.AuditModule.Repositories.Extensions;
 using ACore.Server.Modules.AuditModule.Repositories.Helpers;
 using ACore.Server.Modules.AuditModule.Repositories.SQL.Models;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Models;
@@ -17,10 +17,10 @@ using Microsoft.Extensions.Logging;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace ACore.Server.Modules.AuditModule.Repositories.SQL;
 
-internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IApp app, ILogger<AuditSqlRepositoryImpl> logger)
-  : DbContextBase(options, app, logger), IAuditRepository
+internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IACoreServerApp iaCoreServerApp, ILogger<AuditSqlRepositoryImpl> logger)
+  : DbContextBase(options, iaCoreServerApp, logger), IAuditRepository
 {
-  private readonly IApp _app = app;
+  private readonly IACoreServerApp _iaCoreServerApp = iaCoreServerApp;
 
   internal static CacheKey AuditColumnCacheKey(int tableId) => CacheKey.Create(CacheCategories.Entity, new CacheCategory(nameof(AuditColumnEntity)), tableId.ToString());
   internal static CacheKey AuditUserCacheKey(string userId) => CacheKey.Create(CacheCategories.Entity, new CacheCategory(nameof(AuditUserEntity)), userId);
@@ -115,7 +115,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IApp ap
   {
     var keyCache = AuditUserCacheKey(userId);
 
-    var cacheValue = _app.ServerCache.Get<AuditUserEntity>(keyCache); //await _mediator.Send(new MemoryCacheModuleGetQuery(keyCache));
+    var cacheValue = _iaCoreServerApp.ServerCache.Get<AuditUserEntity>(keyCache); //await _mediator.Send(new MemoryCacheModuleGetQuery(keyCache));
     if (cacheValue != null)
     {
       Logger.LogDebug("Value from cache:{GetAuditUserIdAsync}:{keyCache}:{userId}", nameof(GetAuditUserIdAsync), keyCache, userId);
@@ -134,7 +134,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IApp ap
       Logger.LogDebug("New db value created:{GetAuditUserIdAsync}:{keyCache}:{userId}", nameof(GetAuditUserIdAsync), keyCache, userId);
     }
 
-    _app.ServerCache.Set(keyCache, userEntity);
+    _iaCoreServerApp.ServerCache.Set(keyCache, userEntity);
     // await _mediator.Send(new MemoryCacheModuleSaveCommand(keyCache, userEntity));
     Logger.LogDebug("Value saved to cache:{GetAuditUserIdAsync}:{keyCache}:{userId}", nameof(GetAuditUserIdAsync), keyCache, userId);
     return userEntity.Id;
@@ -145,7 +145,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IApp ap
     var keyCache = AuditTableCacheKey(tableName, tableSchema, version);
 
     //var cacheValue = await _mediator.Send(new MemoryCacheModuleGetQuery(keyCache));
-    var cacheValue = _app.ServerCache.Get<AuditTableEntity>(keyCache);
+    var cacheValue = _iaCoreServerApp.ServerCache.Get<AuditTableEntity>(keyCache);
     if (cacheValue != null)
     {
       Logger.LogDebug("Value from cache:{GetAuditTableIdAsync}:{keyCache}:{tableName}:{tableSchema}", nameof(AuditTableId), keyCache, tableName, tableSchema);
@@ -167,7 +167,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IApp ap
       Logger.LogDebug("New db value created:{GetAuditTableIdAsync}:{keyCache}:{tableName}:{tableSchema}", nameof(AuditTableId), keyCache, tableName, tableSchema);
     }
 
-    _app.ServerCache.Set(keyCache, tableEntity);
+    _iaCoreServerApp.ServerCache.Set(keyCache, tableEntity);
     //await _mediator.Send(new MemoryCacheModuleSaveCommand(keyCache, tableEntity));
     Logger.LogDebug("Value saved to cache:{GetAuditTableIdAsync}:{keyCache}:{tableName}:{tableSchema}", nameof(AuditTableId), keyCache, tableName, tableSchema);
     return tableEntity.Id;
@@ -175,12 +175,12 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IApp ap
 
   private async Task<Dictionary<string, int>> AuditColumnId(int tableId, IEnumerable<EntityEventColumnItem> columns)
   {
-    var keyCache = AuditColumnCacheKey(tableId);
+    CacheKey keyCache = AuditColumnCacheKey(tableId);
     var res = new Dictionary<string, int>();
 
     #region Cache values
 
-    var cacheValue = _app.ServerCache.Get<Dictionary<string, int>>(keyCache);
+    var cacheValue = await _iaCoreServerApp.ServerCache.Get<Dictionary<string, int>>(keyCache);
     //var cacheValue = await _mediator.Send(new MemoryCacheModuleGetQuery(keyCache));
     if (cacheValue != null)
     {
@@ -262,7 +262,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IApp ap
       }
     }
 
-    _app.ServerCache.Set(keyCache, res);
+    _iaCoreServerApp.ServerCache.Set(keyCache, res);
     //await _mediator.Send(new MemoryCacheModuleSaveCommand(keyCache, res));
     Logger.LogDebug("Value saved to cache:{AuditColumnId}:{keyCache}", nameof(AuditColumnId), keyCache);
 

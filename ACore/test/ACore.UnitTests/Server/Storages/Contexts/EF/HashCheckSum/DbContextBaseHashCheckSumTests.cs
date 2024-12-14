@@ -1,7 +1,7 @@
 ﻿using ACore.Configuration;
 using ACore.Extensions;
 using ACore.Server.Configuration;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.UnitTests.Server.Storages.Contexts.EF.HashCheckSum.FakeClasses;
 using ACore.UnitTests.TestImplementations;
@@ -29,7 +29,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     };
 
     // Arrange
-    var mediator = new Mock<IApp>();
+    var mediator = new Mock<IACoreServerApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateDbContextBaseAsSut(mediator);
 
@@ -53,7 +53,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     var fakeEntityUpdate = new WorkWithHashEntity();
 
     // Arrange
-    var mediator = new Mock<IApp>();
+    var mediator = new Mock<IACoreServerApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateDbContextBaseAsSut(mediator, impl =>
     {
@@ -87,7 +87,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     var fakeEntityInit = new WorkWithHashEntity { TestProp = "test" };
 
     // Arrange
-    var mediator = new Mock<IApp>();
+    var mediator = new Mock<IACoreServerApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateDbContextBaseAsSut(mediator, impl =>
     {
@@ -115,7 +115,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     var fakeEntityUpdate = new WorkWithHashEntity();
 
     // Arrange
-    var mediator = new Mock<IApp>();
+    var mediator = new Mock<IACoreServerApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateDbContextBaseAsSut(mediator, impl =>
     {
@@ -148,7 +148,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     var hash = "invalidHash";
 
     // Arrange
-    var mediator = new Mock<IApp>();
+    var mediator = new Mock<IACoreServerApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateDbContextBaseAsSut(mediator, impl =>
     {
@@ -171,7 +171,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     res.ResultErrorItem.Code.Should().Be("concurrency");
   }
 
-  private WorkWithHashDbContextBaseImpl CreateDbContextBaseAsSut(Mock<IApp> mediator, Action<WorkWithHashDbContextBaseImpl>? seed = null)
+  private WorkWithHashDbContextBaseImpl CreateDbContextBaseAsSut(Mock<IACoreServerApp> mediator, Action<WorkWithHashDbContextBaseImpl>? seed = null)
   {
     SetupLoggedUser(mediator);
     SetupAppOptionQuery(mediator);
@@ -182,7 +182,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
     return res;
   }
 
-  private void SetupAppOptionQuery(Mock<IApp> mediator)
+  private void SetupAppOptionQuery(Mock<IACoreServerApp> mediator)
   {
     //var result = Result.Success(HashFake);
     mediator

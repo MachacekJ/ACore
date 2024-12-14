@@ -1,11 +1,12 @@
-using ACore.Modules.MemoryCacheModule.Configuration;
+using ACore.Services.ACoreCache.Configuration;
 
 namespace ACore.Configuration;
 
 public class ACoreOptionsBuilder
 {
-  private MemoryCacheModuleOptionsBuilder? _memoryCacheOptionsBuilder;
   private string _saltForHash = string.Empty;
+  private readonly ACoreCacheOptions _cacheOptions = new();
+  
   private ACoreOptionsBuilder()
   {
   }
@@ -18,11 +19,9 @@ public class ACoreOptionsBuilder
     return this;
   }
 
-  public ACoreOptionsBuilder AddMemoryCacheModule(Action<MemoryCacheModuleOptionsBuilder> action)
+  public ACoreOptionsBuilder AddACoreCache(Action<ACoreCacheOptions> optionsAction)
   {
-    _memoryCacheOptionsBuilder ??= MemoryCacheModuleOptionsBuilder.Empty();
-    action(_memoryCacheOptionsBuilder);
-    _memoryCacheOptionsBuilder.Activate();
+    optionsAction(_cacheOptions);
     return this;
   }
 
@@ -31,7 +30,7 @@ public class ACoreOptionsBuilder
     return new ACoreOptions
     {
       SaltForHash = _saltForHash,
-      MemoryCacheModuleOptions = _memoryCacheOptionsBuilder?.Build() ?? throw new Exception($"{nameof(_memoryCacheOptionsBuilder)} is null.")
+      ACoreCacheOptions = _cacheOptions
     };
   }
 }

@@ -1,9 +1,9 @@
-using ACore.Modules.MemoryCacheModule.Configuration;
+using ACore.Services.ACoreCache.Configuration;
 
 namespace ACore.Configuration;
 
 public class ACoreOptions
 {
   public string SaltForHash { get; init; } = string.Empty;
-  public MemoryCacheModuleOptions MemoryCacheModuleOptions { get; init; } = new(false);
+  public ACoreCacheOptions ACoreCacheOptions { get; init; } = new();
 }

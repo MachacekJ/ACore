@@ -1,4 +1,4 @@
-﻿using ACore.Server.Services.AppUser;
+﻿using ACore.Server.Services;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
@@ -14,7 +14,7 @@ public class WorkWithHashDbContextBaseImpl : DbContextBase
 {
   public DbSet<WorkWithHashEntity> Fakes { get; set; }
   
-  public WorkWithHashDbContextBaseImpl(DbContextOptions<WorkWithHashDbContextBaseImpl> options, IApp mediator, ILogger<WorkWithHashDbContextBaseImpl> logger) : base(options, mediator, logger)
+  public WorkWithHashDbContextBaseImpl(DbContextOptions<WorkWithHashDbContextBaseImpl> options, IACoreServerApp mediator, ILogger<WorkWithHashDbContextBaseImpl> logger) : base(options, mediator, logger)
   {
     RegisterDbSet(Fakes);
   }

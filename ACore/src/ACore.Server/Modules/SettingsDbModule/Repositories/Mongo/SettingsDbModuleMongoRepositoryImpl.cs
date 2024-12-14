@@ -1,6 +1,6 @@
 ﻿using ACore.Models.Cache;
 using ACore.Server.Modules.SettingsDbModule.Repositories.Mongo.Models;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Models;
@@ -15,12 +15,12 @@ namespace ACore.Server.Modules.SettingsDbModule.Repositories.Mongo;
 
 internal class SettingsDbModuleMongoRepositoryImpl : DbContextBase, ISettingsDbModuleRepository
 {
-  private readonly IApp _app;
+  private readonly IACoreServerApp _iaCoreServerApp;
 
-  public SettingsDbModuleMongoRepositoryImpl(DbContextOptions<SettingsDbModuleMongoRepositoryImpl> options, IApp app, ILogger<SettingsDbModuleMongoRepositoryImpl> logger)
-    : base(options, app, logger)
+  public SettingsDbModuleMongoRepositoryImpl(DbContextOptions<SettingsDbModuleMongoRepositoryImpl> options, IACoreServerApp iaCoreServerApp, ILogger<SettingsDbModuleMongoRepositoryImpl> logger)
+    : base(options, iaCoreServerApp, logger)
   {
-    _app = app;
+    _iaCoreServerApp = iaCoreServerApp;
     RegisterDbSet(Settings);
   }
 
@@ -55,7 +55,7 @@ internal class SettingsDbModuleMongoRepositoryImpl : DbContextBase, ISettingsDbM
 
     var res = await Save<SettingsPKMongoEntity, ObjectId>(setting);
 
-    _app.ServerCache.Remove(CacheKeyTableSetting);
+   await  _iaCoreServerApp.ServerCache.Remove(CacheKeyTableSetting);
    // await _mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
     return res;
   }
@@ -64,7 +64,7 @@ internal class SettingsDbModuleMongoRepositoryImpl : DbContextBase, ISettingsDbM
   {
     List<SettingsPKMongoEntity>? allSettings;
 
-    var allSettingsCacheResult = _app.ServerCache.Get<List<SettingsPKMongoEntity>>(CacheKeyTableSetting);  //await _app.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
+    var allSettingsCacheResult = await  _iaCoreServerApp.ServerCache.Get<List<SettingsPKMongoEntity>>(CacheKeyTableSetting);  //await _app.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
 
     if (allSettingsCacheResult != null)
     {
@@ -80,7 +80,7 @@ internal class SettingsDbModuleMongoRepositoryImpl : DbContextBase, ISettingsDbM
     else
     {
       allSettings = await Settings.ToListAsync();
-      _app.ServerCache.Set(CacheKeyTableSetting, allSettings);
+      _iaCoreServerApp.ServerCache.Set(CacheKeyTableSetting, allSettings);
      // await _app.Send(new MemoryCacheModuleSaveCommand(CacheKeyTableSetting, allSettings));
     }
 

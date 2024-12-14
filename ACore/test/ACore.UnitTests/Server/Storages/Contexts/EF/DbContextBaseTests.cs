@@ -1,5 +1,5 @@
 ﻿using ACore.Server.Modules.SecurityModule.Models;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages.CQRS.Notifications;
 using FluentAssertions;
 using MediatR;
@@ -12,7 +12,7 @@ public class DbContextBaseTests
   protected readonly UserData FakeUser = new(UserTypeEnum.Test, "1", "testUser");
 
 
-  protected void SetupLoggedUser(Mock<IApp> app)
+  protected void SetupLoggedUser(Mock<IACoreServerApp> app)
   {
     //var result = Result.Success(FakeUser);
     app
@@ -20,7 +20,7 @@ public class DbContextBaseTests
       .Returns(() => FakeUser);
   }
   
-  protected void SetupSaveNotification(Mock<IApp> app, List<INotification>? notifications = null)
+  protected void SetupSaveNotification(Mock<IACoreServerApp> app, List<INotification>? notifications = null)
   {
     var mediator = new Mock<IMediator>();
     mediator

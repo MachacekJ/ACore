@@ -27,21 +27,20 @@ public abstract class StorageTestsBase(IEnumerable<StorageTypeEnum> storages) : 
     }
 
     base.SetupACoreServer(builder);
-    builder.AddSettingModule();
     TestStorages.ForEach(ts => ts.SetupACoreServer(builder));
   }
 
   protected override void RegisterServices(ServiceCollection services)
   {
     base.RegisterServices(services);
-    TestStorages.ForEach(ts =>  ts.RegisterServices(services));
+    TestStorages.ForEach(ts => ts.RegisterServices(services));
   }
 
   protected override async Task GetServices(IServiceProvider sp)
   {
     foreach (var ts in TestStorages)
       await ts.GetServices(sp);
-    
+
     await base.GetServices(sp);
     StorageResolver = sp.GetService<IStorageResolver>() ?? throw new ArgumentNullException($"{nameof(IStorageResolver)} not found.");
   }

@@ -80,9 +80,31 @@ services:
         MONGO_INITDB_ROOT_PASSWORD: mongodb
       volumes:
         - acore-mongodata:/data/db
+          
+          
+          
+  cache:
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    environment:
+      REDIS_PASSWORD: password
+    volumes:
+      - acore-rediscache:/data
+        
+  redis-insight:
+    image: redis/redisinsight:latest
+    restart: always
+    ports:
+      - "5540:5540"
+    volumes:
+      - acore-redisinsight:/data
 
 volumes:
   acore_pgdata:
   acore_pgadmin:
   acore-mongodata:
   acore_pgdata_replica:
+  acore-rediscache:
+  acore-redisinsight:

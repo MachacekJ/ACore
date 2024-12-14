@@ -1,5 +1,5 @@
 using ACore.Configuration.CQRS;
-using ACore.Modules.MemoryCacheModule.Configuration;
+using ACore.Services.ACoreCache.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -21,6 +21,6 @@ public static class ACoreServiceExtension
     
     services.AddCQRS();
 
-    services.AddMemoryCacheModule(opt.MemoryCacheModuleOptions);
+    services.AddACoreCacheModule(opt.ACoreCacheOptions);
   }
 }

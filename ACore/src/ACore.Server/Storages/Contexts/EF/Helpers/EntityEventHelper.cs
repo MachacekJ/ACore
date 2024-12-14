@@ -1,6 +1,6 @@
 using ACore.Extensions;
 using ACore.Server.Modules.AuditModule.Attributes;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
 using ACore.Server.Storages.Definitions.EF;
 using ACore.Server.Storages.Models.EntityEvent;
@@ -10,7 +10,7 @@ using MongoDB.Bson;
 
 namespace ACore.Server.Storages.Contexts.EF.Helpers;
 
-public class EntityEventHelper<TEntity, TPK>(IApp iApp, IModel model, EFStorageDefinition storageDefinition, TEntity initData)
+public class EntityEventHelper<TEntity, TPK>(IACoreServerApp iIaCoreServerApp, IModel model, EFStorageDefinition storageDefinition, TEntity initData)
   where TEntity : PKEntity<TPK>
 {
   private IEntityType? _dbEntityType;
@@ -105,7 +105,7 @@ public class EntityEventHelper<TEntity, TPK>(IApp iApp, IModel model, EFStorageD
 
   private Task<string> GetUserId()
   {
-    return Task.FromResult(iApp.CurrentUser.ToString());
+    return Task.FromResult(iIaCoreServerApp.CurrentUser.ToString());
   }
 
   private (string Name, bool IsAuditable) GetColumnName<T>(string propName, IEntityType dbEntityType)

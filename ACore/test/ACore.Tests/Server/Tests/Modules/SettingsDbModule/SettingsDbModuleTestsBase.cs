@@ -12,9 +12,11 @@ public class SettingsDbModuleTestsBase() : StorageTestsBase([StorageTypeEnum.Mem
   protected override void SetupACoreServer(ACoreServerOptionBuilder builder)
   {
     base.SetupACoreServer(builder);
-    builder.DefaultStorage(storageOptionBuilder => storageOptionBuilder.AddMemoryDb());
+    builder
+      .AddSettingModule()
+      .DefaultStorage(storageOptionBuilder => storageOptionBuilder.AddMemoryDb());
   }
-  
+
   protected override async Task GetServices(IServiceProvider sp)
   {
     await base.GetServices(sp);

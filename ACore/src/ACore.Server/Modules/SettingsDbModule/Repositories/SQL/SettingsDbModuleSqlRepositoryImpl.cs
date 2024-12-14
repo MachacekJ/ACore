@@ -1,6 +1,6 @@
 ﻿using ACore.Models.Cache;
 using ACore.Server.Modules.SettingsDbModule.Repositories.SQL.Models;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Models;
@@ -12,15 +12,15 @@ namespace ACore.Server.Modules.SettingsDbModule.Repositories.SQL;
 internal abstract class SettingsDbModuleSqlRepositoryImpl : DbContextBase, ISettingsDbModuleRepository
 {
   private static readonly CacheKey CacheKeyTableSetting = CacheKey.Create(CacheCategories.Entity, nameof(SettingsEntity));
-  private readonly IApp _app;
+  private readonly IACoreServerApp _iaCoreServerApp;
   protected override string ModuleName => nameof(ISettingsDbModuleRepository);
 
   public DbSet<SettingsEntity> Settings { get; set; }
 
-  protected SettingsDbModuleSqlRepositoryImpl(DbContextOptions options, IApp app, ILogger<SettingsDbModuleSqlRepositoryImpl> logger)
-    : base(options, app, logger)
+  protected SettingsDbModuleSqlRepositoryImpl(DbContextOptions options, IACoreServerApp iaCoreServerApp, ILogger<SettingsDbModuleSqlRepositoryImpl> logger)
+    : base(options, iaCoreServerApp, logger)
   {
-    _app = app;
+    _iaCoreServerApp = iaCoreServerApp;
     RegisterDbSet(Settings);
   }
 
@@ -42,7 +42,7 @@ internal abstract class SettingsDbModuleSqlRepositoryImpl : DbContextBase, ISett
 
     var res = await Save<SettingsEntity, int>(set);
 
-    _app.ServerCache.Remove(CacheKeyTableSetting);
+    await _iaCoreServerApp.ServerCache.Remove(CacheKeyTableSetting);
     //await _mediator.Send(new MemoryCacheModuleRemoveKeyCommand(CacheKeyTableSetting));
     return res;
   }
@@ -51,7 +51,7 @@ internal abstract class SettingsDbModuleSqlRepositoryImpl : DbContextBase, ISett
   {
     List<SettingsEntity>? allSettings;
 
-    var allSettingsCacheResult = _app.ServerCache.Get< List<SettingsEntity>>(CacheKeyTableSetting);  //await _mediator.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
+    var allSettingsCacheResult = await _iaCoreServerApp.ServerCache.Get<List<SettingsEntity>>(CacheKeyTableSetting); //await _mediator.Send(new MemoryCacheModuleGetQuery(CacheKeyTableSetting));
 
     if (allSettingsCacheResult != null)
     {
@@ -62,12 +62,12 @@ internal abstract class SettingsDbModuleSqlRepositoryImpl : DbContextBase, ISett
       //   throw ex;
       // }
 
-      allSettings = allSettingsCacheResult;// as List<SettingsEntity>;
+      allSettings = allSettingsCacheResult; // as List<SettingsEntity>;
     }
     else
     {
       allSettings = await Settings.ToListAsync();
-      _app.ServerCache.Set(CacheKeyTableSetting, allSettings);
+      _iaCoreServerApp.ServerCache.Set(CacheKeyTableSetting, allSettings);
       //await _mediator.Send(new MemoryCacheModuleSaveCommand(CacheKeyTableSetting, allSettings));
     }
 

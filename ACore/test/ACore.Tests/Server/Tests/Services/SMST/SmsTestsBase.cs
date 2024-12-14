@@ -8,6 +8,11 @@ public class SmsTestsBase : TestsBase
 {
     protected ISMSSenderJM SMSSender = null!;
 
+    protected override void RegisterServices(ServiceCollection services)
+    {
+        base.RegisterServices(services);
+    }
+
     protected override async Task GetServices(IServiceProvider sp)
     {
         await base.GetServices(sp);

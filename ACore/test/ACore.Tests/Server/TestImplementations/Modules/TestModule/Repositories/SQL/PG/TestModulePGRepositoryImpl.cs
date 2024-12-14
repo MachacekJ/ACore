@@ -1,7 +1,7 @@
-﻿using ACore.Server.Storages.Contexts.EF.Scripts;
+﻿using ACore.Server.Services;
+using ACore.Server.Storages.Contexts.EF.Scripts;
 using ACore.Server.Storages.Definitions.EF;
 using ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories.SQL.Models;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -9,8 +9,8 @@ namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.Repositories
 
 using ScriptRegistrations = Scripts.ScriptRegistrations;
 
-internal class TestModulePGRepositoryImpl(DbContextOptions<TestModulePGRepositoryImpl> options, IMediator mediator, ILogger<TestModulePGRepositoryImpl> logger)
-  : TestModuleSqlRepositoryImpl(options, mediator, logger)
+internal class TestModulePGRepositoryImpl(DbContextOptions<TestModulePGRepositoryImpl> options, IACoreServerApp app, ILogger<TestModulePGRepositoryImpl> logger)
+  : TestModuleSqlRepositoryImpl(options, app, logger)
 {
   public DbSet<TestMenuEntity> TestMenus { get; set; }
   public DbSet<TestCategoryEntity> TestCategories { get; set; }

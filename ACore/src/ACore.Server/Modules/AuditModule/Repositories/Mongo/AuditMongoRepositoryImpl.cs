@@ -1,7 +1,7 @@
 ﻿using ACore.Server.Modules.AuditModule.Models;
 using ACore.Server.Modules.AuditModule.Repositories.Helpers;
 using ACore.Server.Modules.AuditModule.Repositories.Mongo.Models;
-using ACore.Server.Services.AppUser;
+using ACore.Server.Services;
 using ACore.Server.Storages.Contexts.EF;
 using ACore.Server.Storages.Contexts.EF.Models;
 using ACore.Server.Storages.Contexts.EF.Models.PK;
@@ -18,7 +18,7 @@ using MongoDB.EntityFrameworkCore.Extensions;
 
 namespace ACore.Server.Modules.AuditModule.Repositories.Mongo;
 
-internal class AuditMongoRepositoryImpl(DbContextOptions<AuditMongoRepositoryImpl> options, IApp mediator, ILogger<AuditMongoRepositoryImpl> logger)
+internal class AuditMongoRepositoryImpl(DbContextOptions<AuditMongoRepositoryImpl> options, IACoreServerApp mediator, ILogger<AuditMongoRepositoryImpl> logger)
   : DbContextBase(options, mediator, logger), IAuditRepository
 {
   protected override DbScriptBase UpdateScripts => new Scripts.ScriptRegistrations();

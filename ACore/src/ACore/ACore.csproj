@@ -99,6 +99,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Modules\Base\" />
-	  <Folder Include="Modules\MemoryCacheModule\CQRS\" />
+	  <Folder Include="Services\" />
 	</ItemGroup>
 </Project>

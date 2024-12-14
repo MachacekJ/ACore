@@ -81,7 +81,7 @@ public abstract class TestsBase
     await RunTestAsync(testData, 0, async (_) => { await testCode(); });
   }
 
-  protected void RegisterAutofacContainer(ServiceCollection services, ContainerBuilder containerBuilder)
+  private void RegisterAutofacContainer(ServiceCollection services, ContainerBuilder containerBuilder)
   {
     SetContainer(containerBuilder);
     RegisterServices(services);

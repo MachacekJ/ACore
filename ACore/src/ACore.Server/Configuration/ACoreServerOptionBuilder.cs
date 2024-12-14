@@ -1,8 +1,8 @@
 using ACore.Configuration;
-using ACore.Modules.Base.Configuration;
 using ACore.Server.Modules.AuditModule.Configuration;
 using ACore.Server.Modules.SecurityModule.Configuration;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
+using ACore.Server.Services.ServerCache.Configuration;
 using ACore.Server.Storages.Configuration;
 
 namespace ACore.Server.Configuration;
@@ -13,14 +13,9 @@ public class ACoreServerOptionBuilder
   private readonly SettingsDbModuleOptionsBuilder _settingsDbModuleOptionsBuilder = SettingsDbModuleOptionsBuilder.Empty();
   private readonly AuditModuleOptionsBuilder _auditModuleOptionsBuilder = AuditModuleOptionsBuilder.Empty();
   private readonly SecurityModuleOptionsBuilder _securityModuleOptionsBuilder = SecurityModuleOptionsBuilder.Empty();
-
-
+  private ServerCacheOptions? _serverCacheOptions;
   public StorageOptionBuilder? DefaultStorageOptionBuilder;
-
-  private ACoreServerOptionBuilder()
-  {
-  }
-
+  
   public static ACoreServerOptionBuilder Empty() => new();
 
   public ACoreServerOptionBuilder DefaultStorage(Action<StorageOptionBuilder> action)
@@ -43,6 +38,13 @@ public class ACoreServerOptionBuilder
     _settingsDbModuleOptionsBuilder.Activate();
     _auditModuleOptionsBuilder.Activate();
     _securityModuleOptionsBuilder.Activate();
+    return this;
+  }
+
+  public ACoreServerOptionBuilder AddServerCache(Action<ServerCacheOptions>? action = null)
+  {
+    _serverCacheOptions = new ServerCacheOptions(new StorageRedisOptions(string.Empty, string.Empty));
+    action?.Invoke(_serverCacheOptions);
     return this;
   }
 
@@ -73,7 +75,8 @@ public class ACoreServerOptionBuilder
       ACoreOptions = _aCoreOptionsBuilder.Build(),
       SettingsDbModuleOptions = _settingsDbModuleOptionsBuilder.Build(DefaultStorageOptionBuilder),
       AuditModuleOptions = _auditModuleOptionsBuilder.Build(DefaultStorageOptionBuilder),
-      SecurityModuleOptions = _securityModuleOptionsBuilder.Build()
+      SecurityModuleOptions = _securityModuleOptionsBuilder.Build(),
+      ServerCache = _serverCacheOptions
     };
   }
 }

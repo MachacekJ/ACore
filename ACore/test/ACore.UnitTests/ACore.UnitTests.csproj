@@ -34,4 +34,10 @@
       <ProjectReference Include="..\..\src\ACore.Server\ACore.Server.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Core\Modules\" />
+      <Folder Include="Core\Services\" />
+      <Folder Include="Server\Services\" />
+    </ItemGroup>
+
 </Project>

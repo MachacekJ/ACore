@@ -14,8 +14,10 @@ public class StorageModuleOptionBuilder : ModuleOptionsBuilder
 
   protected StorageOptions BuildStorage(StorageOptionBuilder? defaultStorages, string moduleName)
   {
-    _storageOptionBuilder ??= defaultStorages
-                              ?? throw new Exception($"No storage is defined for {moduleName}");
+    if (defaultStorages == null)
+      return _storageOptionBuilder?.Build() ?? StorageOptionBuilder.Empty().Build();
+    
+    _storageOptionBuilder ??= defaultStorages;
 
     return _storageOptionBuilder.Build();
   }
