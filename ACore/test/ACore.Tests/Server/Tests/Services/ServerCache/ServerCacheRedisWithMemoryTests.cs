@@ -4,7 +4,7 @@ using Xunit;
 
 namespace ACore.Tests.Server.Tests.Services.ServerCache;
 
-public class ServerCacheTests : ServerCacheTestsBase
+public class ServerCacheRedisWithMemoryTests : ServerCacheTestsBase
 {
   private const string FakeCacheKey = "CacheFakeKey";
 

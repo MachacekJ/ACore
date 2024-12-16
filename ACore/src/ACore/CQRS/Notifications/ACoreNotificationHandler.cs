@@ -12,17 +12,32 @@ public abstract class ACoreNotificationHandler<TNotification>(ILogger logger) : 
   {
     try
     {
-      await HandleMethod(notification, cancellationToken);
+      if (!InBackground)
+        await HandleMethod(notification, cancellationToken);
+      else
+      {
+        _ = Task.Run(async () => await HandleMethod(notification, cancellationToken), cancellationToken).ConfigureAwait(false);
+      }
     }
     catch (Exception e)
     {
       logger.LogError(e, e.Message);
-      throw;
+      if (ThrowException)
+        throw;
     }
   }
 }
 
 public abstract class ACoreNotificationHandler
 {
+  /// <summary>
+  /// Throw an exception if the other side also throws an exception.
+  /// For example, some metrics cannot be written (the server is unavailable), but the application continues. Only the log is written.
+  /// </summary>
   public abstract bool ThrowException { get; }
+
+  /// <summary>
+  /// Receive notification and run handle in background.
+  /// </summary>
+  public abstract bool InBackground { get; }
 }

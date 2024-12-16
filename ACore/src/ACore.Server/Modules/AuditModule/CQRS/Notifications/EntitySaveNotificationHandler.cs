@@ -4,11 +4,12 @@ using ACore.Server.Storages.CQRS.Notifications;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace ACore.Server.Modules.AuditModule.CQRS.NotificationHandlers;
+namespace ACore.Server.Modules.AuditModule.CQRS.Notifications;
 
 public class EntitySaveNotificationHandler(ILogger<EntitySaveNotificationHandler> logger, IMediator mediator) : ACoreNotificationHandler<EntityEventNotification>(logger)
 {
   public override bool ThrowException => true;
+  public override bool InBackground => false;
 
   protected override async Task HandleMethod(EntityEventNotification notification, CancellationToken cancellationToken)
   {

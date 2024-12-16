@@ -22,13 +22,13 @@ public class DbContextBaseTests
   
   protected void SetupSaveNotification(Mock<IACoreServerApp> app, List<INotification>? notifications = null)
   {
-    var mediator = new Mock<IMediator>();
-    mediator
+    var fakeMediator = new Mock<IMediator>();
+    fakeMediator
       .Setup(i => i.Publish(It.IsAny<EntityEventNotification>(), It.IsAny<CancellationToken>()))
       .Callback<INotification, CancellationToken>((notification, _) => { notifications?.Add(notification); });
     
     app.Setup(i=>i.Mediator)
-      .Returns(mediator.Object);
+      .Returns(fakeMediator.Object);
   }
   
   protected static INotification AssertOneNotification(List<INotification> allNotifications)

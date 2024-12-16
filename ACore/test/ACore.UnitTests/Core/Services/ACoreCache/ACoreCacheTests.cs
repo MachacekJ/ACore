@@ -1,5 +1,4 @@
-﻿using ACore.Configuration;
-using ACore.Models.Cache;
+﻿using ACore.Models.Cache;
 using ACore.Services.ACoreCache;
 using ACore.Services.ACoreCache.Configuration;
 using ACore.UnitTests.Core.Services.ACoreCache.FakeClasses;
@@ -19,7 +18,7 @@ public class ACoreCacheTests
   protected readonly CacheCategory FakeCacheCategory2 = new(FakeCacheCategoryString + "2");
   protected readonly CacheCategory FakeCacheSubCategory = new(FakeCacheSubCategoryString);
   protected readonly CacheCategory FakeCacheSubCategory2 = new(FakeCacheSubCategoryString + "2");
- 
+
   [Fact]
   public void StringTest()
   {
@@ -51,7 +50,7 @@ public class ACoreCacheTests
     aCoreCacheAsSut.TryGetValue<FakeCachedData>(cacheKey, out var cachedValue).Should().BeTrue();
     cachedValue?.Data.Should().Be(cacheValue.Data);
   }
-  
+
   [Fact]
   public void ObjectSubCategoryTest()
   {
@@ -67,7 +66,7 @@ public class ACoreCacheTests
     aCoreCacheAsSut.TryGetValue<FakeCachedData>(cacheKey, out var cachedValue).Should().BeTrue();
     cachedValue?.Data.Should().Be(cacheValue.Data);
   }
-  
+
   [Fact]
   public void RemoveTest()
   {
@@ -83,7 +82,7 @@ public class ACoreCacheTests
     // Assert
     aCoreCacheAsSut.TryGetValue<string>(cacheKey, out _).Should().BeFalse();
   }
-  
+
   [Fact]
   public void SaveCacheWithUnknownCacheCategory()
   {
@@ -105,13 +104,11 @@ public class ACoreCacheTests
     {
       Clock = systemClock
     });
-    var aCoreOptions = Options.Create(new ACoreOptions()
-    {
-      ACoreCacheOptions = new ACoreCacheOptions
+    var aCoreOptions = Options.Create(
+      new ACoreCacheOptions
       {
         Categories = [FakeCacheCategory, FakeCacheCategory2]
-      }
-    });
+      });
     var mc = new Microsoft.Extensions.Caching.Memory.MemoryCache(memoryCacheOptions);
     return new ACore.Services.ACoreCache.ACoreCache(mc, aCoreOptions);
   }

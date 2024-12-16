@@ -1,6 +1,5 @@
-using MediatR;
+﻿using MediatR;
 
 namespace ACore.UnitTests.Core.Base.CQRS.Notifications.ACoreNotificationPublisher.FakeClasses;
 
-public record ThrowNotification : INotification;
-
+public record LongNotification(TimeSpan Duration) : INotification;

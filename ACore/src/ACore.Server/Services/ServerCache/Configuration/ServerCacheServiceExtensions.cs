@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using ACore.Server.Services.ServerCache.Implementations;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -11,7 +12,7 @@ public static class ServerCacheServiceExtensions
   {
     if (options == null)
     {
-      services.TryAddSingleton<IServerCache, EmptyServerCache>();
+      services.TryAddSingleton<IServerCache, ServerCacheDefault>();
       return;
     }
 
@@ -30,6 +31,6 @@ public static class ServerCacheServiceExtensions
       // };
       //redisCacheOptions.InstanceName = options.RedisOptions.InstanceName;
     });
-    services.TryAddSingleton<IServerCache, ServerCache>();
+    services.TryAddSingleton<IServerCache, ServerCacheRedisWithMemory>();
   }
 }

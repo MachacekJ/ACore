@@ -115,7 +115,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IACoreS
   {
     var keyCache = AuditUserCacheKey(userId);
 
-    var cacheValue = _iaCoreServerApp.ServerCache.Get<AuditUserEntity>(keyCache); //await _mediator.Send(new MemoryCacheModuleGetQuery(keyCache));
+    var cacheValue = await _iaCoreServerApp.ServerCache.Get<AuditUserEntity>(keyCache); //await _mediator.Send(new MemoryCacheModuleGetQuery(keyCache));
     if (cacheValue != null)
     {
       Logger.LogDebug("Value from cache:{GetAuditUserIdAsync}:{keyCache}:{userId}", nameof(GetAuditUserIdAsync), keyCache, userId);
@@ -134,8 +134,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IACoreS
       Logger.LogDebug("New db value created:{GetAuditUserIdAsync}:{keyCache}:{userId}", nameof(GetAuditUserIdAsync), keyCache, userId);
     }
 
-    _iaCoreServerApp.ServerCache.Set(keyCache, userEntity);
-    // await _mediator.Send(new MemoryCacheModuleSaveCommand(keyCache, userEntity));
+    await _iaCoreServerApp.ServerCache.Set(keyCache, userEntity);
     Logger.LogDebug("Value saved to cache:{GetAuditUserIdAsync}:{keyCache}:{userId}", nameof(GetAuditUserIdAsync), keyCache, userId);
     return userEntity.Id;
   }
@@ -145,7 +144,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IACoreS
     var keyCache = AuditTableCacheKey(tableName, tableSchema, version);
 
     //var cacheValue = await _mediator.Send(new MemoryCacheModuleGetQuery(keyCache));
-    var cacheValue = _iaCoreServerApp.ServerCache.Get<AuditTableEntity>(keyCache);
+    var cacheValue = await _iaCoreServerApp.ServerCache.Get<AuditTableEntity?>(keyCache);
     if (cacheValue != null)
     {
       Logger.LogDebug("Value from cache:{GetAuditTableIdAsync}:{keyCache}:{tableName}:{tableSchema}", nameof(AuditTableId), keyCache, tableName, tableSchema);
@@ -167,8 +166,7 @@ internal abstract class AuditSqlRepositoryImpl(DbContextOptions options, IACoreS
       Logger.LogDebug("New db value created:{GetAuditTableIdAsync}:{keyCache}:{tableName}:{tableSchema}", nameof(AuditTableId), keyCache, tableName, tableSchema);
     }
 
-    _iaCoreServerApp.ServerCache.Set(keyCache, tableEntity);
-    //await _mediator.Send(new MemoryCacheModuleSaveCommand(keyCache, tableEntity));
+    await _iaCoreServerApp.ServerCache.Set(keyCache, tableEntity);
     Logger.LogDebug("Value saved to cache:{GetAuditTableIdAsync}:{keyCache}:{tableName}:{tableSchema}", nameof(AuditTableId), keyCache, tableName, tableSchema);
     return tableEntity.Id;
   }

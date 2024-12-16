@@ -1,8 +1,11 @@
 ﻿using ACore.Models.Cache;
 
-namespace ACore.Server.Services.ServerCache;
+namespace ACore.Server.Services.ServerCache.Implementations;
 
-public class EmptyServerCache : IServerCache
+/// <summary>
+/// No cache implementation.
+/// </summary>
+public class ServerCacheDefault : IServerCache
 {
   public CacheCategory[] Categories { get; } = [];
 

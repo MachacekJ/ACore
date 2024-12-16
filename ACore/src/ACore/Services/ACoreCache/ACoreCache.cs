@@ -2,26 +2,24 @@
 using System.Reflection;
 using ACore.Configuration.Cache;
 using ACore.Models.Cache;
+using ACore.Services.ACoreCache.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace ACore.Services.ACoreCache;
 
-public class ACoreCache(IMemoryCache memoryCache, IOptions<ACore.Configuration.ACoreOptions> aCoreOptions) : IACoreCache
+public class ACoreCache(IMemoryCache memoryCache, IOptions<ACoreCacheOptions> aCoreCacheOptions) : IACoreCache
 {
-  public CacheCategory[] Categories => aCoreOptions.Value.ACoreCacheOptions.Categories.ToArray();
+  public CacheCategory[] Categories => aCoreCacheOptions.Value.Categories.ToArray();
 
   public TItem? Get<TItem>(CacheKey key)
   {
     return memoryCache.Get<TItem>(GetKey(key));
   }
 
-  public void Set<TItem>(CacheKey key, TItem value)
+  public void Set<TItem>(CacheKey key, TItem value, TimeSpan? expiry = null)
   {
-    if (key.Duration == null)
-      memoryCache.Set(GetKey(key), value);
-    else
-      memoryCache.Set(GetKey(key), value, key.Duration.Value);
+    memoryCache.Set(GetKey(key), value, expiry ?? key.Duration ?? aCoreCacheOptions.Value.Expiration);
   }
 
   public bool TryGetValue<TItem>(CacheKey key, out TItem? value)
@@ -43,7 +41,7 @@ public class ACoreCache(IMemoryCache memoryCache, IOptions<ACore.Configuration.A
     var cacheKeyPrefix = keyPrefix == null
       ? $"C:{categoryKey}^"
       : $"C:{categoryKey}^S:{keyPrefix}^";
-    
+
     var keys = GetAllKeys(cacheKeyPrefix);
     foreach (var key in keys)
     {
@@ -73,9 +71,9 @@ public class ACoreCache(IMemoryCache memoryCache, IOptions<ACore.Configuration.A
 
     var keys = new List<string>();
 
-    if (stringEntriesCollectionValue == null) 
+    if (stringEntriesCollectionValue == null)
       return keys;
-    
+
     foreach (var item in stringEntriesCollectionValue)
     {
       var methodInfo = item.GetType().GetProperty("Key");
