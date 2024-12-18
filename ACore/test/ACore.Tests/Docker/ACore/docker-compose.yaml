@@ -85,7 +85,7 @@ services:
           
   cache:
     image: redis:latest
-    restart: always
+    restart: no
     ports:
       - '6379:6379'
     environment:
@@ -95,7 +95,7 @@ services:
         
   redis-insight:
     image: redis/redisinsight:latest
-    restart: always
+    restart: no
     ports:
       - "5540:5540"
     volumes:

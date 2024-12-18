@@ -26,7 +26,7 @@ public class ServerCacheRedisWithMemory(IACoreCache aCoreCache, IDistributedCach
     var memDuration = key.Duration ?? coreCache.Value.Expiration;
     aCoreCache.Set(key, value);
     await mediator.Publish(new ServerCacheAddItemNotification(key, value, ServerCacheTypeEnum.Memory, memDuration));
-    
+
     var duration = key.Duration ?? serverCacheOptions.Value.RedisOptions.Expiration;
     await distributedCache.SetStringAsync(GetKey(key), JsonSerializer.Serialize(value), new DistributedCacheEntryOptions()
     {
@@ -37,13 +37,30 @@ public class ServerCacheRedisWithMemory(IACoreCache aCoreCache, IDistributedCach
 
   public async Task<TItem?> Get<TItem>(CacheKey key)
   {
-    var b = await distributedCache.GetStringAsync(GetKey(key));
-    return b != null ? JsonSerializer.Deserialize<TItem>(b) : default;
+    var aCoreCacheResult = aCoreCache.TryGetValue(key, out TItem? value);
+    if (aCoreCacheResult)
+    {
+      await mediator.Publish(new ServerCacheGetItemNotification(key, ServerCacheTypeEnum.Memory, true));
+      return value;
+    }
+
+    await mediator.Publish(new ServerCacheGetItemNotification(key, ServerCacheTypeEnum.Memory, false));
+
+    var distributedCacheResult = await distributedCache.GetStringAsync(GetKey(key));
+    if (distributedCacheResult != null)
+    {
+      await mediator.Publish(new ServerCacheGetItemNotification(key, ServerCacheTypeEnum.Redis, true));
+      return JsonSerializer.Deserialize<TItem>(distributedCacheResult);
+    }
+
+    await mediator.Publish(new ServerCacheGetItemNotification(key, ServerCacheTypeEnum.Redis, false));
+    return default;
   }
 
   public async Task Remove(CacheKey key)
   {
     await distributedCache.RemoveAsync(GetKey(key));
+    aCoreCache.Remove(key);
   }
 
   public async Task RemoveCategory(CacheCategory mainCategory, CacheCategory? subCategory = null)
@@ -67,6 +84,8 @@ public class ServerCacheRedisWithMemory(IACoreCache aCoreCache, IDistributedCach
     {
       await distributedCache.RemoveAsync(redisKey);
     }
+
+    aCoreCache.RemoveCategory(mainCategory, subCategory);
   }
 
 
