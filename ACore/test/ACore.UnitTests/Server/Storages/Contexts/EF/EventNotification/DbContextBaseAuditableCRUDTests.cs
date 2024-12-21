@@ -17,22 +17,30 @@ public class DbContextBaseAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDEnti
     var mediator = new Mock<IACoreServerApp>();
     SetupSaveNotification(mediator, allNotifications);
     var sut = CreateAuditableDbContextBaseAsSut(mediator);
-    var en = new FakeAuditableEntity();
+    var en = new FakeAuditableEntity
+    {
+      TestProp = "test"
+    };
 
     // Act.
     await sut.Save<FakeAuditableEntity, long>(en);
 
     // Assert
     sut.Fakes.Count().Should().Be(1);
-    AssertAdd(allNotifications);
+    AssertAdd(allNotifications, out var testProp);
+    testProp.NewValue.Should().Be(en.TestProp);
   }
 
   [Fact]
   public async Task UpdateItemTest()
   {
     const string fakeData = "fakeData";
+    const string fakeDataOld = "fakeDataOld";
     var allNotifications = new List<INotification>();
-    var fakeEntityInit = new FakeAuditableEntity();
+    var fakeEntityInit = new FakeAuditableEntity
+    {
+      TestProp = fakeDataOld
+    };
     var fakeEntityUpdate = new FakeAuditableEntity();
 
     // Arrange
@@ -52,7 +60,9 @@ public class DbContextBaseAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDEnti
 
     // Assert
     sut.Fakes.Count().Should().Be(1);
-    AssertUpdate(allNotifications, fakeData);
+    AssertUpdate(allNotifications, out var testProp);
+    testProp.NewValue.Should().Be(fakeData);
+    testProp.OldValue.Should().Be(fakeDataOld);
   }
 
   [Fact]
@@ -82,6 +92,7 @@ public class DbContextBaseAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDEnti
 
     // Assert
     sut.Fakes.Count().Should().Be(0);
-    AssertDelete(allNotifications, fakeData);
+    AssertDelete(allNotifications, out var testProp);
+    testProp.OldValue.Should().Be(fakeData);
   }
 }

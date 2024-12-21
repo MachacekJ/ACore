@@ -68,7 +68,10 @@ public abstract class DbContextBaseCRUDTests(CRUDEntityTypeEnum entityType) : Db
   #endregion
 
   #region Assert
-  protected void AssertAdd(List<INotification> allNotifications)
+  /// <summary>
+  /// Check if add event notification has been fired.
+  /// </summary>
+  protected void AssertAdd(List<INotification> allNotifications, out EntityEventColumnItem testProp)
   {
     var notification = AssertOneNotification(allNotifications);
     var entitySaveNotification = AssertBaseEventNotification(notification, EntityEventEnum.Added, _auditEntityVersion);
@@ -79,11 +82,13 @@ public abstract class DbContextBaseCRUDTests(CRUDEntityTypeEnum entityType) : Db
     idProp.OldValue.Should().BeNull();
 
     var prop1Prop = AssertEventNotificationTestProp(entitySaveNotification);
-    prop1Prop.NewValue.Should().BeNull();
     prop1Prop.OldValue.Should().BeNull();
+    testProp = prop1Prop;
   }
-
-  protected void AssertUpdate(List<INotification> allNotifications, string fakeData)
+  /// <summary>
+  /// Check if update event notification has been fired.
+  /// </summary>
+  protected void AssertUpdate(List<INotification> allNotifications, out EntityEventColumnItem testProp)
   {
     var notification = AssertOneNotification(allNotifications);
     var entitySaveNotification = AssertBaseEventNotification(notification, EntityEventEnum.Modified, _auditEntityVersion);
@@ -94,11 +99,13 @@ public abstract class DbContextBaseCRUDTests(CRUDEntityTypeEnum entityType) : Db
     idProp.OldValue.Should().Be(1);
 
     var prop1Prop = AssertEventNotificationTestProp(entitySaveNotification);
-    prop1Prop.OldValue.Should().BeNull();
-    prop1Prop.NewValue.Should().Be(fakeData);
+    testProp = prop1Prop;
   }
 
-  protected void AssertDelete(List<INotification> allNotifications, string fakeData)
+  /// <summary>
+  /// Check if delete event notification has been fired.
+  /// </summary>
+  protected void AssertDelete(List<INotification> allNotifications, out EntityEventColumnItem testProp)
   {
     var notification = AssertOneNotification(allNotifications);
     var entitySaveNotification = AssertBaseEventNotification(notification, EntityEventEnum.Deleted, _auditEntityVersion);
@@ -107,10 +114,10 @@ public abstract class DbContextBaseCRUDTests(CRUDEntityTypeEnum entityType) : Db
     idProp.IsChanged.Should().BeTrue();
     idProp.NewValue.Should().BeNull();
     idProp.OldValue.Should().Be(1);
-
+    
     var prop1Prop = AssertEventNotificationTestProp(entitySaveNotification);
-    prop1Prop.OldValue.Should().Be(fakeData);
     prop1Prop.NewValue.Should().BeNull();
+    testProp = prop1Prop;
   }
 
   
@@ -144,7 +151,7 @@ public abstract class DbContextBaseCRUDTests(CRUDEntityTypeEnum entityType) : Db
   {
     var prop1Prop = entitySaveNotification?.EntityEvent.ChangedColumns.FirstOrDefault(e => e.PropName == nameof(FakeNotAuditableEntity.TestProp));
     prop1Prop.Should().NotBeNull();
-    prop1Prop?.ColumnName.Should().Be(nameof(FakeNotAuditableEntity.TestProp));
+    prop1Prop?.ColumnName.Should().Be(nameof(FakeAuditableEntity.TestProp));
     prop1Prop?.IsChanged.Should().BeTrue();
     prop1Prop?.IsAuditable.Should().Be(
       entityType != CRUDEntityTypeEnum.FakeNotAuditPropLongEntity && _auditable);

@@ -1,4 +1,5 @@
-﻿using ACore.Server.Services;
+﻿using ACore.Server.Modules.AuditModule.Attributes;
+using ACore.Server.Services;
 using ACore.UnitTests.Server.Storages.Contexts.EF.EventNotification.FakeClasses.NotAuditProp;
 using FluentAssertions;
 using MediatR;
@@ -6,6 +7,10 @@ using Moq;
 
 namespace ACore.UnitTests.Server.Storages.Contexts.EF.EventNotification;
 
+
+/// <summary>
+/// Test for entity that prop contains <see cref="NotAuditableAttribute"/>. 
+/// </summary>
 public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDEntityTypeEnum.FakeNotAuditPropLongEntity)
 {
   [Fact]
@@ -14,9 +19,9 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
     var allNotifications = new List<INotification>();
 
     // Arrange
-    var mediator = new Mock<IACoreServerApp>();
-    SetupSaveNotification(mediator, allNotifications);
-    var sut = CreateNotAuditPropDbContextBaseAsSut(mediator);
+    var serveOptions = new Mock<IACoreServerApp>();
+    SetupSaveNotification(serveOptions, allNotifications);
+    var sut = CreateNotAuditPropDbContextBaseAsSut(serveOptions);
     var en = new FakeNotAuditPropEntity();
 
     // Act.
@@ -24,7 +29,8 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
 
     // Assert
     sut.Fakes.Count().Should().Be(1);
-    AssertAdd(allNotifications);
+    AssertAdd(allNotifications, out var testProp);
+    testProp.NewValue.Should().Be(en.TestProp);
   }
 
   [Fact]
@@ -36,9 +42,9 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
     var fakeEntityUpdate = new FakeNotAuditPropEntity();
 
     // Arrange
-    var mediator = new Mock<IACoreServerApp>();
-    SetupSaveNotification(mediator, allNotifications);
-    var sut = CreateNotAuditPropDbContextBaseAsSut(mediator, impl =>
+    var serveOptions = new Mock<IACoreServerApp>();
+    SetupSaveNotification(serveOptions, allNotifications);
+    var sut = CreateNotAuditPropDbContextBaseAsSut(serveOptions, impl =>
     {
       impl.Fakes.Add(fakeEntityInit);
       impl.SaveChanges();
@@ -52,7 +58,9 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
 
     // Assert
     sut.Fakes.Count().Should().Be(1);
-    AssertUpdate(allNotifications, fakeData);
+    AssertUpdate(allNotifications, out var testProp);
+    testProp.NewValue.Should().Be(fakeData);
+    testProp.OldValue.Should().BeNull();
   }
 
   [Fact]
@@ -67,9 +75,9 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
     };
 
     // Arrange
-    var mediator = new Mock<IACoreServerApp>();
-    SetupSaveNotification(mediator, allNotifications);
-    var sut = CreateNotAuditPropDbContextBaseAsSut(mediator, impl =>
+    var serveOptions = new Mock<IACoreServerApp>();
+    SetupSaveNotification(serveOptions, allNotifications);
+    var sut = CreateNotAuditPropDbContextBaseAsSut(serveOptions, impl =>
     {
       impl.Fakes.Add(fakeEntity);
       impl.SaveChanges();
@@ -82,6 +90,7 @@ public class DbContextBaseNotAuditPropCRUDTests() : DbContextBaseCRUDTests(CRUDE
 
     // Assert
     sut.Fakes.Count().Should().Be(0);
-    AssertDelete(allNotifications, fakeData);
+    AssertDelete(allNotifications, out var testProp);
+    testProp.OldValue.Should().Be(fakeData);
   }
 }

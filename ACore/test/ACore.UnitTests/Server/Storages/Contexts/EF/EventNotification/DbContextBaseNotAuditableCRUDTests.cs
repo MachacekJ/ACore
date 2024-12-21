@@ -14,9 +14,9 @@ public class DbContextBaseNotAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDE
     var allNotifications = new List<INotification>();
 
     // Arrange
-    var mediator = new Mock<IACoreServerApp>();
-    SetupSaveNotification(mediator, allNotifications);
-    var sut = CreateNotAuditableDbContextBaseAsSut(mediator);
+    var serverOptions = new Mock<IACoreServerApp>();
+    SetupSaveNotification(serverOptions, allNotifications);
+    var sut = CreateNotAuditableDbContextBaseAsSut(serverOptions);
     var en = new FakeNotAuditableEntity();
 
     // Act.
@@ -24,7 +24,8 @@ public class DbContextBaseNotAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDE
 
     // Assert
     sut.Fakes.Count().Should().Be(1);
-    AssertAdd(allNotifications);
+    AssertAdd(allNotifications, out var testProp);
+    testProp.NewValue.Should().Be(en.TestProp);
   }
 
   [Fact]
@@ -36,9 +37,9 @@ public class DbContextBaseNotAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDE
     var fakeEntityUpdate = new FakeNotAuditableEntity();
 
     // Arrange
-    var mediator = new Mock<IACoreServerApp>();
-    SetupSaveNotification(mediator, allNotifications);
-    var sut = CreateNotAuditableDbContextBaseAsSut(mediator, impl =>
+    var serveOptions = new Mock<IACoreServerApp>();
+    SetupSaveNotification(serveOptions, allNotifications);
+    var sut = CreateNotAuditableDbContextBaseAsSut(serveOptions, impl =>
     {
       impl.Fakes.Add(fakeEntityInit);
       impl.SaveChanges();
@@ -52,7 +53,9 @@ public class DbContextBaseNotAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDE
 
     // Assert
     sut.Fakes.Count().Should().Be(1);
-    AssertUpdate(allNotifications, fakeData);
+    AssertUpdate(allNotifications, out var testProp);
+    testProp.NewValue.Should().Be(fakeData);
+    testProp.OldValue.Should().BeNull();
   }
 
   [Fact]
@@ -67,9 +70,9 @@ public class DbContextBaseNotAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDE
     };
 
     // Arrange
-    var mediator = new Mock<IACoreServerApp>();
-    SetupSaveNotification(mediator, allNotifications);
-    var sut = CreateNotAuditableDbContextBaseAsSut(mediator, impl =>
+    var serveOptions = new Mock<IACoreServerApp>();
+    SetupSaveNotification(serveOptions, allNotifications);
+    var sut = CreateNotAuditableDbContextBaseAsSut(serveOptions, impl =>
     {
       impl.Fakes.Add(fakeEntity);
       impl.SaveChanges();
@@ -82,6 +85,7 @@ public class DbContextBaseNotAuditableCRUDTests() : DbContextBaseCRUDTests(CRUDE
 
     // Assert
     sut.Fakes.Count().Should().Be(0);
-    AssertDelete(allNotifications, fakeData);
+    AssertDelete(allNotifications, out var testProp);
+    testProp.OldValue.Should().Be(fakeData);
   }
 }
