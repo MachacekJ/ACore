@@ -52,7 +52,7 @@ public class ACoreCache(IMemoryCache memoryCache, IOptions<ACoreCacheOptions> aC
   private string GetKey(CacheKey key)
   {
     if (Categories.All(k => k.CategoryNameKey != key.MainCategory.CategoryNameKey))
-      throw new ArgumentException($"Cache - Category '{key.MainCategory.CategoryNameKey}' is not registered. Please register this category in {nameof(CacheOptionsBuilder.AddCacheCategories)}");
+      throw new ArgumentException($"Cache - Category '{key.MainCategory.CategoryNameKey}' is not registered. Please register this category in {nameof(CacheOptions.Categories)}");
 
     return key.ToString();
   }

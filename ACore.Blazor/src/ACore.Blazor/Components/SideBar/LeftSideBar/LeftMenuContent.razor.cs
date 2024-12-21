@@ -1,5 +1,8 @@
-﻿using ACore.Blazor.CQRS.LocalStorage;
-using ACore.Blazor.CQRS.LocalStorage.Models;
+﻿using ACore.Blazor.Configuration;
+using ACore.Blazor.Modules.LocalStorageModule;
+using ACore.Blazor.Modules.LocalStorageModule.CQRS.LocalStorageGet;
+using ACore.Blazor.Modules.LocalStorageModule.CQRS.LocalStorageSave;
+using ACore.Blazor.Modules.LocalStorageModule.CQRS.Models;
 using ACore.Blazor.Services.App;
 using ACore.Blazor.Services.Page.Interfaces;
 using ACore.Blazor.Services.Page.Models;
@@ -10,7 +13,7 @@ using Telerik.Blazor.Components.PanelBar.Models;
 
 namespace ACore.Blazor.Components.SideBar.LeftSideBar;
 
-public partial class LeftMenuContent : JMComponentBase, IDisposable
+public partial class LeftMenuContent : ACoreComponentBase, IDisposable
 {
     private List<PanelBarItem> _rootItems = [];
 
@@ -19,7 +22,7 @@ public partial class LeftMenuContent : JMComponentBase, IDisposable
     private List<string> _allExp = [];
 
     [Inject]
-    private IAppStartConfiguration AppStartConfiguration { get; set; } = null!;
+    private IAppPagesConfiguration AppStartConfiguration { get; set; } = null!;
 
     protected override void OnInitialized()
     {

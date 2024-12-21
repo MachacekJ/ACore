@@ -1,4 +1,5 @@
-﻿using ACore.Blazor.Services.App;
+﻿using ACore.Blazor.Configuration;
+using ACore.Blazor.Services.App;
 using ACore.Blazor.Services.App.Models;
 using ACore.Blazor.Services.Page.Interfaces;
 using ACore.Blazor.Services.Page.Models;
@@ -7,7 +8,7 @@ using Telerik.Blazor.Components;
 
 namespace ACore.Blazor.Components.Layouts;
 
-public partial class DashboardDrawer : JMComponentBase, IDisposable
+public partial class DashboardDrawer : ACoreComponentBase, IDisposable
 {
     private string _pageTitle = string.Empty;
     private IEnumerable<BreadcrumbItem> _items = new List<BreadcrumbItem>();
@@ -21,7 +22,7 @@ public partial class DashboardDrawer : JMComponentBase, IDisposable
 
     [Parameter] public RenderFragment? Body { get; set; }
 
-    [Inject] public IAppStartConfiguration AppSettings { get; set; } = null!;
+    [Inject] public IAppPagesConfiguration AppSettings { get; set; } = null!;
 
     [Inject] public IPageManager PageManager { get; set; } = null!;
 

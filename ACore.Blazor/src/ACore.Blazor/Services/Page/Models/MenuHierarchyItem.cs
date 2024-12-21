@@ -1,4 +1,5 @@
-﻿using ACore.Blazor.Services.Page.Interfaces;
+﻿using System.Resources;
+using ACore.Blazor.Services.Page.Interfaces;
 using Telerik.Blazor.Components.Common.Trees.Models;
 using Telerik.Blazor.Components.PanelBar.Models;
 using Telerik.SvgIcons;
@@ -7,8 +8,7 @@ namespace ACore.Blazor.Services.Page.Models;
 
 public class MenuHierarchyItem
 {
-    public (Type Type, string Name)? ResX { get; }
-    //public string? PageId { get; }
+    public (ResourceManager Type, string Name)? ResX { get; }
 
     public string Id { get; }
 
@@ -37,7 +37,7 @@ public class MenuHierarchyItem
     {
      
     }
-    public MenuHierarchyItem(string id, string title, (Type Type, string Name)? resx, ISvgIcon icon, IEnumerable<MenuHierarchyItem> children)
+    public MenuHierarchyItem(string id, string title, (ResourceManager Type, string Name)? resx, ISvgIcon icon, IEnumerable<MenuHierarchyItem> children)
     {
         Id = id;
         ResX = resx;

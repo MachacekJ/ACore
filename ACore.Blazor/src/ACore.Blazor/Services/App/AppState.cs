@@ -1,11 +1,12 @@
-﻿using ACore.Blazor.Services.App.Models;
+﻿using ACore.Blazor.Configuration;
+using ACore.Blazor.Services.App.Models;
 using ACore.Blazor.Services.Page.Implementations;
 using ACore.Blazor.Services.Page.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace ACore.Blazor.Services.App;
 
-public class AppState(IAppStartConfiguration appSettings, ILogger<AppState> logger) : IAppState
+public class AppState(IAppPagesConfiguration appSettings, ILogger<AppState> logger) : IAppState
 {
     //public event Action<IPageData>? OnPageChange;
     public event Func<IPageData, Task>? OnPageChangeAsync;
@@ -14,7 +15,7 @@ public class AppState(IAppStartConfiguration appSettings, ILogger<AppState> logg
 
     public IPageData PageData { get; private set; } = appSettings.HomePage;
 
-    public IAppStartConfiguration AppSetting { get; } = appSettings;
+    public IAppPagesConfiguration AppSetting { get; } = appSettings;
 
     private PageStateEnum PageState { get; set; } = PageStateEnum.Initialize;
 

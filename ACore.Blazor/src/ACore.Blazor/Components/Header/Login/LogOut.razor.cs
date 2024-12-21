@@ -2,7 +2,7 @@
 
 namespace ACore.Blazor.Components.Header.Login
 {
-    public partial class LogOut : JMComponentBase, IDisposable
+    public partial class LogOut : ACoreComponentBase, IDisposable
     {
         private string _mobileIconCss = string.Empty;
 

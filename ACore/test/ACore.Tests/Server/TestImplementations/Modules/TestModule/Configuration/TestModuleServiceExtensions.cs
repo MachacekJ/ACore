@@ -38,7 +38,7 @@ public static class TestModuleServiceExtensions
     TestNoAuditData.MapConfig();
   }
 
-  public static void ConfigureAutofacTestModule(this ContainerBuilder containerBuilder)
+  public static void ContainerTestModule(this ContainerBuilder containerBuilder)
   {
     containerBuilder.RegisterGeneric(typeof(TestAuditGetHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(TestAuditSaveHandler<>)).AsImplementedInterfaces();

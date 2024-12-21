@@ -1,11 +1,12 @@
-﻿@using ACore.Blazor.CQRS.Analytics
-@using ACore.Blazor.CQRS.Analytics.Models
-@using ACore.Blazor.Services
+﻿@using ACore.Blazor.Services
 @using Microsoft.Extensions.Logging
 @using System.Globalization
+@using ACore.Blazor.Configuration
+@using ACore.Blazor.Modules.Analytics
+@using ACore.Blazor.Modules.Analytics.Models
 @using ACore.Blazor.Services.App.Models
 @using Telerik.Blazor.Components.PanelBar.Models
-@inherits JMComponentBase
+@inherits ACoreComponentBase
 
 <Testable TestId=@(nameof(CultureItems))>
     <TelerikPanelBar Data="_rootItems" OnItemClick="LanguageChange">
@@ -26,7 +27,7 @@
 
     protected override void OnInitialized()
     {
-        foreach (var item in Config.AvailableLanguage.AllSupportedLanguages)
+        foreach (var item in ACoreBlazorAvailableLanguage.AllSupportedLanguages)
         {
             _rootItems.Add(new PanelBarItem
             {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace ACore.Blazor.Components.Header.Login
 {
-    public partial class LogIn : JMComponentBase, IDisposable
+    public partial class LogIn : ACoreComponentBase, IDisposable
     {
         private string _mobileIconCss = string.Empty;
 

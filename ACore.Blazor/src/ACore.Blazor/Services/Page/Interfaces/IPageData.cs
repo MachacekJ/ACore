@@ -1,4 +1,6 @@
-﻿namespace ACore.Blazor.Services.Page.Interfaces;
+﻿using System.Resources;
+
+namespace ACore.Blazor.Services.Page.Interfaces;
 
 public interface IPageData
 {
@@ -6,6 +8,6 @@ public interface IPageData
     string PageId { get; }
     public string PageUrl { get; }
     
-    (Type Type, string Name)? ResX { get; }
+    (ResourceManager Type, string Name)? ResX { get; }
 }
 

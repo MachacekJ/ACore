@@ -65,9 +65,9 @@ public static class ACoreServerServiceExtensions
       await provider.UseAuditServiceModule();
   }
 
-  public static void ConfigureAutofacACoreServer(this ContainerBuilder containerBuilder)
+  public static void ContainerACoreServer(this ContainerBuilder containerBuilder)
   {
-    containerBuilder.RegisterGeneric(typeof(AuditGetHandler<>)).AsImplementedInterfaces();
+    containerBuilder.ContainerAuditModule();
   }
 
   private static void AddACoreServerModules(this IServiceCollection services, ACoreServerOptions aCoreServerOptions)

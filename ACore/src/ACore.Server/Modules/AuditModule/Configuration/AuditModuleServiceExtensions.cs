@@ -1,10 +1,12 @@
 using ACore.Server.Modules.AuditModule.CQRS;
+using ACore.Server.Modules.AuditModule.CQRS.AuditGet;
 using ACore.Server.Modules.AuditModule.Repositories;
 using ACore.Server.Modules.AuditModule.Repositories.Mongo;
 using ACore.Server.Modules.AuditModule.Repositories.SQL.Memory;
 using ACore.Server.Modules.AuditModule.Repositories.SQL.PG;
 using ACore.Server.Modules.SettingsDbModule.Configuration;
 using ACore.Server.Storages.Configuration;
+using Autofac;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -40,5 +42,10 @@ internal static class AuditModuleServiceExtensions
     await provider.ConfigureMongoStorage<IAuditRepository, AuditMongoRepositoryImpl>(opt.Storages);
     await provider.ConfigurePGStorage<IAuditRepository, AuditPGEFRepositoryImpl>(opt.Storages);
     await provider.ConfigureMemoryStorage<IAuditRepository, AuditSqlMemoryRepositoryImpl>(opt.Storages);
+  }
+
+  public static void ContainerAuditModule(this ContainerBuilder containerBuilder)
+  {
+    containerBuilder.RegisterGeneric(typeof(AuditGetHandler<>)).AsImplementedInterfaces();
   }
 }

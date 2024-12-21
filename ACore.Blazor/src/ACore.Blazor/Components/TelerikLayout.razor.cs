@@ -1,4 +1,5 @@
-﻿using ACore.Blazor.Services.App;
+﻿using ACore.Blazor.Configuration;
+using ACore.Blazor.Services.App;
 using ACore.Blazor.Services.App.Models;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -10,7 +11,7 @@ namespace ACore.Blazor.Components;
 public partial class TelerikLayout : LayoutComponentBase
 {
     [Inject]
-    private IAppStartConfiguration AppSettings { get; set; } = null!;
+    private IAppPagesConfiguration AppSettings { get; set; } = null!;
 
     [Inject]
     private IAppState AppState { get; set; } = null!;

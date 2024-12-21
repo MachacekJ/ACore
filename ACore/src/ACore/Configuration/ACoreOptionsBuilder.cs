@@ -5,7 +5,7 @@ namespace ACore.Configuration;
 public class ACoreOptionsBuilder
 {
   private string _saltForHash = string.Empty;
-  protected readonly ACoreCacheOptions _cacheOptions = new();
+  protected readonly ACoreCacheOptions CacheOptions = new();
 
   public static ACoreOptionsBuilder Empty() => new();
 
@@ -13,7 +13,7 @@ public class ACoreOptionsBuilder
     => _saltForHash = salt;
   
   public void AddACoreCache(Action<ACoreCacheOptions> optionsAction)
-  => optionsAction(_cacheOptions);
+  => optionsAction(CacheOptions);
   
   public virtual ACoreOptions Build()
   {
@@ -25,6 +25,6 @@ public class ACoreOptionsBuilder
   protected void SetOptions(ACoreOptions opt)
   {
     opt.SaltForHash = _saltForHash;
-    opt.ACoreCacheOptions = _cacheOptions;
+    opt.ACoreCacheOptions = CacheOptions;
   }
 }

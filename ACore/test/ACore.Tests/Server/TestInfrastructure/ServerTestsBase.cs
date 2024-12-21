@@ -1,5 +1,4 @@
 ﻿using ACore.Server.Configuration;
-using ACore.Server.Storages;
 using ACore.Tests.Base;
 using ACore.Tests.Server.TestImplementations.Configuration;
 using Autofac;
@@ -16,11 +15,7 @@ public abstract class ServerTestsBase : TestsBase
   protected override void RegisterServices(ServiceCollection services)
   {
     base.RegisterServices(services);
-    services.AddACoreTest((ot) =>
-    {
-      //ot.ACoreServer(o => { SetupACoreServer(o); });
-      SetupACoreTest(ot);
-    });
+    services.AddACoreTest(SetupACoreTest);
   }
 
   protected override async Task GetServices(IServiceProvider sp)
@@ -32,7 +27,7 @@ public abstract class ServerTestsBase : TestsBase
   protected override void SetContainer(ContainerBuilder containerBuilder)
   {
     base.SetContainer(containerBuilder);
-    containerBuilder.ConfigureAutofacACoreServer();
-    containerBuilder.AddACoreTest();
+    containerBuilder.ContainerACoreServer();
+    containerBuilder.ContainerACoreTest();
   }
 }

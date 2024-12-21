@@ -76,7 +76,7 @@ public class ACoreServerOptionsBuilder : ACoreOptionsBuilder
 
     foreach (var category in _serverCacheOptions.Categories)
     {
-      _cacheOptions.Categories.Add(category);
+      CacheOptions.Categories.Add(category);
     }
   }
 }

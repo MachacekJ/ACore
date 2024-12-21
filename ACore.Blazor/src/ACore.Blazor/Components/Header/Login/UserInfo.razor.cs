@@ -4,7 +4,7 @@ using Telerik.SvgIcons;
 
 namespace ACore.Blazor.Components.Header.Login;
 
-public partial class UserInfo : JMComponentBase
+public partial class UserInfo : ACoreComponentBase
 {
     private TelerikContextMenu<MenuItem>? _contextMenuRef;
     private TelerikButton? _nameItemRef;

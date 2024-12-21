@@ -1,4 +1,5 @@
-﻿using ACore.Blazor.Services.App;
+﻿using ACore.Blazor.Configuration;
+using ACore.Blazor.Services.App;
 using ACore.Blazor.Services.Page.Interfaces;
 using ACore.Blazor.Services.Page.Models;
 using Microsoft.Extensions.Logging;
@@ -8,11 +9,11 @@ namespace ACore.Blazor.Services.Page.Implementations;
 
 public class PageManager : IPageManager
 {
-    private readonly IAppStartConfiguration _appSettings;
+    private readonly IAppPagesConfiguration _appSettings;
     private readonly List<MenuHierarchyItem> _leftMenuFlatItems = [];
     private readonly ILogger<PageManager> _logger;
 
-    public PageManager(IAppStartConfiguration appSettings, ILogger<PageManager> logger)
+    public PageManager(IAppPagesConfiguration appSettings, ILogger<PageManager> logger)
     {
         _appSettings = appSettings;
         _logger = logger;
@@ -76,8 +77,6 @@ public class PageManager : IPageManager
     {
         if (item.Parent != null)
             BreadcrumbsRek(item.Parent, list);
-
-        // if (item.PageId != null)
         list.Add(item.ToBreadcrumbItem());
     }
 
