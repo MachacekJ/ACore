@@ -4,6 +4,6 @@ namespace ACore.Configuration;
 
 public class ACoreOptions
 {
-  public string SaltForHash { get; init; } = string.Empty;
-  public ACoreCacheOptions ACoreCacheOptions { get; init; } = new();
+  public string SaltForHash { get; set; } = string.Empty;
+  public ACoreCacheOptions ACoreCacheOptions { get; set; } = new();
 }

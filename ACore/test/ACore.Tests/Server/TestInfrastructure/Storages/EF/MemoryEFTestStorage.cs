@@ -5,7 +5,7 @@ namespace ACore.Tests.Server.TestInfrastructure.Storages.EF;
 
 public class MemoryEFTestStorage : ITestStorage
 {
-  public void SetupACoreServer(ACoreServerOptionBuilder builder)
+  public void ConfigureStorage(ACoreServerOptionsBuilder builder)
   {
     builder.DefaultStorage(storageOptionBuilder => storageOptionBuilder.AddMemoryDb());
   }

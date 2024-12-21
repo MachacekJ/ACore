@@ -14,30 +14,44 @@ public class ServerCacheTestsBase : ServerTestsBase
 
   public required IServerCache ServerCache;
 
+  protected override void SetupACoreTest(ACoreTestOptionsBuilder builder)
+  {
+    base.SetupACoreTest(builder);
+    builder.AddServerCache(serverCacheOptions =>
+    {
+      serverCacheOptions.Categories.Add(FakeCacheCategory);
+      serverCacheOptions.RedisOptions.Password = Configuration?["TestSettings:RedisPassword"] ?? throw new InvalidOperationException();
+      serverCacheOptions.RedisOptions.ConnectionString = Configuration?["TestSettings:Redis"] ?? throw new InvalidOperationException();
+      serverCacheOptions.RedisOptions.InstanceName = nameof(ACore) + "Tests";
+    });
+  }
+
   protected override void RegisterServices(ServiceCollection services)
   {
-     base.RegisterServices(services);
-    services.AddACoreTest((ot) =>
-    {
-      ot.ACoreServer(o => { SetupACoreServer(o); });
-      SetupACoreTest(ot);
-    });
-    
-  //   builder.ACore(a =>
-  //     a.AddACoreCache(aCoreCacheOptions => { aCoreCacheOptions.Categories.Add(CacheCategories.Entity); })
-  //       .AddSaltForHash("fakesalt"));
-  // }
-  //
-  // {
-  //   base.SetupACoreServer(builder);
-  //   builder.s;
-  //   builder.AddServerCache(opt =>
-  //   {
-  //     opt.Categories.Add(FakeCacheCategory);
-  //     opt.RedisOptions.Password = "password";
-  //     opt.RedisOptions.ConnectionString = Configuration?["TestSettings:Redis"] ?? throw new InvalidOperationException();
-  //     opt.RedisOptions.InstanceName = nameof(ACore) + "Tests";
-  //   });
+    base.RegisterServices(services);
+ 
+
+    // services.AddACoreTest((ot) =>
+    // {
+    //   ot.ACoreServer(o => { SetupACoreServer(o); });
+    //   SetupACoreTest(ot);
+    // });
+
+    //   builder.ACore(a =>
+    //     a.AddACoreCache(aCoreCacheOptions => { aCoreCacheOptions.Categories.Add(CacheCategories.Entity); })
+    //       .AddSaltForHash("fakesalt"));
+    // }
+    //
+    // {
+    //   base.SetupACoreServer(builder);
+    //   builder.s;
+    //   builder.AddServerCache(opt =>
+    //   {
+    //     opt.Categories.Add(FakeCacheCategory);
+    //     opt.RedisOptions.Password = "password";
+    //     opt.RedisOptions.ConnectionString = Configuration?["TestSettings:Redis"] ?? throw new InvalidOperationException();
+    //     opt.RedisOptions.InstanceName = nameof(ACore) + "Tests";
+    //   });
   }
 
   protected override async Task GetServices(IServiceProvider sp)

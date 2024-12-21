@@ -28,7 +28,7 @@ public class PGTestStorage : ITestStorage
     sc.AddDbContext<MasterDb>(opt => opt.UseNpgsql(_dbConnectionStringMaster));
   }
 
-  public void SetupACoreServer(ACoreServerOptionBuilder builder)
+  public void ConfigureStorage(ACoreServerOptionsBuilder builder)
   {
     builder.DefaultStorage(storageOptionBuilder => storageOptionBuilder.AddPG(_dbConnectionString));
   }

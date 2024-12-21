@@ -9,20 +9,6 @@ namespace ACore.Tests.Server.TestInfrastructure;
 
 public abstract class ServerTestsBase : TestsBase
 {
-  protected virtual void SetupACoreServer(ACoreServerOptionBuilder builder)
-  {
-    builder.ACore(a =>
-      a.AddACoreCache(aCoreCacheOptions =>
-        {
-          aCoreCacheOptions.Categories.Add(CacheCategories.Entity);
-          // aCoreCacheOptions.MemoryCacheOptionAction = (options) =>
-          // {
-          //  
-          // };
-        })
-        .AddSaltForHash("fakesalt"));
-  }
-
   protected virtual void SetupACoreTest(ACoreTestOptionsBuilder builder)
   {
   }
@@ -32,7 +18,7 @@ public abstract class ServerTestsBase : TestsBase
     base.RegisterServices(services);
     services.AddACoreTest((ot) =>
     {
-      ot.ACoreServer(o => { SetupACoreServer(o); });
+      //ot.ACoreServer(o => { SetupACoreServer(o); });
       SetupACoreTest(ot);
     });
   }

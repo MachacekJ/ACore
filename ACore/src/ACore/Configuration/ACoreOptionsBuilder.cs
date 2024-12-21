@@ -5,32 +5,26 @@ namespace ACore.Configuration;
 public class ACoreOptionsBuilder
 {
   private string _saltForHash = string.Empty;
-  private readonly ACoreCacheOptions _cacheOptions = new();
-  
-  private ACoreOptionsBuilder()
-  {
-  }
+  protected readonly ACoreCacheOptions _cacheOptions = new();
 
   public static ACoreOptionsBuilder Empty() => new();
 
-  public ACoreOptionsBuilder AddSaltForHash(string salt)
+  public void AddSaltForHash(string salt)
+    => _saltForHash = salt;
+  
+  public void AddACoreCache(Action<ACoreCacheOptions> optionsAction)
+  => optionsAction(_cacheOptions);
+  
+  public virtual ACoreOptions Build()
   {
-    _saltForHash = salt;
-    return this;
+    var res = new ACoreOptions();
+    SetOptions(res);
+    return res;
   }
 
-  public ACoreOptionsBuilder AddACoreCache(Action<ACoreCacheOptions> optionsAction)
+  protected void SetOptions(ACoreOptions opt)
   {
-    optionsAction(_cacheOptions);
-    return this;
-  }
-
-  public ACoreOptions Build()
-  {
-    return new ACoreOptions
-    {
-      SaltForHash = _saltForHash,
-      ACoreCacheOptions = _cacheOptions
-    };
+    opt.SaltForHash = _saltForHash;
+    opt.ACoreCacheOptions = _cacheOptions;
   }
 }

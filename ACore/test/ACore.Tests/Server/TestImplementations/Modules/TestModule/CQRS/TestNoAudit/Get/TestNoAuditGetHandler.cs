@@ -14,7 +14,7 @@ internal class TestNoAuditGetHandler<TPK>(IStorageResolver storageResolver, IOpt
 {
   public override async Task<Result<Dictionary<string, TestNoAuditData<TPK>>>> Handle(TestNoAuditGetQuery<TPK> request, CancellationToken cancellationToken)
   {
-    var saltForHash = options.Value.ACoreOptions.SaltForHash;
+    var saltForHash = options.Value.SaltForHash;
     var st = ReadTestContext();
     if (st is TestModuleMongoRepositoryImpl)
     {

@@ -189,8 +189,7 @@ public class DbContextBaseHashCheckSumTests : DbContextBaseTests
       .Setup(i => i.Options)
       .Returns(() => new ACoreServerOptions
       {
-        ACoreOptions = new ACoreOptions
-          { SaltForHash = HashFake }
+        SaltForHash = HashFake
       });
   }
 }

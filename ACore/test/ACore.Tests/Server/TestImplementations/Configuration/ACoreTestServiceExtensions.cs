@@ -22,7 +22,7 @@ public static class ACoreTestServiceExtensions
   {
     ValidateDependencyInConfiguration(aCoreTestOptions);
 
-    services.AddACoreServer(aCoreTestOptions.ACoreServerOptions);
+    services.AddACoreServer(aCoreTestOptions);
 
     var myOptionsInstance = Options.Create(aCoreTestOptions);
     services.AddSingleton(myOptionsInstance);
@@ -63,7 +63,7 @@ public static class ACoreTestServiceExtensions
     if (!aCoreTestOptions.TestModuleOptions.IsActive)
       return;
 
-    if (aCoreTestOptions.ACoreServerOptions.AuditModuleOptions.IsActive == false)
+    if (aCoreTestOptions.AuditModuleOptions.IsActive == false)
       throw new Exception($"Module {nameof(ACore.Server.Modules.AuditModule)} must be activated.");
   }
 }

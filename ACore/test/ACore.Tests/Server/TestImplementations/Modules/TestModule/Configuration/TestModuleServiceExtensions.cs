@@ -55,12 +55,12 @@ public static class TestModuleServiceExtensions
               ?? throw new ArgumentException($"{nameof(TestModuleOptions)} is not configured.");
 
     StorageOptions? storageOptions = null;
-    if (opt.ACoreServerOptions.DefaultStorages != null)
-      storageOptions = opt.ACoreServerOptions.DefaultStorages;
+    if (opt.DefaultStorages != null)
+      storageOptions = opt.DefaultStorages;
     if (opt.TestModuleOptions.Storages != null)
       storageOptions = opt.TestModuleOptions.Storages;
     if (storageOptions == null)
-      throw new ArgumentException($"{nameof(opt.TestModuleOptions)} is null. You can also use {nameof(opt.ACoreServerOptions.DefaultStorages)}.");
+      throw new ArgumentException($"{nameof(opt.TestModuleOptions)} is null. You can also use {nameof(opt.DefaultStorages)}.");
 
 
     await provider.ConfigureMongoStorage<ITestRepositoryModule, TestModuleMongoRepositoryImpl>(storageOptions);

@@ -55,7 +55,7 @@ public abstract partial class DbContextBase(DbContextOptions options, IACoreServ
     if (hashIsRequired)
     {
       // Gets salt from global app settings.
-      saltForHash = iaCoreServerApp.Options.ACoreOptions.SaltForHash;  //(await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt))).ResultValue ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
+      saltForHash = iaCoreServerApp.Options.SaltForHash;  //(await mediator.Send(new AppOptionQuery<string>(OptionQueryEnum.HashSalt))).ResultValue ?? throw new Exception($"Mediator for {nameof(AppOptionQuery<string>)}.{Enum.GetName(OptionQueryEnum.HashSalt)} returned null value.");
       if (string.IsNullOrEmpty(saltForHash))
         Logger.LogWarning($"Please configure salt for hash. Check application settings and paste hash string to section '{nameof(ACoreOptions)}.{nameof(ACoreOptions.SaltForHash)}'");
     }

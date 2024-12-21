@@ -1,6 +1,6 @@
-﻿using ACore.Server.Configuration;
-using ACore.Server.Storages.Definitions.Models;
+﻿using ACore.Server.Storages.Definitions.Models;
 using ACore.Server.Storages.Services.StorageResolvers;
+using ACore.Tests.Server.TestImplementations.Configuration;
 using ACore.Tests.Server.TestInfrastructure.Storages;
 using ACore.Tests.Server.TestInfrastructure.Storages.EF;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +12,9 @@ public abstract class StorageTestsBase(IEnumerable<StorageTypeEnum> storages) : 
   protected IStorageResolver? StorageResolver;
   private List<ITestStorage> TestStorages { get; set; } = new();
 
-  protected override void SetupACoreServer(ACoreServerOptionBuilder builder)
+  protected override void SetupACoreTest(ACoreTestOptionsBuilder builder)
   {
+    base.SetupACoreTest(builder);
     foreach (var storage in storages)
     {
       ITestStorage testStorage = storage switch
@@ -26,8 +27,7 @@ public abstract class StorageTestsBase(IEnumerable<StorageTypeEnum> storages) : 
       TestStorages.Add(testStorage);
     }
 
-    base.SetupACoreServer(builder);
-    TestStorages.ForEach(ts => ts.SetupACoreServer(builder));
+    TestStorages.ForEach(ts => ts.ConfigureStorage(builder));
   }
 
   protected override void RegisterServices(ServiceCollection services)

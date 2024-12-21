@@ -21,9 +21,9 @@ namespace ACore.Server.Configuration;
 
 public static class ACoreServerServiceExtensions
 {
-  public static void AddACoreServer(this IServiceCollection services, Action<ACoreServerOptionBuilder>? optionsBuilder = null)
+  public static void AddACoreServer(this IServiceCollection services, Action<ACoreServerOptionsBuilder>? optionsBuilder = null)
   {
-    var aCoreServerOptionBuilder = ACoreServerOptionBuilder.Empty();
+    var aCoreServerOptionBuilder = ACoreServerOptionsBuilder.Empty();
     optionsBuilder?.Invoke(aCoreServerOptionBuilder);
     var aCoreServerOptions = aCoreServerOptionBuilder.Build();
     AddACoreServer(services, aCoreServerOptions);
@@ -33,7 +33,7 @@ public static class ACoreServerServiceExtensions
   {
     ValidateDependencyInConfiguration(aCoreServerOptions);
 
-    services.AddACore(aCoreServerOptions.ACoreOptions);
+    services.AddACore(aCoreServerOptions);
 
     var myOptionsInstance = Options.Create(aCoreServerOptions);
     services.AddSingleton(myOptionsInstance);

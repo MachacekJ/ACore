@@ -11,7 +11,7 @@ public class AppOptionHandler<T>(IOptions<ACoreServerOptions> options) : IReques
     switch (request.OptionQueryEnum)
     {
       case OptionQueryEnum.HashSalt:
-        return Task.FromResult(Result.Success((T)Convert.ChangeType(options.Value.ACoreOptions.SaltForHash, typeof(T))));
+        return Task.FromResult(Result.Success((T)Convert.ChangeType(options.Value.SaltForHash, typeof(T))));
     }
 
     throw new NotImplementedException();

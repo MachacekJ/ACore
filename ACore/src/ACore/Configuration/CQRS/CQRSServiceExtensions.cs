@@ -18,6 +18,5 @@ public static class CQRSExtensions
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehavior<,>));
     services.AddValidatorsFromAssembly(typeof(CQRSExtensions).Assembly, includeInternalTypes: true);
-
   }
 }

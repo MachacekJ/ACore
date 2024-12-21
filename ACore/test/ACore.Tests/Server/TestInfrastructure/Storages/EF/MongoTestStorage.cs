@@ -19,7 +19,7 @@ public class MongoTestStorage : ITestStorage
     _dbConnectionString = string.Format(configuration["TestSettings:ConnectionStringMongo"] ?? throw new InvalidOperationException(), _dbName);
   }
 
-  public void SetupACoreServer(ACoreServerOptionBuilder builder)
+  public void ConfigureStorage(ACoreServerOptionsBuilder builder)
   {
     builder.DefaultStorage(storageOptionBuilder => storageOptionBuilder.AddMongo(_dbConnectionString, _dbName));
   }

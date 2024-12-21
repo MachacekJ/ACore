@@ -9,19 +9,15 @@ using ACore.Server.Storages.Configuration;
 
 namespace ACore.Server.Configuration;
 
-public class ACoreServerOptions
+public class ACoreServerOptions : ACoreOptions
 {
-  public ACoreOptions ACoreOptions { get; init; } = new ();
+  public StorageOptions? DefaultStorages { get; set; }
   
-  public StorageOptions? DefaultStorages { get; init; }
+  public ServerCacheOptions? ServerCache { get; set; }
   
-  public ServerCacheOptions? ServerCache { get; init; }
-  
-  public SettingsDbModuleOptions SettingsDbModuleOptions { get; init; } = new();
+  public SettingsDbModuleOptions SettingsDbModuleOptions { get; set; } = new();
 
-  public AuditModuleOptions AuditModuleOptions { get; init; } = new();
+  public AuditModuleOptions AuditModuleOptions { get; set; } = new();
 
-  public SecurityModuleOptions SecurityModuleOptions { get; init; } = new();
-  
-  public List<ModuleOptions> ExternalModulesOptions { get; init; } = new();
+  public SecurityModuleOptions SecurityModuleOptions { get; set; } = new();
 }
