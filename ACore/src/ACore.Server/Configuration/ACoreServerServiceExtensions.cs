@@ -2,7 +2,6 @@ using Autofac;
 using ACore.Configuration;
 using ACore.Configuration.CQRS;
 using ACore.CQRS.Extensions;
-using ACore.Server.Configuration.CQRS.OptionsGet;
 using ACore.Server.Modules.AuditModule.Configuration;
 using ACore.Server.Modules.AuditModule.CQRS.AuditGet;
 using ACore.Server.Modules.SecurityModule.Configuration;
@@ -39,7 +38,7 @@ public static class ACoreServerServiceExtensions
     services.AddSingleton(myOptionsInstance);
 
     // Adding CQRS only from ACore assembly.
-    services.AddCQRS();
+    services.AddACoreMediatr();
     // Adding CQRS from ACore.Server assembly.
     services.AddMediatR(c =>
     {
@@ -48,37 +47,12 @@ public static class ACoreServerServiceExtensions
     });
     services.AddValidatorsFromAssembly(typeof(ACoreServerServiceExtensions).Assembly, includeInternalTypes: true);
 
+    services.AddServerCache(aCoreServerOptions.ServerCache);
+    services.TryAddScoped<ISecurity, EmptySecurity>();
+    services.AddScoped<IACoreServerApp, ACoreServerApp>();
     services.TryAddSingleton<IStorageResolver>(new DefaultStorageResolver());
 
-    if (aCoreServerOptions.SettingsDbModuleOptions.IsActive)
-      services.AddSettingsDbModule(aCoreServerOptions.SettingsDbModuleOptions);
-
-    if (aCoreServerOptions.AuditModuleOptions.IsActive)
-      services.AddAuditModule(aCoreServerOptions.AuditModuleOptions);
-
-    if (aCoreServerOptions.SecurityModuleOptions.IsActive)
-      services.AddSecurityModule(aCoreServerOptions.SecurityModuleOptions);
-
-    
-    services.AddServerCache(aCoreServerOptions.ServerCache);
-    // if (aCoreServerOptions.ServerCache != null)
-    // {
-    //   services.AddStackExchangeRedisCache(opt =>
-    //   {
-    //     opt.Configuration = aCoreServerOptions.ServerCache.RedisOptions.ConnectionString;
-    //     opt.InstanceName = aCoreServerOptions.ServerCache.RedisOptions.InstanceName;
-    //   });
-    //  
-    // }
-    // else
-    // {
-    //  
-    // }
-
-    services.TryAddScoped<ISecurity, EmptySecurity>();
-
-
-    services.AddScoped<IACoreServerApp, ACoreServerApp>();
+    services.AddACoreServerModules(aCoreServerOptions);
   }
 
   public static async Task UseACoreServer(this IServiceProvider provider)
@@ -93,10 +67,21 @@ public static class ACoreServerServiceExtensions
 
   public static void ConfigureAutofacACoreServer(this ContainerBuilder containerBuilder)
   {
-    containerBuilder.RegisterGeneric(typeof(AppOptionHandler<>)).AsImplementedInterfaces();
     containerBuilder.RegisterGeneric(typeof(AuditGetHandler<>)).AsImplementedInterfaces();
   }
 
+  private static void AddACoreServerModules(this IServiceCollection services, ACoreServerOptions aCoreServerOptions)
+  {
+    if (aCoreServerOptions.SettingsDbModuleOptions.IsActive)
+      services.AddSettingsDbModule(aCoreServerOptions.SettingsDbModuleOptions);
+
+    if (aCoreServerOptions.AuditModuleOptions.IsActive)
+      services.AddAuditModule(aCoreServerOptions.AuditModuleOptions);
+
+    if (aCoreServerOptions.SecurityModuleOptions.IsActive)
+      services.AddSecurityModule(aCoreServerOptions.SecurityModuleOptions);
+  }
+  
   private static void ValidateDependencyInConfiguration(ACoreServerOptions aCoreServerOptions)
   {
     ValidateSettingsDbOptions(aCoreServerOptions);
@@ -109,18 +94,18 @@ public static class ACoreServerServiceExtensions
       return;
 
     if (!aCoreServerOptions.SecurityModuleOptions.IsActive)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.SecurityModule)} must be activated.");
+      throw new Exception($"Module {nameof(Modules.SecurityModule)} must be activated.");
 
     if (aCoreServerOptions.SettingsDbModuleOptions.IsActive == false)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.SettingsDbModule)} must be activated.");
+      throw new Exception($"Module {nameof(Modules.SettingsDbModule)} must be activated.");
 
     if (aCoreServerOptions.AuditModuleOptions.Storages == null && aCoreServerOptions.DefaultStorages == null)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.AuditModule)} must have {nameof(StorageOptions)}.");
+      throw new Exception($"Module {nameof(Modules.AuditModule)} must have {nameof(StorageOptions)}.");
   }
 
   private static void ValidateSettingsDbOptions(ACoreServerOptions aCoreServerOptions)
   {
     if (aCoreServerOptions.SettingsDbModuleOptions.Storages == null && aCoreServerOptions.DefaultStorages == null)
-      throw new Exception($"Module {nameof(ACore.Server.Modules.SettingsDbModule)} must have {nameof(StorageOptions)}.");
+      throw new Exception($"Module {nameof(Modules.SettingsDbModule)} must have {nameof(StorageOptions)}.");
   }
 }

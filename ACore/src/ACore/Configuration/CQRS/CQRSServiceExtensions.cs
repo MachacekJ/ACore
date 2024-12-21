@@ -8,7 +8,7 @@ namespace ACore.Configuration.CQRS;
 
 public static class CQRSExtensions
 {
-  public static void AddCQRS(this IServiceCollection services)
+  public static void AddACoreMediatr(this IServiceCollection services)
   {
     services.AddMediatR((c) =>
     {

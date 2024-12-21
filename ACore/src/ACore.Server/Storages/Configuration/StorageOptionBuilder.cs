@@ -38,16 +38,4 @@ public class StorageOptionBuilder
       MongoDb = _storageMongoOptions
     };
   }
-
-  private void CheckAtLeastOneDB()
-  {
-    if (_isMem)
-      return;
-    if (_storagePGOptions != null)
-      return;
-    if (_storageMongoOptions != null)
-      return;
-
-    throw new Exception("Please register at least one storage.");
-  }
 }

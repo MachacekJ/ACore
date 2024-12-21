@@ -1,4 +1,4 @@
-using ACore.Server.Configuration.Modules;
+using ACore.Server.Storages.Configuration;
 
 namespace ACore.Tests.Server.TestImplementations.Modules.TestModule.Configuration;
 

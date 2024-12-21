@@ -1,7 +1,6 @@
 using ACore.Modules.Base.Configuration;
-using ACore.Server.Storages.Configuration;
 
-namespace ACore.Server.Configuration.Modules;
+namespace ACore.Server.Storages.Configuration;
 
 public class StorageModuleOptionBuilder : ModuleOptionsBuilder
 {

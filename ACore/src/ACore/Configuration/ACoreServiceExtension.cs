@@ -18,7 +18,7 @@ public static class ACoreServiceExtension
   {
     var myOptionsInstance = Options.Create(opt);
     services.AddSingleton(myOptionsInstance);
-    services.AddCQRS();
+    services.AddACoreMediatr();
     services.AddACoreCacheModule(opt.ACoreCacheOptions);
   }
 }

@@ -1,4 +1,4 @@
-using ACore.Server.Configuration.Modules;
+using ACore.Server.Storages.Configuration;
 
 namespace ACore.Server.Modules.AuditModule.Configuration;
 
