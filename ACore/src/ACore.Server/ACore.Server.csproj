@@ -29,6 +29,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.4" />
 		<PackageReference Include="MongoDB.EntityFrameworkCore" Version="9.0.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
