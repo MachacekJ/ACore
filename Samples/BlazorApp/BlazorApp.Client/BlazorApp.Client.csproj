@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+    <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="UI\Pages\Counter.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modules\InvoiceModule\Pages\" />
+    <Folder Include="UI\Components\RightMenu\Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Configuration\Localization\Contexts\ResX\ResXMain.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResXMain.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Configuration\Localization\Contexts\ResX\ResXMenu.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResXMenu.resx</DependentUpon>
+    </Compile>
+    <Compile Update="UI\Pages\About\AboutPageResX.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AboutPageResX.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Configuration\Localization\Contexts\ResX\ResXMain.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResXMain.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Configuration\Localization\Contexts\ResX\ResXMenu.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResXMenu.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Pages\About\AboutPageResX.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AboutPageResX.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Pages\About\AboutPageResX.cs-cz.resx">
+    </EmbeddedResource>
+    <Content Remove="UI\Pages\About\AboutPage.resx.json" />
+    <EmbeddedResource Include="UI\Pages\About\AboutPage.resx.json" />
+    <Content Remove="UI\Pages\Home\HomePage.loc.json" />
+    <EmbeddedResource Include="UI\Pages\Home\HomePage.loc.json">
+      <DependentUpon>HomePage.loc.cs</DependentUpon>
+    </EmbeddedResource>
+    <Content Remove="UI\Pages\Home\HomePage.loc.cs.json" />
+    <EmbeddedResource Include="UI\Pages\Home\HomePage.loc.cs.json">
+      <DependentUpon>HomePage.loc.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\ACore.Blazor\src\ACore.Blazor\ACore.Blazor.csproj" />
+    <ProjectReference Include="..\..\..\Core\ACore\src\ACore.Client\ACore.Client.csproj" />
+  </ItemGroup>
+
+</Project>

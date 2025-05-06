@@ -1,0 +1,6 @@
+@ACoreAuditModule_HostAddress = http://localhost:5074
+
+GET {{ACoreAuditModule_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

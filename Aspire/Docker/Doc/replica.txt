@@ -1,0 +1,7 @@
+https://dev.to/ietxaniz/practical-postgresql-logical-replication-setting-up-an-experimentation-environment-using-docker-4h50
+
+https://medium.com/@ravikushwaha18.rk/setting-up-a-mongodb-replica-set-with-docker-compose-62ece5c295a1
+
+docker exec -it mongo-1-container mongosh -u sa -p Password123 --authenticationDatabase admin
+rs.status()
+
